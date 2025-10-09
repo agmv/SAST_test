@@ -1,0 +1,115 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "RuntimeDestroyerLib/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "RuntimeDestroyerLibRecords": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/RuntimeDestroyerLib.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/RuntimeDestroyerLib.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
+      "RuntimeDestroyerLibRecords/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/RuntimeDestroyerLibRecords.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/RuntimeDestroyerLibRecords.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "RuntimeDestroyerLib/1.0.0": {
+      "type": "project",
+      "path": "../../70e88f84-20c0-496b-bde5-9831530a09d3/RuntimeDestroyerLib.csproj",
+      "msbuildProject": "../../70e88f84-20c0-496b-bde5-9831530a09d3/RuntimeDestroyerLib.csproj"
+    },
+    "RuntimeDestroyerLibRecords/1.0.0": {
+      "type": "project",
+      "path": "../../70e88f84-20c0-496b-bde5-9831530a09d3/Records/RuntimeDestroyerLibRecords.csproj",
+      "msbuildProject": "../../70e88f84-20c0-496b-bde5-9831530a09d3/Records/RuntimeDestroyerLibRecords.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "RuntimeDestroyerLib >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "/Users/andre.vieira/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/e7c634b1-9547-4f8e-807b-c9faa359b669/referencesProxy/RuntimeDestroyerReferencesProxy.csproj",
+      "projectName": "RuntimeDestroyerReferencesProxy",
+      "projectPath": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/e7c634b1-9547-4f8e-807b-c9faa359b669/referencesProxy/RuntimeDestroyerReferencesProxy.csproj",
+      "packagesPath": "/Users/andre.vieira/.nuget/packages/",
+      "outputPath": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/e7c634b1-9547-4f8e-807b-c9faa359b669/referencesProxy/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/Users/andre.vieira/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {
+            "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/RuntimeDestroyerLib.csproj": {
+              "projectPath": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/RuntimeDestroyerLib.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.403/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
