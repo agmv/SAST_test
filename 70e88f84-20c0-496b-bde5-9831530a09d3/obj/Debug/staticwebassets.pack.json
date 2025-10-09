@@ -1,0 +1,129 @@
+{
+  "Files": [
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/_error.html",
+      "PackagePath": "staticwebassets/_error.html"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/css/_Basic.css",
+      "PackagePath": "staticwebassets/css/_Basic.css"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/css/_error.css",
+      "PackagePath": "staticwebassets/css/_error.css"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/index.html",
+      "PackagePath": "staticwebassets/index.html"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/scripts/LICENSES.txt",
+      "PackagePath": "staticwebassets/scripts/LICENSES.txt"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/scripts/cordova.js",
+      "PackagePath": "staticwebassets/scripts/cordova.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/scripts/osenv-bootstrap.js",
+      "PackagePath": "staticwebassets/scripts/osenv-bootstrap.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/scripts/pwa-service-worker.js",
+      "PackagePath": "staticwebassets/scripts/pwa-service-worker.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/scripts/register-sw.js",
+      "PackagePath": "staticwebassets/scripts/register-sw.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/scripts/require.js",
+      "PackagePath": "staticwebassets/scripts/require.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/scripts/requirejs-bootstrap.js",
+      "PackagePath": "staticwebassets/scripts/requirejs-bootstrap.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/RuntimeDestroyerLib.appDefinition.js",
+      "PackagePath": "staticwebassets/sources/RuntimeDestroyerLib.appDefinition.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/RuntimeDestroyerLib.controller.js",
+      "PackagePath": "staticwebassets/sources/RuntimeDestroyerLib.controller.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/RuntimeDestroyerLib.entities-model.js",
+      "PackagePath": "staticwebassets/sources/RuntimeDestroyerLib.entities-model.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/RuntimeDestroyerLib.error.js",
+      "PackagePath": "staticwebassets/sources/RuntimeDestroyerLib.error.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/RuntimeDestroyerLib.index.js",
+      "PackagePath": "staticwebassets/sources/RuntimeDestroyerLib.index.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/RuntimeDestroyerLib.languageResources.js",
+      "PackagePath": "staticwebassets/sources/RuntimeDestroyerLib.languageResources.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/RuntimeDestroyerLib.model.js",
+      "PackagePath": "staticwebassets/sources/RuntimeDestroyerLib.model.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/RuntimeDestroyerLib.referencesHealth.js",
+      "PackagePath": "staticwebassets/sources/RuntimeDestroyerLib.referencesHealth.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/RuntimeDestroyerLib.staticEntities.js",
+      "PackagePath": "staticwebassets/sources/RuntimeDestroyerLib.staticEntities.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/react-dom.js",
+      "PackagePath": "staticwebassets/sources/react-dom.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/react-router-dom.js",
+      "PackagePath": "staticwebassets/sources/react-router-dom.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/react-router.js",
+      "PackagePath": "staticwebassets/sources/react-router.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/react.js",
+      "PackagePath": "staticwebassets/sources/react.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/remix-run-router.js",
+      "PackagePath": "staticwebassets/sources/remix-run-router.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sources/tslib.js",
+      "PackagePath": "staticwebassets/sources/tslib.js"
+    },
+    {
+      "Id": "/Users/andre.vieira/Documents/OutSystems/vscode/SAST_test/70e88f84-20c0-496b-bde5-9831530a09d3/wwwroot/sw.js",
+      "PackagePath": "staticwebassets/sw.js"
+    },
+    {
+      "Id": "obj/Debug/staticwebassets/msbuild.RuntimeDestroyerLib.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/staticwebassets/msbuild.build.RuntimeDestroyerLib.props",
+      "PackagePath": "build\\RuntimeDestroyerLib.props"
+    },
+    {
+      "Id": "obj/Debug/staticwebassets/msbuild.buildMultiTargeting.RuntimeDestroyerLib.props",
+      "PackagePath": "buildMultiTargeting\\RuntimeDestroyerLib.props"
+    },
+    {
+      "Id": "obj/Debug/staticwebassets/msbuild.buildTransitive.RuntimeDestroyerLib.props",
+      "PackagePath": "buildTransitive\\RuntimeDestroyerLib.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
