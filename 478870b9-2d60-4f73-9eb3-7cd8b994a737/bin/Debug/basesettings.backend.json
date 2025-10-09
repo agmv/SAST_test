@@ -1,0 +1,71 @@
+﻿{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Warning",
+      "System.Net.Http.HttpClient.DefaultClientWithRetries.*": "Warning",
+      "System.Net.Http.HttpClient.*.ClientHandler": "Warning",
+      "OutSystems.Log.Visits": "None",
+      "OutSystems.RuntimeCommon.OSTrace": "Information"
+    },
+    "Console": {
+      "LogLevel": {
+        "Default": "Error",
+        "Microsoft": "Error",
+        "Microsoft.Hosting.Lifetime": "Error",
+        "OutSystems.RuntimeCommon.OSTrace": "Error"
+      },
+      "System.Net.Http.HttpClient.DefaultClientWithRetries.*": "Warning",
+      "System.Net.Http.HttpClient.*.ClientHandler": "Warning"
+    },
+    "EventLog": {
+      "LogLevel": {
+        "Default": "Error",
+        "OutSystems.RuntimeCommon.OSTrace": "None",
+        "OutSystems.RuntimeCommon.Log.EventLogger": "Information",
+        "Microsoft*": "Warning"
+      }
+    }
+  },
+  "OutSystems": {
+    "Application": {
+      "Key": "478870b9-2d60-4f73-9eb3-7cd8b994a737",
+      "Name": "(System)",
+      "RevisionId": "1",
+      "UrlBasePath": "System_",
+      "Description": "System Objects",
+      "PrimaryColor": "",
+      "Hubs": {
+        "DebuggerRequestsHub": "True",
+        "DebuggerEventsHub": "False"
+      },
+      "Controllers": {
+        "DebuggerApiController": "False",
+        "DataPreviewController": "False",
+        "PwaApiController": "False"
+      },
+      "Workload": {
+        "Type": "app"
+      },
+      "Services": {
+        "RestConsumeService": "True"
+      }
+    },
+    "Module": {
+      "CompilationHash": "0ZGvQ2xiaVX06MxIxZfDwA"
+    },
+    "RESTService": {
+      "Assemblies": "System_"
+    },
+    "BuildJob": {
+      "Version": "v44.6.2.0"
+    },
+    "BackendWorker": {
+      "Version": "v18.280.3-PullRequest0717.7"
+    },
+    "HubEdition": {
+      "NoMARSSupport": "True"
+    }
+  }
+}

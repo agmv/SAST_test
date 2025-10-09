@@ -30,12 +30,12 @@
   },
   "OutSystems": {
     "Application": {
-      "Key": "70e88f84-20c0-496b-bde5-9831530a09d3",
-      "Name": "RuntimeDestroyerLib",
-      "RevisionId": "1",
-      "UrlBasePath": "RuntimeDestroyerLib",
+      "Key": "e7c634b1-9547-4f8e-807b-c9faa359b669",
+      "Name": "RuntimeDestroyer",
+      "RevisionId": "6",
+      "UrlBasePath": "RuntimeDestroyer",
       "Description": "",
-      "PrimaryColor": "",
+      "PrimaryColor": "#8E44AD",
       "Hubs": {
         "DebuggerRequestsHub": "True",
         "DebuggerEventsHub": "False"
@@ -53,10 +53,10 @@
       }
     },
     "Module": {
-      "CompilationHash": "vf+D+J7xWXSeApSwwDIe7w"
+      "CompilationHash": "ng6_0QV9tSTRVGs9urXcTw"
     },
     "RESTService": {
-      "Assemblies": "RuntimeDestroyerLib"
+      "Assemblies": "RuntimeDestroyer"
     },
     "BuildJob": {
       "Version": "v44.6.2.0"

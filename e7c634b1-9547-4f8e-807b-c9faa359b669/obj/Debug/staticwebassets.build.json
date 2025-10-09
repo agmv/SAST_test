@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "PTFwyvOH3KdudfHg2oA82P/nG5kf3frBAOQz9d9OiCI=",
+  "Hash": "3OEzsIKMwKuqZE4JTXTmm076HV68qTiCdfAvK30IDyA=",
   "Source": "RuntimeDestroyer",
   "BasePath": "_content/RuntimeDestroyer",
   "Mode": "Default",
@@ -11,10 +11,10 @@
       "Version": 2,
       "Source": "RuntimeDestroyerLib",
       "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
-      "AdditionalPublishProperties": "",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
       "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework",
       "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
-      "AdditionalBuildProperties": "",
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
       "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework"
     }
   ],

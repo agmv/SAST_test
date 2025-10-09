@@ -43,5 +43,7 @@ jobs:
         shell: powershell
         run: |
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"agmv_SAST_test" /o:"agmv" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-          dotnet build
+          dotnet build 70e88f84-20c0-496b-bde5-9831530a09d3
+          dotnet build 478870b9-2d60-4f73-9eb3-7cd8b994a737
+          dotnet build e7c634b1-9547-4f8e-807b-c9faa359b669
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
