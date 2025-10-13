@@ -1,0 +1,71 @@
+﻿{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Warning",
+      "System.Net.Http.HttpClient.DefaultClientWithRetries.*": "Warning",
+      "System.Net.Http.HttpClient.*.ClientHandler": "Warning",
+      "OutSystems.Log.Visits": "None",
+      "OutSystems.RuntimeCommon.OSTrace": "Information"
+    },
+    "Console": {
+      "LogLevel": {
+        "Default": "Error",
+        "Microsoft": "Error",
+        "Microsoft.Hosting.Lifetime": "Error",
+        "OutSystems.RuntimeCommon.OSTrace": "Error"
+      },
+      "System.Net.Http.HttpClient.DefaultClientWithRetries.*": "Warning",
+      "System.Net.Http.HttpClient.*.ClientHandler": "Warning"
+    },
+    "EventLog": {
+      "LogLevel": {
+        "Default": "Error",
+        "OutSystems.RuntimeCommon.OSTrace": "None",
+        "OutSystems.RuntimeCommon.Log.EventLogger": "Information",
+        "Microsoft*": "Warning"
+      }
+    }
+  },
+  "OutSystems": {
+    "Application": {
+      "Key": "e7c634b1-9547-4f8e-807b-c9faa359b669",
+      "Name": "RuntimeDestroyer",
+      "RevisionId": "7",
+      "UrlBasePath": "RuntimeDestroyer",
+      "Description": "",
+      "PrimaryColor": "#8E44AD",
+      "Hubs": {
+        "DebuggerRequestsHub": "True",
+        "DebuggerEventsHub": "False"
+      },
+      "Controllers": {
+        "DebuggerApiController": "False",
+        "DataPreviewController": "False",
+        "PwaApiController": "False"
+      },
+      "Workload": {
+        "Type": "app"
+      },
+      "Services": {
+        "RestConsumeService": "True"
+      }
+    },
+    "Module": {
+      "CompilationHash": "7BdWkBVn3xgxJWvy9aBTTQ"
+    },
+    "RESTService": {
+      "Assemblies": "RuntimeDestroyer"
+    },
+    "BuildJob": {
+      "Version": "v44.7.3.0"
+    },
+    "BackendWorker": {
+      "Version": "v18.284.1"
+    },
+    "HubEdition": {
+      "NoMARSSupport": "True"
+    }
+  }
+}

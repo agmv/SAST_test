@@ -1,0 +1,22 @@
+﻿using OutSystems.RESTService.Runtime.Core.Controllers;
+using OutSystems.RESTService.Runtime.Core.Controllers.ScreenServices;
+
+namespace ssRuntimeDestroyer.ScreenServices;
+
+public class RESTRuntimeDestroyer_MainFlow_ScreenAggregate_ssCreateOrUpdateEmployee_Inputs : ScreenServicesApiController.Payload.IDataPayload {
+
+    [JsonProperty("Source")]
+public ssRuntimeDestroyer.RestRecords.RESTRC_3b55179c5be20c3d1041cf4a1dcf3f76 inParamSource;
+
+
+    public static RESTRuntimeDestroyer_MainFlow_ScreenAggregate_ssCreateOrUpdateEmployee_Inputs FromJSON(JObject inputParameters, JsonSerializer settings) {RESTRuntimeDestroyer_MainFlow_ScreenAggregate_ssCreateOrUpdateEmployee_Inputs result = inputParameters.ToObject<RESTRuntimeDestroyer_MainFlow_ScreenAggregate_ssCreateOrUpdateEmployee_Inputs>(settings);
+return result;
+}
+
+
+    public RuntimeDestroyer_MainFlow_ScreenAggregate_ssCreateOrUpdateEmployee_Model ToModel() {RuntimeDestroyer_MainFlow_ScreenAggregate_ssCreateOrUpdateEmployee_Model result = new RuntimeDestroyer_MainFlow_ScreenAggregate_ssCreateOrUpdateEmployee_Model();
+result.inParamSource = (RC_3b55179c5be20c3d1041cf4a1dcf3f76)ssRuntimeDestroyer.RestRecords.RESTRC_3b55179c5be20c3d1041cf4a1dcf3f76.ToStructure(inParamSource);
+return result;
+}
+
+}

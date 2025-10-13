@@ -42,7 +42,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          Expand-Archive .\33fcb998-6464-46c2-9832-224e42712a6b.zip -DestinationPath .
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"agmv_SAST_test" /o:"agmv" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
           dotnet build
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
