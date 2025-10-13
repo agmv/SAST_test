@@ -1,6 +1,0 @@
-﻿namespace ssRuntimeDestroyer;
-
-public interface ICallback_TestClient_a07c5d9788164016ac17c28c58cf19ad {
-    public Task<ST_2e4d23f993f70b2a453aff430875354bStructure> FlowTestClientActionOnBeforeRequest(IRequestContext requestContext,ST_2e4d23f993f70b2a453aff430875354bStructure inParamRequest,CancellationToken cancellationToken);
-
-}
