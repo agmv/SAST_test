@@ -32,7 +32,7 @@
     "Application": {
       "Key": "e7c634b1-9547-4f8e-807b-c9faa359b669",
       "Name": "RuntimeDestroyer",
-      "RevisionId": "7",
+      "RevisionId": "13",
       "UrlBasePath": "RuntimeDestroyer",
       "Description": "",
       "PrimaryColor": "#8E44AD",
@@ -59,10 +59,10 @@
       "Assemblies": "RuntimeDestroyer"
     },
     "BuildJob": {
-      "Version": "v44.7.3.0"
+      "Version": "v44.7.4.0"
     },
     "BackendWorker": {
-      "Version": "v18.284.1"
+      "Version": "v18.285.1"
     },
     "HubEdition": {
       "NoMARSSupport": "True"

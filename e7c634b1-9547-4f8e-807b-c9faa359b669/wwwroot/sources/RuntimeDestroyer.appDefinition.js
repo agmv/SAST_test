@@ -17,10 +17,10 @@ errorPageConfig: {
 showExceptionStack: false
 },
 isWeb: true,
-frontendBuildWorkerVersion: "v18.380.0",
+frontendBuildWorkerVersion: "v18.381.0",
 buildSDKVersion: "v44.7.2.0",
-clientRuntimeVersion: "6.49.8",
-appVersion: "7",
+clientRuntimeVersion: "6.49.9",
+appVersion: "13",
 homeModuleControllerImporter: async function () {
 var {default: RuntimeDestroyerController} = await(import("./RuntimeDestroyer.controller.js"));
 return RuntimeDestroyerController;

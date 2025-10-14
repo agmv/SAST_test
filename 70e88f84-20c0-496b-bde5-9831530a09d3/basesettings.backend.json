@@ -59,10 +59,10 @@
       "Assemblies": "RuntimeDestroyerLib"
     },
     "BuildJob": {
-      "Version": "v44.7.3.0"
+      "Version": "v44.7.4.0"
     },
     "BackendWorker": {
-      "Version": "v18.284.1"
+      "Version": "v18.285.1"
     },
     "HubEdition": {
       "NoMARSSupport": "True"

@@ -16,8 +16,8 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliantAttribute(false)]
 
-[assembly: AssemblyVersion("18.284.0.0")]
-[assembly: AssemblyFileVersion("18.284.1.0")]
+[assembly: AssemblyVersion("18.285.0.0")]
+[assembly: AssemblyFileVersion("18.285.1.0")]
 
 [assembly: NeutralResourcesLanguage("")]
 [assembly: InternalsVisibleTo("RuntimeDestroyerLibCodeBehind")]
