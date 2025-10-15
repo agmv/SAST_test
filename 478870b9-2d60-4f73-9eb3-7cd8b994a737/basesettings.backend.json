@@ -62,7 +62,7 @@
       "Version": "v44.7.4.0"
     },
     "BackendWorker": {
-      "Version": "v18.286.0"
+      "Version": "v18.286.1-PullRequest0732.2"
     },
     "HubEdition": {
       "NoMARSSupport": "True"

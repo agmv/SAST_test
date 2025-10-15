@@ -17,7 +17,7 @@ errorPageConfig: {
 showExceptionStack: false
 },
 isWeb: true,
-frontendBuildWorkerVersion: "v18.381.0",
+frontendBuildWorkerVersion: "v18.383.1",
 buildSDKVersion: "v44.7.2.0",
 clientRuntimeVersion: "6.49.9",
 appVersion: "1",

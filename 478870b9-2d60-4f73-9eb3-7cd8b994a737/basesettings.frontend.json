@@ -7,7 +7,7 @@
       }
     },
     "FrontendWorker": {
-      "Version": "v18.381.0"
+      "Version": "v18.383.1"
     },
     "ClientRuntime": {
       "Version": "6.49.9"
