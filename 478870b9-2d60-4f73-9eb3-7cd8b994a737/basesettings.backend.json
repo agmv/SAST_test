@@ -59,10 +59,10 @@
       "Assemblies": "System_"
     },
     "BuildJob": {
-      "Version": "v44.7.4.0"
+      "Version": "v44.7.9.0"
     },
     "BackendWorker": {
-      "Version": "v18.286.1-PullRequest0732.2"
+      "Version": "v18.286.3-PullRequest0732.7"
     },
     "HubEdition": {
       "NoMARSSupport": "True"

@@ -17,9 +17,9 @@ errorPageConfig: {
 showExceptionStack: false
 },
 isWeb: true,
-frontendBuildWorkerVersion: "v18.383.1",
+frontendBuildWorkerVersion: "v18.385.0",
 buildSDKVersion: "v44.7.2.0",
-clientRuntimeVersion: "6.49.9",
+clientRuntimeVersion: "6.49.11",
 appVersion: "1",
 homeModuleControllerImporter: async function () {
 var {default: System_Controller} = await(import("./System_.controller.js"));

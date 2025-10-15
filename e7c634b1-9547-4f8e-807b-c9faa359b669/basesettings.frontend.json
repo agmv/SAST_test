@@ -1,16 +1,16 @@
 {
   "OutSystems": {
     "Application": {
-      "ManifestVersionToken": "P6WVteza8tV2jsqCzHL7jg",
+      "ManifestVersionToken": "kPB8dkB9gqCrSV2Bl7vbHA",
       "StaticFiles": {
         "NoCacheList": "index.html"
       }
     },
     "FrontendWorker": {
-      "Version": "v18.383.1"
+      "Version": "v18.385.0"
     },
     "ClientRuntime": {
-      "Version": "6.49.9"
+      "Version": "6.49.11"
     }
   }
 }
