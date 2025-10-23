@@ -32,7 +32,7 @@
     "Application": {
       "Key": "e7c634b1-9547-4f8e-807b-c9faa359b669",
       "Name": "RuntimeDestroyer",
-      "RevisionId": "22",
+      "RevisionId": "23",
       "UrlBasePath": "RuntimeDestroyer",
       "Description": "",
       "PrimaryColor": "#8E44AD",
@@ -53,7 +53,7 @@
       }
     },
     "Module": {
-      "CompilationHash": "zKzkfXyK9chaP8K2irMymQ"
+      "CompilationHash": "m7oZlKvYypH4V5NgZTqj5Q"
     },
     "RESTService": {
       "Assemblies": "RuntimeDestroyer"

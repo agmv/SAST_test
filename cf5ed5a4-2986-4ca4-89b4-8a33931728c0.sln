@@ -1,0 +1,50 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuntimeDestroyer", "e7c634b1-9547-4f8e-807b-c9faa359b669/RuntimeDestroyer.csproj", "{294e0710-b8aa-4219-a82e-da8abaae29ee}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuntimeDestroyerLib", "70e88f84-20c0-496b-bde5-9831530a09d3/RuntimeDestroyerLib.csproj", "{e97171cd-12e9-4a7a-83fc-89eb4acf61dd}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuntimeDestroyerReferencesProxy", "e7c634b1-9547-4f8e-807b-c9faa359b669/referencesProxy/RuntimeDestroyerReferencesProxy.csproj", "{5704b6aa-8365-46c0-8a17-337417242425}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuntimeDestroyerRecords", "e7c634b1-9547-4f8e-807b-c9faa359b669/Records/RuntimeDestroyerRecords.csproj", "{a58e9df3-34d4-4694-ad2d-6d04b0483f3a}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuntimeDestroyerLibRecords", "70e88f84-20c0-496b-bde5-9831530a09d3/Records/RuntimeDestroyerLibRecords.csproj", "{2f16b453-fd09-4933-9b20-6152b993004e}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuntimeDestroyer.CsRESTExpose", "e7c634b1-9547-4f8e-807b-c9faa359b669/CustomServices/RESTExpose/RuntimeDestroyer.CsRESTExpose.csproj", "{deac4aa8-12b7-4ff1-80ea-a31b15aa063a}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{294e0710-b8aa-4219-a82e-da8abaae29ee}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{294e0710-b8aa-4219-a82e-da8abaae29ee}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{294e0710-b8aa-4219-a82e-da8abaae29ee}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{294e0710-b8aa-4219-a82e-da8abaae29ee}.Release|Any CPU.Build.0 = Release|Any CPU
+		{e97171cd-12e9-4a7a-83fc-89eb4acf61dd}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{e97171cd-12e9-4a7a-83fc-89eb4acf61dd}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{e97171cd-12e9-4a7a-83fc-89eb4acf61dd}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{e97171cd-12e9-4a7a-83fc-89eb4acf61dd}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5704b6aa-8365-46c0-8a17-337417242425}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5704b6aa-8365-46c0-8a17-337417242425}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5704b6aa-8365-46c0-8a17-337417242425}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5704b6aa-8365-46c0-8a17-337417242425}.Release|Any CPU.Build.0 = Release|Any CPU
+		{a58e9df3-34d4-4694-ad2d-6d04b0483f3a}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{a58e9df3-34d4-4694-ad2d-6d04b0483f3a}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{a58e9df3-34d4-4694-ad2d-6d04b0483f3a}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{a58e9df3-34d4-4694-ad2d-6d04b0483f3a}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2f16b453-fd09-4933-9b20-6152b993004e}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2f16b453-fd09-4933-9b20-6152b993004e}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2f16b453-fd09-4933-9b20-6152b993004e}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2f16b453-fd09-4933-9b20-6152b993004e}.Release|Any CPU.Build.0 = Release|Any CPU
+		{deac4aa8-12b7-4ff1-80ea-a31b15aa063a}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{deac4aa8-12b7-4ff1-80ea-a31b15aa063a}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{deac4aa8-12b7-4ff1-80ea-a31b15aa063a}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{deac4aa8-12b7-4ff1-80ea-a31b15aa063a}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

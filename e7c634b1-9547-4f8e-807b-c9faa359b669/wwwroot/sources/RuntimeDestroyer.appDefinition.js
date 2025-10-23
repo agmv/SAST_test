@@ -20,7 +20,7 @@ isWeb: true,
 frontendBuildWorkerVersion: "v18.395.0",
 buildSDKVersion: "v44.7.4.0",
 clientRuntimeVersion: "6.50.2",
-appVersion: "22",
+appVersion: "23",
 homeModuleControllerImporter: async function () {
 var {default: RuntimeDestroyerController} = await(import("./RuntimeDestroyer.controller.js"));
 return RuntimeDestroyerController;

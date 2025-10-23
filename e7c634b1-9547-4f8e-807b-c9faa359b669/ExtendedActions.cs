@@ -49,6 +49,18 @@ return;
 }
 
 /// <summary>
+/// Action: GenerateGuid
+/// </summary>
+
+public static async Task<string> GenerateGuid(IRequestContext requestContext,CancellationToken cancellationToken) {
+string outParamGuid = default;
+outParamGuid = "";
+
+outParamGuid = GenericExtendedActions.GenerateGuid(requestContext);
+return outParamGuid;
+}
+
+/// <summary>
 /// Action: CommitTransaction
 /// </summary>
 

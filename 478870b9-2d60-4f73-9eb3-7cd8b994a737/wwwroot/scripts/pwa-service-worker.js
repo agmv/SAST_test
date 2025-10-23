@@ -12088,7 +12088,7 @@
         yield (tracerWrapper === null || tracerWrapper === void 0 ? void 0 : tracerWrapper.processClientMessage({ payload: event.data }));
     });
 
-    const Version = "0.9.2";
+    const Version = "0.9.3";
 
     exports.Version = Version;
     exports.startInstrumentationModule = startInstrumentationModule;

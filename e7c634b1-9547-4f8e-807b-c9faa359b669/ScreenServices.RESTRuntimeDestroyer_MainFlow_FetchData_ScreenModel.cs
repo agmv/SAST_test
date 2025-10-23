@@ -10,6 +10,8 @@ public class RESTRuntimeDestroyer_MainFlow_FetchData_ScreenModel : ScreenService
     public class ScreenModelVariables {
         [JsonProperty("GetWeekday")]
 public RESTRuntimeDestroyer_MainFlow_FetchData_DataActionGetWeekday_Outputs varLcGetWeekday;
+[JsonProperty("DataAction1")]
+public RESTRuntimeDestroyer_MainFlow_FetchData_DataActionDataAction1_Outputs varLcDataAction1;
 
     }
 
@@ -27,7 +29,8 @@ return result;
 
 
     public RuntimeDestroyer_MainFlow_FetchData_ScreenModel ToModel() {RuntimeDestroyer_MainFlow_FetchData_DataActionGetWeekday_Model _varLcGetWeekday = (variables.varLcGetWeekday != null) ? RESTRuntimeDestroyer_MainFlow_FetchData_DataActionGetWeekday_Outputs.ToModel(variables.varLcGetWeekday) : null;
-RuntimeDestroyer_MainFlow_FetchData_ScreenModel screenModel = new RuntimeDestroyer_MainFlow_FetchData_ScreenModel(_varLcGetWeekday);
+RuntimeDestroyer_MainFlow_FetchData_DataActionDataAction1_Model _varLcDataAction1 = (variables.varLcDataAction1 != null) ? RESTRuntimeDestroyer_MainFlow_FetchData_DataActionDataAction1_Outputs.ToModel(variables.varLcDataAction1) : null;
+RuntimeDestroyer_MainFlow_FetchData_ScreenModel screenModel = new RuntimeDestroyer_MainFlow_FetchData_ScreenModel(_varLcGetWeekday, _varLcDataAction1);
 return screenModel;
 }
 

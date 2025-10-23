@@ -10,6 +10,7 @@ public class RuntimeDestroyer_MainFlow_FetchData_ScreenModel : VarsBag {
     private static readonly ActivitySource activitySource = new(typeof(RuntimeDestroyer_MainFlow_FetchData_ScreenModel).Namespace);
 
     public RuntimeDestroyer_MainFlow_FetchData_DataActionGetWeekday_Model varLcGetWeekday;
+public RuntimeDestroyer_MainFlow_FetchData_DataActionDataAction1_Model varLcDataAction1;
 
 
     public RuntimeDestroyer_MainFlow_FetchData_ScreenModel() {
@@ -17,9 +18,10 @@ public class RuntimeDestroyer_MainFlow_FetchData_ScreenModel : VarsBag {
 
 
 
-    public RuntimeDestroyer_MainFlow_FetchData_ScreenModel(RuntimeDestroyer_MainFlow_FetchData_DataActionGetWeekday_Model varLcGetWeekday) {
-Init(new string[] {"GetWeekday"}, new string[] {"varLcGetWeekday"});
+    public RuntimeDestroyer_MainFlow_FetchData_ScreenModel(RuntimeDestroyer_MainFlow_FetchData_DataActionGetWeekday_Model varLcGetWeekday, RuntimeDestroyer_MainFlow_FetchData_DataActionDataAction1_Model varLcDataAction1) {
+Init(new string[] {"GetWeekday", "DataAction1"}, new string[] {"varLcGetWeekday", "varLcDataAction1"});
 this.varLcGetWeekday = varLcGetWeekday;
+this.varLcDataAction1 = varLcDataAction1;
 }
 
 
@@ -58,6 +60,42 @@ int datasetGetWeekdays_startIndex = 0;(localVars.queryResGetWeekdays_outParamLis
 // Set Out1
 // Out1 = GetWeekdays.List.Current.Weekday.Label
 result.outParamOut1=localVars.queryResGetWeekdays_outParamList.CurrentRec.ssENWeekday.ssLabel;
+} //close CreateActionActivity using block
+} //try
+
+finally {
+outParamOut1 = result.outParamOut1;
+}
+RETURN_STATEMENT:
+return outParamOut1;
+}
+public class lcvDataAction1 : VarsBag {
+public Actions.lcoAction1 resAction1 =  new Actions.lcoAction1();
+public lcvDataAction1() {
+}
+}
+public class lcoDataAction1 : VarsBag {
+public string outParamOut1 = "";
+
+public lcoDataAction1() {
+}
+}
+/// <summary>
+/// Action <code>DataAction1</code> that represents the Service Studio action <code>DataAction1</code>
+///  <p> Description: </p>
+/// </summary>
+public async Task<string> DataActionDataAction1(IRequestContext requestContext,CancellationToken cancellationToken) {
+string outParamOut1 = default;
+lcoDataAction1 result = new lcoDataAction1();
+lcvDataAction1 localVars = new lcvDataAction1();
+try {
+cancellationToken.ThrowIfCancellationRequested();
+using (activitySource.CreateScreenDataActionActivity("FetchData", "DataAction1")){
+// Action1
+localVars.resAction1.outParamOut1 = await Actions.ActionAction1(requestContext,cancellationToken);
+
+// Out1 = Action1.Out1
+result.outParamOut1=localVars.resAction1.outParamOut1;
 } //close CreateActionActivity using block
 } //try
 
@@ -137,6 +175,8 @@ throw DatabaseErrorsHelper.QueryError(e);
 }
 }
 }
+}
+public static class FuncDataActionDataAction1 {
 }
 
 

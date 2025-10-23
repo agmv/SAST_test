@@ -12,10 +12,12 @@ super(model, messagesProvider, idService);
 var controller = this.controller;
 this.clientActionProxies = {};
 this.dataFetchDependenciesOriginal = {
-getWeekday$DataActRefresh: 0
+getWeekday$DataActRefresh: 0,
+dataAction1$DataActRefresh: 0
 };
 this.dataFetchDependentsGraph = {
-getWeekday$DataActRefresh: []
+getWeekday$DataActRefresh: [],
+dataAction1$DataActRefresh: []
 };
 this.shouldSendClientVarsToDataSources = false;
 }
@@ -62,9 +64,48 @@ return this._getWeekday$DataActRefresh;
 }set getWeekday$DataActRefresh(value) {this._getWeekday$DataActRefresh = value;
 }
 
+get dataAction1$DataActRefresh() {if(!(this.hasOwnProperty("_dataAction1$DataActRefresh"))) {
+this._dataAction1$DataActRefresh = function () {
+var innerBody = function (callContext) {
+var model = this.model;
+var controller = this.controller;
+var idService = this.idService;
+var callContext = controller.callContext(callContext);
+return controller.callDataAction("DataActionDataAction1", "screenservices/RuntimeDestroyer/MainFlow/FetchData/DataActionDataAction1", "7Kzdy+q2wuYpI67SHkqj5A", function (b) {
+model.variables.dataAction1DataAct.dataFetchStatusAttr = b;
+}, function (json) {
+model.variables.dataAction1DataAct.replaceWith(OS.DataConversion.ServerDataConverter.from(json, model.variables.dataAction1DataAct.constructor));
+}, undefined, undefined, undefined, callContext, undefined, false);
+}.bind(this);
+return OS.Logger.startActiveSpan("DataAction1", function (span) {
+if(span) {
+span.setAttribute("code.function", "DataAction1");
+span.setAttribute("outsystems.function.key", "69608727-6988-4577-9e2f-a512c6c79408");
+span.setAttribute("outsystems.function.owner.name", "RuntimeDestroyer");
+span.setAttribute("outsystems.function.owner.key", "e7c634b1-9547-4f8e-807b-c9faa359b669");
+span.setAttribute("outsystems.function.type", "SCREEN_SERVICE_DATA_ACTION_CALL");
+}
+
+return OS.Flow.tryFinally(function () {
+return innerBody();
+}, function () {
+if(span) {
+span.end();
+}
+
+});
+}, 0);
+
+};
+}
+
+return this._dataAction1$DataActRefresh;
+}set dataAction1$DataActRefresh(value) {this._dataAction1$DataActRefresh = value;
+}
+
 
 get dataFetchActionNames() {if(!(this.hasOwnProperty("_dataFetchActionNames"))) {
-this._dataFetchActionNames = ["getWeekday$DataActRefresh"];
+this._dataFetchActionNames = ["getWeekday$DataActRefresh", "dataAction1$DataActRefresh"];
 }
 
 return this._dataFetchActionNames;

@@ -13,6 +13,18 @@ return outParamResult;
 }
 
 /// <summary>
+/// Function <code>GenerateGuid</code> that represents the Service Studio function
+///  <code>GenerateGuid</code> <p> Description: Generates and returns a new GUID.</p>
+/// </summary>
+
+public static async Task<string> GenerateGuid(IRequestContext requestContext,CancellationToken cancellationToken) {
+string outParamGuid;
+outParamGuid = await ExtendedActions.GenerateGuid(requestContext,cancellationToken);
+
+return outParamGuid;
+}
+
+/// <summary>
 /// Function <code>GetMethodFunction</code> that represents the Service Studio function
 ///  <code>GetMethodFunction</code> <p> Description: </p>
 /// </summary>
