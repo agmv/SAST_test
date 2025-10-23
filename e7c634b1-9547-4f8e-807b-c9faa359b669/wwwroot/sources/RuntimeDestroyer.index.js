@@ -1,7 +1,7 @@
 ﻿import "./NullDebugger.js";
 import {runPreInitialization, Injector, useBaseApplication, Format, useAuthConfigsManager, useSettingsManager, settingsUpdatedHandler, useVersionsManager, runPostInitialization, Interfaces, ErrorHandling, Application, Flow} from "@outsystems/runtime-core-js";
 import {default as RuntimeDestroyerAppDefinition} from "./RuntimeDestroyer.appDefinition.js";
-import {routerV6} from "@outsystems/runtime-view-js";
+import {Router} from "@outsystems/runtime-view-js";
 import {ROUTER_INFO, SPLASH_SCREEN_ROUTE} from "./router_info.js";
 runPreInitialization(Injector, {
 applicationDefinition: RuntimeDestroyerAppDefinition
@@ -29,7 +29,7 @@ resolve();
 }
 function initView() {
 return new Promise(function (resolve, reject) {
-try {routerV6.load(Application.default, undefined, {
+try {Router.load(Application.default, undefined, {
 staticScreenRoutes: ROUTER_INFO,
 staticSplashRoute: SPLASH_SCREEN_ROUTE
 });

@@ -525,10 +525,6 @@
   <HintPath>../../bin/System.IdentityModel.Tokens.Jwt.dll</HintPath>
   <Private>False</Private>
 </Reference>
-<Reference Include="System.Runtime.Caching">
-  <HintPath>../../bin/System.Runtime.Caching.dll</HintPath>
-  <Private>False</Private>
-</Reference>
 <Reference Include="System.Security.Cryptography.ProtectedData">
   <HintPath>../../bin/System.Security.Cryptography.ProtectedData.dll</HintPath>
   <Private>False</Private>

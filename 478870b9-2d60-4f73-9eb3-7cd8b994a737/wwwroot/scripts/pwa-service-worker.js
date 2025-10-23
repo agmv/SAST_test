@@ -708,26 +708,29 @@
     	  function quote(s) {
     	    return $replace$1.call(String(s), /"/g, '&quot;');
     	  }
+    	  function canTrustToString(obj) {
+    	    return !toStringTag || !(typeof obj === 'object' && (toStringTag in obj || typeof obj[toStringTag] !== 'undefined'));
+    	  }
     	  function isArray$3(obj) {
-    	    return toStr(obj) === '[object Array]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj));
+    	    return toStr(obj) === '[object Array]' && canTrustToString(obj);
     	  }
     	  function isDate(obj) {
-    	    return toStr(obj) === '[object Date]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj));
+    	    return toStr(obj) === '[object Date]' && canTrustToString(obj);
     	  }
     	  function isRegExp$1(obj) {
-    	    return toStr(obj) === '[object RegExp]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj));
+    	    return toStr(obj) === '[object RegExp]' && canTrustToString(obj);
     	  }
     	  function isError(obj) {
-    	    return toStr(obj) === '[object Error]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj));
+    	    return toStr(obj) === '[object Error]' && canTrustToString(obj);
     	  }
     	  function isString(obj) {
-    	    return toStr(obj) === '[object String]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj));
+    	    return toStr(obj) === '[object String]' && canTrustToString(obj);
     	  }
     	  function isNumber(obj) {
-    	    return toStr(obj) === '[object Number]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj));
+    	    return toStr(obj) === '[object Number]' && canTrustToString(obj);
     	  }
     	  function isBoolean(obj) {
-    	    return toStr(obj) === '[object Boolean]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj));
+    	    return toStr(obj) === '[object Boolean]' && canTrustToString(obj);
     	  }
 
     	  // Symbol and BigInt do have Symbol.toStringTag by spec, so that can't be used to eliminate false positives
@@ -1007,7 +1010,7 @@
     	  /** @type {import('./list.d.ts').listGet} */
     	  var listGet = function (objects, key) {
     	    if (!objects) {
-    	      return void 0;
+    	      return void undefined;
     	    }
     	    var node = listGetNode(objects, key);
     	    return node && node.value;
@@ -1061,7 +1064,7 @@
     	        var root = $o && $o.next;
     	        var deletedNode = listDelete($o, key);
     	        if (deletedNode && root && root === deletedNode) {
-    	          $o = void 0;
+    	          $o = void undefined;
     	        }
     	        return !!deletedNode;
     	      },
@@ -1075,7 +1078,7 @@
     	        if (!$o) {
     	          // Initialize the linked list as an empty node, so that we don't have to special-case handling of the first node: we can always refer to it as (previous node).next, instead of something like (list).head
     	          $o = {
-    	            next: void 0
+    	            next: void undefined
     	          };
     	        }
     	        // eslint-disable-next-line no-extra-parens
@@ -1397,7 +1400,7 @@
     	  var $call$1 = requireFunctionCall();
     	  var $actualApply = actualApply;
 
-    	  /** @type {import('.')} */
+    	  /** @type {(args: [Function, thisArg?: unknown, ...args: unknown[]]) => Function} TODO FIXME, find a way to use import('.') */
     	  var callBindApplyHelpers = function callBindBasic(args) {
     	    if (args.length < 1 || typeof args[0] !== 'function') {
     	      throw new $TypeError$4('a function is required');
@@ -1548,6 +1551,7 @@
     	    '%eval%': eval,
     	    // eslint-disable-line no-eval
     	    '%EvalError%': $EvalError,
+    	    '%Float16Array%': typeof Float16Array === 'undefined' ? undefined$1 : Float16Array,
     	    '%Float32Array%': typeof Float32Array === 'undefined' ? undefined$1 : Float32Array,
     	    '%Float64Array%': typeof Float64Array === 'undefined' ? undefined$1 : Float64Array,
     	    '%FinalizationRegistry%': typeof FinalizationRegistry === 'undefined' ? undefined$1 : FinalizationRegistry,
@@ -1780,7 +1784,7 @@
     	          if (!allowMissing) {
     	            throw new $TypeError$3('base intrinsic for ' + name + ' exists, but the property is not available.');
     	          }
-    	          return void 0;
+    	          return void undefined$1;
     	        }
     	        if ($gOPD && i + 1 >= parts.length) {
     	          var desc = $gOPD(value, part);
@@ -1817,10 +1821,11 @@
 
     	  /** @type {import('.')} */
     	  var callBound$2 = function callBoundIntrinsic(name, allowMissing) {
-    	    // eslint-disable-next-line no-extra-parens
-    	    var intrinsic = /** @type {Parameters<typeof callBindBasic>[0][0]} */GetIntrinsic$2(name, !!allowMissing);
+    	    /* eslint no-extra-parens: 0 */
+
+    	    var intrinsic = /** @type {(this: unknown, ...args: unknown[]) => unknown} */GetIntrinsic$2(name, !!allowMissing);
     	    if (typeof intrinsic === 'function' && $indexOf(name, '.prototype.') > -1) {
-    	      return callBindBasic([intrinsic]);
+    	      return callBindBasic(/** @type {const} */[intrinsic]);
     	    }
     	    return intrinsic;
     	  };
@@ -1860,7 +1865,7 @@
     	        if ($m) {
     	          var result = $mapDelete($m, key);
     	          if ($mapSize($m) === 0) {
-    	            $m = void 0;
+    	            $m = void undefined;
     	          }
     	          return result;
     	        }
@@ -2289,7 +2294,7 @@
     	    encodeDotInKeys: false,
     	    encoder: utils$1.encode,
     	    encodeValuesOnly: false,
-    	    filter: void 0,
+    	    filter: void undefined,
     	    format: defaultFormat,
     	    formatter: formats$1.formatters[defaultFormat],
     	    // deprecated
@@ -2309,7 +2314,7 @@
     	    var tmpSc = sideChannel;
     	    var step = 0;
     	    var findFlag = false;
-    	    while ((tmpSc = tmpSc.get(sentinel)) !== void 0 && !findFlag) {
+    	    while ((tmpSc = tmpSc.get(sentinel)) !== void undefined && !findFlag) {
     	      // Where object last appeared in the ref tree
     	      var pos = tmpSc.get(object);
     	      step += 1;
@@ -2360,7 +2365,7 @@
     	        obj = utils$1.maybeMap(obj, encoder);
     	      }
     	      objKeys = [{
-    	        value: obj.length > 0 ? obj.join(',') || null : void 0
+    	        value: obj.length > 0 ? obj.join(',') || null : void undefined
     	      }];
     	    } else if (isArray$1(filter)) {
     	      objKeys = filter;
@@ -3144,7 +3149,7 @@
     	      });
     	    }
     	    getResponseUrl(_a) {
-    	      return __awaiter(this, arguments, void 0, function (_ref10) {
+    	      return __awaiter(this, arguments, void 0, function (_ref0) {
     	        var _this3 = this;
     	        let {
     	          url,
@@ -3154,7 +3159,7 @@
     	          timeout,
     	          timeoutHandler,
     	          baseURL
-    	        } = _ref10;
+    	        } = _ref0;
     	        return function* () {
     	          const response = yield __classPrivateFieldGet(_this3, _FetchHttpClient_instances, "m", _FetchHttpClient_getResponse).call(_this3, {
     	            url,
@@ -3183,7 +3188,7 @@
     	      }
     	    });
     	  }, _FetchHttpClient_getResponse = function _FetchHttpClient_getResponse(_a) {
-    	    return __awaiter(this, arguments, void 0, function (_ref11) {
+    	    return __awaiter(this, arguments, void 0, function (_ref1) {
     	      var _this4 = this;
     	      let {
     	        url,
@@ -3193,7 +3198,7 @@
     	        timeout,
     	        timeoutHandler,
     	        baseURL
-    	      } = _ref11;
+    	      } = _ref1;
     	      return function* () {
     	        var _b, _c, _d, _e, _f;
     	        (_c = (_b = __classPrivateFieldGet(_this4, _FetchHttpClient_logger, "f")) === null || _b === void 0 ? void 0 : _b.setActiveSpanAsNonAggregable) === null || _c === void 0 ? void 0 : _c.call(_b);
@@ -3350,8 +3355,8 @@
     	  };
     	  const buildAbsoluteUrl = (url, baseURL, params) => {
     	    const requestUrl = isUrlValid(baseURL !== null && baseURL !== void 0 ? baseURL : "") ? new URL(url, baseURL) : new URL(url);
-    	    Object.entries(params !== null && params !== void 0 ? params : {}).forEach(_ref12 => {
-    	      let [key, value] = _ref12;
+    	    Object.entries(params !== null && params !== void 0 ? params : {}).forEach(_ref10 => {
+    	      let [key, value] = _ref10;
     	      requestUrl.searchParams.append(key, value !== null && value !== void 0 ? value : "");
     	    });
     	    return requestUrl.toString();
@@ -3359,8 +3364,8 @@
     	  const buildRelativeUrl = (url, baseURL, params) => {
     	    const finalUrl = `${baseURL ? baseURL : ""}/${url}${params ? "?" : ""}`;
     	    let queryParams = "";
-    	    Object.entries(params !== null && params !== void 0 ? params : {}).forEach(_ref13 => {
-    	      let [key, value] = _ref13;
+    	    Object.entries(params !== null && params !== void 0 ? params : {}).forEach(_ref11 => {
+    	      let [key, value] = _ref11;
     	      queryParams += `${queryParams ? "&" : ""}${key}=${encodeURIComponent(value)}`;
     	    });
     	    return `${finalUrl}${queryParams}`.replace(/\/+/g, "/");
@@ -3370,7 +3375,7 @@
     	  const LOG_CATEGORY$2 = "NativeHttpClient";
     	  const LOCALE_HEADER$1 = "";
     	  class NativeHttpClient {
-    	    constructor(_ref14) {
+    	    constructor(_ref12) {
     	      let {
     	        baseUrl = BASE_URL,
     	        headers = {},
@@ -3381,7 +3386,7 @@
     	        logger,
     	        loadTrace,
     	        getToken
-    	      } = _ref14;
+    	      } = _ref12;
     	      _NativeHttpClient_instances.add(this);
     	      _NativeHttpClient_localeHeader.set(this, void 0);
     	      _NativeHttpClient_getLocale.set(this, void 0);
@@ -3402,7 +3407,7 @@
     	      __classPrivateFieldSet(this, _NativeHttpClient_getToken, getToken !== null && getToken !== void 0 ? getToken : () => Promise.resolve(undefined));
     	    }
     	    post(_a) {
-    	      return __awaiter(this, arguments, void 0, function (_ref15) {
+    	      return __awaiter(this, arguments, void 0, function (_ref13) {
     	        var _this5 = this;
     	        let {
     	          url,
@@ -3416,7 +3421,7 @@
     	          baseURL,
     	          abortCommand,
     	          responseHandler
-    	        } = _ref15;
+    	        } = _ref13;
     	        return function* () {
     	          var _b, _c, _d;
     	          const reqPayload = stringifyPayload({
@@ -3458,7 +3463,7 @@
     	      });
     	    }
     	    get(_a) {
-    	      return __awaiter(this, arguments, void 0, function (_ref16) {
+    	      return __awaiter(this, arguments, void 0, function (_ref14) {
     	        var _this6 = this;
     	        let {
     	          url,
@@ -3469,7 +3474,7 @@
     	          timeout,
     	          timeoutHandler,
     	          baseURL
-    	        } = _ref16;
+    	        } = _ref14;
     	        return function* () {
     	          const isBlobResponse = responseType === "blob";
     	          const fetch = () => __classPrivateFieldGet(_this6, _NativeHttpClient_instances, "m", _NativeHttpClient_executeRequest).call(_this6, {
@@ -3492,7 +3497,7 @@
     	      });
     	    }
     	    getResponseUrl(_a) {
-    	      return __awaiter(this, arguments, void 0, function (_ref17) {
+    	      return __awaiter(this, arguments, void 0, function (_ref15) {
     	        var _this7 = this;
     	        let {
     	          url,
@@ -3502,7 +3507,7 @@
     	          timeout,
     	          timeoutHandler,
     	          baseURL
-    	        } = _ref17;
+    	        } = _ref15;
     	        return function* () {
     	          var _b, _c;
     	          const fetch = () => __classPrivateFieldGet(_this7, _NativeHttpClient_instances, "m", _NativeHttpClient_executeRequest).call(_this7, {
@@ -3638,8 +3643,8 @@
     	          });
     	          reject(error);
     	        };
-    	        Object.entries(requestHeaders).forEach(_ref18 => {
-    	          let [key, value] = _ref18;
+    	        Object.entries(requestHeaders).forEach(_ref16 => {
+    	          let [key, value] = _ref16;
     	          request.setHeader(key, value);
     	        });
     	        if (timeout) {
@@ -3664,13 +3669,13 @@
     	      });
     	    });
     	  }, _NativeHttpClient_buildHeaders = function _NativeHttpClient_buildHeaders(_a) {
-    	    return __awaiter(this, arguments, void 0, function (_ref19) {
+    	    return __awaiter(this, arguments, void 0, function (_ref17) {
     	      var _this8 = this;
     	      let {
     	        headers,
     	        locale,
     	        contentType
-    	      } = _ref19;
+    	      } = _ref17;
     	      return function* () {
     	        var _b;
     	        const requestHeaders = Object.assign(Object.assign(Object.assign({}, (_b = __classPrivateFieldGet(_this8, _NativeHttpClient_headers, "f")) !== null && _b !== void 0 ? _b : {}), headers), locale ? {
@@ -6614,14 +6619,14 @@
     	      return (_a = yield getToken()) !== null && _a !== void 0 ? _a : "";
     	    });
     	  }
-    	  const createHubConnection = _ref20 => {
+    	  const createHubConnection = _ref18 => {
     	    let {
     	      builder = new HubConnectionBuilder(),
     	      hubEndpoint,
     	      appUrl,
     	      logger,
     	      getToken
-    	    } = _ref20;
+    	    } = _ref18;
     	    if (!appUrl) {
     	      throw new Error("The AppUrl and HubEndpoint must be defined in order to use SignalR communications");
     	    }
@@ -6666,7 +6671,7 @@
     	  const LOCALE_HEADER = "";
     	  const LOG_CATEGORY$1 = "SignalRHttpClient";
     	  class SignalRClient {
-    	    constructor(_ref21) {
+    	    constructor(_ref19) {
     	      let {
     	        appUrl,
     	        localeHeader = LOCALE_HEADER,
@@ -6674,7 +6679,7 @@
     	        setLocale,
     	        logger,
     	        getToken
-    	      } = _ref21;
+    	      } = _ref19;
     	      _SignalRClient_instances.add(this);
     	      _SignalRClient_localeHeader.set(this, void 0);
     	      _SignalRClient_getLocale.set(this, void 0);
@@ -6690,7 +6695,7 @@
     	      __classPrivateFieldSet(this, _SignalRClient_getToken, getToken);
     	    }
     	    executeRequest(_a) {
-    	      return __awaiter(this, arguments, void 0, function (_ref22) {
+    	      return __awaiter(this, arguments, void 0, function (_ref20) {
     	        var _this9 = this;
     	        let {
     	          url,
@@ -6701,7 +6706,7 @@
     	          abortCommand,
     	          responseHandler,
     	          hubConnectionBuilder = new HubConnectionBuilder()
-    	        } = _ref22;
+    	        } = _ref20;
     	        return function* () {
     	          var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
     	          if (abortCommand) {
@@ -6799,7 +6804,7 @@
     	    return communicationError;
     	  };
     	  var _DebuggerHttpClient_signalRClientInstance, _DebuggerHttpClient_alternateHttpClientInstance, _DebuggerHttpClient_logger;
-    	  const createSignalRInstance = _ref23 => {
+    	  const createSignalRInstance = _ref21 => {
     	    let {
     	      appUrl,
     	      localeHeader,
@@ -6807,7 +6812,7 @@
     	      setLocale,
     	      logger,
     	      getToken
-    	    } = _ref23;
+    	    } = _ref21;
     	    return new SignalRClient({
     	      appUrl,
     	      localeHeader,
@@ -6818,7 +6823,7 @@
     	    });
     	  };
     	  class DebuggerHttpClient {
-    	    constructor(_ref24) {
+    	    constructor(_ref22) {
     	      let {
     	        appUrl,
     	        localeHeader,
@@ -6835,7 +6840,7 @@
     	          getToken
     	        }),
     	        alternateHttpClientInstance
-    	      } = _ref24;
+    	      } = _ref22;
     	      _DebuggerHttpClient_signalRClientInstance.set(this, void 0);
     	      _DebuggerHttpClient_alternateHttpClientInstance.set(this, void 0);
     	      _DebuggerHttpClient_logger.set(this, void 0);
@@ -6844,8 +6849,8 @@
     	      __classPrivateFieldSet(this, _DebuggerHttpClient_logger, logger);
     	    }
     	    post(_a) {
-    	      return __awaiter(this, arguments, void 0, function (_ref25) {
-    	        var _this10 = this;
+    	      return __awaiter(this, arguments, void 0, function (_ref23) {
+    	        var _this0 = this;
     	        let {
     	          url,
     	          payload,
@@ -6856,9 +6861,9 @@
     	          useLocaleInfo,
     	          abortCommand,
     	          responseHandler
-    	        } = _ref25;
+    	        } = _ref23;
     	        return function* () {
-    	          const fetch = () => __classPrivateFieldGet(_this10, _DebuggerHttpClient_signalRClientInstance, "f").executeRequest({
+    	          const fetch = () => __classPrivateFieldGet(_this0, _DebuggerHttpClient_signalRClientInstance, "f").executeRequest({
     	            url,
     	            payload,
     	            headers,
@@ -6869,13 +6874,13 @@
     	            abortCommand,
     	            responseHandler
     	          });
-    	          return doWithSpan(__classPrivateFieldGet(_this10, _DebuggerHttpClient_logger, "f"), "POST", fetch);
+    	          return doWithSpan(__classPrivateFieldGet(_this0, _DebuggerHttpClient_logger, "f"), "POST", fetch);
     	        }();
     	      });
     	    }
     	    get(_a) {
-    	      return __awaiter(this, arguments, void 0, function (_ref26) {
-    	        var _this11 = this;
+    	      return __awaiter(this, arguments, void 0, function (_ref24) {
+    	        var _this1 = this;
     	        let {
     	          url,
     	          params,
@@ -6885,9 +6890,9 @@
     	          timeout,
     	          timeoutHandler,
     	          baseURL
-    	        } = _ref26;
+    	        } = _ref24;
     	        return function* () {
-    	          return __classPrivateFieldGet(_this11, _DebuggerHttpClient_alternateHttpClientInstance, "f").get({
+    	          return __classPrivateFieldGet(_this1, _DebuggerHttpClient_alternateHttpClientInstance, "f").get({
     	            url,
     	            params,
     	            headers,
@@ -6901,8 +6906,8 @@
     	      });
     	    }
     	    getResponseUrl(_a) {
-    	      return __awaiter(this, arguments, void 0, function (_ref27) {
-    	        var _this12 = this;
+    	      return __awaiter(this, arguments, void 0, function (_ref25) {
+    	        var _this10 = this;
     	        let {
     	          url,
     	          params,
@@ -6911,9 +6916,9 @@
     	          timeout,
     	          timeoutHandler,
     	          baseURL
-    	        } = _ref27;
+    	        } = _ref25;
     	        return function* () {
-    	          return __classPrivateFieldGet(_this12, _DebuggerHttpClient_alternateHttpClientInstance, "f").getResponseUrl({
+    	          return __classPrivateFieldGet(_this10, _DebuggerHttpClient_alternateHttpClientInstance, "f").getResponseUrl({
     	            url,
     	            params,
     	            headers,
@@ -6965,8 +6970,8 @@
     	      __classPrivateFieldSet(this, _HttpClientWithHealthCheck_healthCheckIntervalInMilliseconds, intervalInSeconds * 1000);
     	    }
     	    post(_a) {
-    	      return __awaiter(this, arguments, void 0, function (_ref28) {
-    	        var _this13 = this;
+    	      return __awaiter(this, arguments, void 0, function (_ref26) {
+    	        var _this11 = this;
     	        let {
     	          url,
     	          payload,
@@ -6979,9 +6984,9 @@
     	          baseURL,
     	          abortCommand,
     	          responseHandler
-    	        } = _ref28;
+    	        } = _ref26;
     	        return function* () {
-    	          return __classPrivateFieldGet(_this13, _HttpClientWithHealthCheck_instances, "m", _HttpClientWithHealthCheck_doWithHealthManagement).call(_this13, effectiveTimeout => __classPrivateFieldGet(_this13, _HttpClientWithHealthCheck_httpClient, "f").post({
+    	          return __classPrivateFieldGet(_this11, _HttpClientWithHealthCheck_instances, "m", _HttpClientWithHealthCheck_doWithHealthManagement).call(_this11, effectiveTimeout => __classPrivateFieldGet(_this11, _HttpClientWithHealthCheck_httpClient, "f").post({
     	            url,
     	            payload,
     	            params,
@@ -6998,8 +7003,8 @@
     	      });
     	    }
     	    get(_a) {
-    	      return __awaiter(this, arguments, void 0, function (_ref29) {
-    	        var _this14 = this;
+    	      return __awaiter(this, arguments, void 0, function (_ref27) {
+    	        var _this12 = this;
     	        let {
     	          url,
     	          params,
@@ -7009,9 +7014,9 @@
     	          timeoutHandler,
     	          responseType,
     	          baseURL
-    	        } = _ref29;
+    	        } = _ref27;
     	        return function* () {
-    	          return __classPrivateFieldGet(_this14, _HttpClientWithHealthCheck_instances, "m", _HttpClientWithHealthCheck_doWithHealthManagement).call(_this14, effectiveTimeout => __classPrivateFieldGet(_this14, _HttpClientWithHealthCheck_httpClient, "f").get({
+    	          return __classPrivateFieldGet(_this12, _HttpClientWithHealthCheck_instances, "m", _HttpClientWithHealthCheck_doWithHealthManagement).call(_this12, effectiveTimeout => __classPrivateFieldGet(_this12, _HttpClientWithHealthCheck_httpClient, "f").get({
     	            url,
     	            params,
     	            headers,
@@ -7025,8 +7030,8 @@
     	      });
     	    }
     	    getResponseUrl(_a) {
-    	      return __awaiter(this, arguments, void 0, function (_ref30) {
-    	        var _this15 = this;
+    	      return __awaiter(this, arguments, void 0, function (_ref28) {
+    	        var _this13 = this;
     	        let {
     	          url,
     	          params,
@@ -7035,9 +7040,9 @@
     	          timeout,
     	          timeoutHandler,
     	          baseURL
-    	        } = _ref30;
+    	        } = _ref28;
     	        return function* () {
-    	          return __classPrivateFieldGet(_this15, _HttpClientWithHealthCheck_instances, "m", _HttpClientWithHealthCheck_doWithHealthManagement).call(_this15, effectiveTimeout => __classPrivateFieldGet(_this15, _HttpClientWithHealthCheck_httpClient, "f").getResponseUrl({
+    	          return __classPrivateFieldGet(_this13, _HttpClientWithHealthCheck_instances, "m", _HttpClientWithHealthCheck_doWithHealthManagement).call(_this13, effectiveTimeout => __classPrivateFieldGet(_this13, _HttpClientWithHealthCheck_httpClient, "f").getResponseUrl({
     	            url,
     	            params,
     	            headers,
@@ -7132,7 +7137,7 @@
     	      return false;
     	    }
     	  };
-    	  _exports.Version = "1.11.1";
+    	  _exports.Version = "1.13.0";
     	}); 
     } (dist$2));
 
@@ -7156,6 +7161,20 @@
     		    value: true
     		  });
     		  _exports.Version = _exports.FeaturesManager = _exports.FeatureKeys = void 0;
+    		  var FeatureKeys;
+    		  (function (FeatureKeys) {
+    		    FeatureKeys["WebHttpClientForNative"] = "WebHttpClientForNative";
+    		    FeatureKeys["NoInstrumentationFactoryLogs"] = "NoInstrumentationFactoryLogs";
+    		    FeatureKeys["WriteLogsOnConsoles"] = "WriteLogsOnConsoles";
+    		    FeatureKeys["ServiceWorkerTraces"] = "ServiceWorkerTraces";
+    		    FeatureKeys["EnableOTLV2TraceFormat"] = "EnableOTLV2TraceFormat";
+    		    FeatureKeys["ReadAuthConfigsFromSettings"] = "ReadAuthConfigsFromSettings";
+    		  })(FeatureKeys || (_exports.FeatureKeys = FeatureKeys = {}));
+    		  const FEATURE_DEFAULTS = {
+    		    ServiceWorkerTraces: "true",
+    		    EnableOTLV2TraceFormat: "true"
+    		  };
+    		  const FEATURE_GUARDS = {};
     		  function getGlobalScope() {
     		    if (typeof window !== "undefined") {
     		      return window;
@@ -7171,29 +7190,6 @@
     		    }
     		    throw new Error("unable to locate global object");
     		  }
-    		  var FeatureKeys;
-    		  (function (FeatureKeys) {
-    		    FeatureKeys["WebHttpClientForNative"] = "WebHttpClientForNative";
-    		    FeatureKeys["NoInstrumentationFactoryLogs"] = "NoInstrumentationFactoryLogs";
-    		    FeatureKeys["WriteLogsOnConsoles"] = "WriteLogsOnConsoles";
-    		    FeatureKeys["ServiceWorkerTraces"] = "ServiceWorkerTraces";
-    		    FeatureKeys["EnableOTLV2TraceFormat"] = "EnableOTLV2TraceFormat";
-    		    FeatureKeys["UseCASEndpoints"] = "UseCASEndpoints";
-    		    FeatureKeys["UseBigInt"] = "UseBigInt";
-    		  })(FeatureKeys || (_exports.FeatureKeys = FeatureKeys = {}));
-    		  const FEATURE_DEFAULTS = {
-    		    ServiceWorkerTraces: "true",
-    		    EnableOTLV2TraceFormat: "true",
-    		    UseCASEndpoints: "true"
-    		  };
-    		  const FEATURE_GUARDS = {
-    		    UseBigInt: () => typeof getGlobalScope().BigInt === "function" ? {
-    		      value: "inherit"
-    		    } : {
-    		      value: "forceFalse",
-    		      reason: "Browser does not support BigInt API."
-    		    }
-    		  };
     		  const FEATURE_SUFFIX = "ft-";
     		  const defaultStorage = getGlobalScope().sessionStorage;
     		  const featureCache = new Map();
@@ -7242,14 +7238,14 @@
     		  }
     		  _exports.FeaturesManager = FeaturesManager;
     		  FeaturesManager.getFeatureKey = featureKey => `${FEATURE_SUFFIX}${featureKey}`;
-    		  _exports.Version = "1.2.1";
+    		  _exports.Version = "1.7.0";
     		}); 
     	} (dist));
     	return dist;
     }
 
     (function (exports) {
-    	(function(global,factory){{factory(exports,requireDist(),dist$2);}})(typeof globalThis!=="undefined"?globalThis:typeof self!=="undefined"?self:commonjsGlobal,function(_exports,_settingsJs,_communicationJs){Object.defineProperty(_exports,"__esModule",{value:true});_exports.Visibility=_exports.Version=_exports.Tracer=_exports.SpanKind=_exports.Logger=_exports.LogType=_exports.Log=_exports.KnownAttributes=_exports.InstrumentationFactory=void 0;/******************************************************************************
+    	(function(global,factory){{factory(exports,requireDist(),dist$2);}})(typeof globalThis!=="undefined"?globalThis:typeof self!=="undefined"?self:commonjsGlobal,function(_exports,_settingsJs,_communicationJs){Object.defineProperty(_exports,"__esModule",{value:true});_exports.Visibility=_exports.Version=_exports.Tracer=_exports.SpanKind=_exports.Logger=_exports.LogType=_exports.Log=_exports.KnownAttributes=_exports.InstrumentationFactory=void 0;var _process$release;function _defineProperty2(e,r,t){return (r=_toPropertyKey(r))in e?Object.defineProperty(e,r,{value:t,enumerable:true,configurable:true,writable:true}):e[r]=t,e;}function _toPropertyKey(t){var i=_toPrimitive(t,"string");return "symbol"==typeof i?i:i+"";}function _toPrimitive(t,r){if("object"!=typeof t||!t)return t;var e=t[Symbol.toPrimitive];if(void 0!==e){var i=e.call(t,r);if("object"!=typeof i)return i;throw new TypeError("@@toPrimitive must return a primitive value.");}return ("string"===r?String:Number)(t);}/******************************************************************************
     	Copyright (c) Microsoft Corporation.
 
     	Permission to use, copy, modify, and/or distribute this software for any
@@ -7284,7 +7280,7 @@
     	 * - global (NodeJS implementation)
     	 * - <object> (When all else fails)
     	 *//** only globals that common to node and browsers are allowed */// eslint-disable-next-line node/no-unsupported-features/es-builtins, no-undef
-    	var _globalThis$2=typeof globalThis==='object'?globalThis:typeof self==='object'?self:typeof window==='object'?window:typeof commonjsGlobal==='object'?commonjsGlobal:{};/*
+    	var _globalThis$3=typeof globalThis==='object'?globalThis:typeof self==='object'?self:typeof window==='object'?window:typeof commonjsGlobal==='object'?commonjsGlobal:{};/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -7362,7 +7358,7 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var major=VERSION$3.split('.')[0];var GLOBAL_OPENTELEMETRY_API_KEY=Symbol.for("opentelemetry.js.api."+major);var _global$2=_globalThis$2;function registerGlobal(type,instance,diag,allowOverride){var _a;if(allowOverride===void 0){allowOverride=false;}var api=_global$2[GLOBAL_OPENTELEMETRY_API_KEY]=(_a=_global$2[GLOBAL_OPENTELEMETRY_API_KEY])!==null&&_a!==void 0?_a:{version:VERSION$3};if(!allowOverride&&api[type]){// already registered an API of this type
+    	 */var major=VERSION$3.split('.')[0];var GLOBAL_OPENTELEMETRY_API_KEY=Symbol.for("opentelemetry.js.api."+major);var _global$2=_globalThis$3;function registerGlobal(type,instance,diag,allowOverride){var _a;if(allowOverride===void 0){allowOverride=false;}var api=_global$2[GLOBAL_OPENTELEMETRY_API_KEY]=(_a=_global$2[GLOBAL_OPENTELEMETRY_API_KEY])!==null&&_a!==void 0?_a:{version:VERSION$3};if(!allowOverride&&api[type]){// already registered an API of this type
     	var err=new Error("@opentelemetry/api: Attempted duplicate registration of API: "+type);diag.error(err.stack||err.message);return false;}if(api.version!==VERSION$3){// All registered APIs must be of the same version exactly
     	var err=new Error("@opentelemetry/api: Registration of version v"+api.version+" for "+type+" does not match previously registered API v"+VERSION$3);diag.error(err.stack||err.message);return false;}api[type]=instance;diag.debug("@opentelemetry/api: Registered a global for "+type+" v"+VERSION$3+".");return true;}function getGlobal(type){var _a,_b;var globalVersion=(_a=_global$2[GLOBAL_OPENTELEMETRY_API_KEY])===null||_a===void 0?void 0:_a.version;if(!globalVersion||!isCompatible(globalVersion)){return;}return (_b=_global$2[GLOBAL_OPENTELEMETRY_API_KEY])===null||_b===void 0?void 0:_b[type];}function unregisterGlobal(type,diag){diag.debug("@opentelemetry/api: Unregistering a global for "+type+" v"+VERSION$3+".");var api=_global$2[GLOBAL_OPENTELEMETRY_API_KEY];if(api){delete api[type];}}/*
     	 * Copyright The OpenTelemetry Authors
@@ -7464,7 +7460,7 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var __read$8=function(o,n){var m=typeof Symbol==="function"&&o[Symbol.iterator];if(!m)return o;var i=m.call(o),r,ar=[],e;try{while((n===void 0||n-->0)&&!(r=i.next()).done)ar.push(r.value);}catch(error){e={error:error};}finally{try{if(r&&!r.done&&(m=i["return"]))m.call(i);}finally{if(e)throw e.error;}}return ar;};var __values$5=function(o){var s=typeof Symbol==="function"&&Symbol.iterator,m=s&&o[s],i=0;if(m)return m.call(o);if(o&&typeof o.length==="number")return {next:function(){if(o&&i>=o.length)o=void 0;return {value:o&&o[i++],done:!o};}};throw new TypeError(s?"Object is not iterable.":"Symbol.iterator is not defined.");};var BaggageImpl=/** @class */function(){function BaggageImpl(entries){this._entries=entries?new Map(entries):new Map();}BaggageImpl.prototype.getEntry=function(key){var entry=this._entries.get(key);if(!entry){return undefined;}return Object.assign({},entry);};BaggageImpl.prototype.getAllEntries=function(){return Array.from(this._entries.entries()).map(function(_a){var _b=__read$8(_a,2),k=_b[0],v=_b[1];return [k,v];});};BaggageImpl.prototype.setEntry=function(key,entry){var newBaggage=new BaggageImpl(this._entries);newBaggage._entries.set(key,entry);return newBaggage;};BaggageImpl.prototype.removeEntry=function(key){var newBaggage=new BaggageImpl(this._entries);newBaggage._entries.delete(key);return newBaggage;};BaggageImpl.prototype.removeEntries=function(){var e_1,_a;var keys=[];for(var _i=0;_i<arguments.length;_i++){keys[_i]=arguments[_i];}var newBaggage=new BaggageImpl(this._entries);try{for(var keys_1=__values$5(keys),keys_1_1=keys_1.next();!keys_1_1.done;keys_1_1=keys_1.next()){var key=keys_1_1.value;newBaggage._entries.delete(key);}}catch(e_1_1){e_1={error:e_1_1};}finally{try{if(keys_1_1&&!keys_1_1.done&&(_a=keys_1.return))_a.call(keys_1);}finally{if(e_1)throw e_1.error;}}return newBaggage;};BaggageImpl.prototype.clear=function(){return new BaggageImpl();};return BaggageImpl;}();/*
+    	 */var __read$8=function(o,n){var m=typeof Symbol==="function"&&o[Symbol.iterator];if(!m)return o;var i=m.call(o),r,ar=[],e;try{while((n===void 0||n-->0)&&!(r=i.next()).done)ar.push(r.value);}catch(error){e={error:error};}finally{try{if(r&&!r.done&&(m=i["return"]))m.call(i);}finally{if(e)throw e.error;}}return ar;};var __values$4=function(o){var s=typeof Symbol==="function"&&Symbol.iterator,m=s&&o[s],i=0;if(m)return m.call(o);if(o&&typeof o.length==="number")return {next:function(){if(o&&i>=o.length)o=void 0;return {value:o&&o[i++],done:!o};}};throw new TypeError(s?"Object is not iterable.":"Symbol.iterator is not defined.");};var BaggageImpl=/** @class */function(){function BaggageImpl(entries){this._entries=entries?new Map(entries):new Map();}BaggageImpl.prototype.getEntry=function(key){var entry=this._entries.get(key);if(!entry){return undefined;}return Object.assign({},entry);};BaggageImpl.prototype.getAllEntries=function(){return Array.from(this._entries.entries()).map(function(_a){var _b=__read$8(_a,2),k=_b[0],v=_b[1];return [k,v];});};BaggageImpl.prototype.setEntry=function(key,entry){var newBaggage=new BaggageImpl(this._entries);newBaggage._entries.set(key,entry);return newBaggage;};BaggageImpl.prototype.removeEntry=function(key){var newBaggage=new BaggageImpl(this._entries);newBaggage._entries.delete(key);return newBaggage;};BaggageImpl.prototype.removeEntries=function(){var e_1,_a;var keys=[];for(var _i=0;_i<arguments.length;_i++){keys[_i]=arguments[_i];}var newBaggage=new BaggageImpl(this._entries);try{for(var keys_1=__values$4(keys),keys_1_1=keys_1.next();!keys_1_1.done;keys_1_1=keys_1.next()){var key=keys_1_1.value;newBaggage._entries.delete(key);}}catch(e_1_1){e_1={error:e_1_1};}finally{try{if(keys_1_1&&!keys_1_1.done&&(_a=keys_1.return))_a.call(keys_1);}finally{if(e_1)throw e_1.error;}}return newBaggage;};BaggageImpl.prototype.clear=function(){return new BaggageImpl();};return BaggageImpl;}();/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -7542,7 +7538,7 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var __extends$4=function(){var extendStatics=function(d,b){extendStatics=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(d,b){d.__proto__=b;}||function(d,b){for(var p in b)if(Object.prototype.hasOwnProperty.call(b,p))d[p]=b[p];};return extendStatics(d,b);};return function(d,b){if(typeof b!=="function"&&b!==null)throw new TypeError("Class extends value "+String(b)+" is not a constructor or null");extendStatics(d,b);function __(){this.constructor=d;}d.prototype=b===null?Object.create(b):(__.prototype=b.prototype,new __());};}();/**
+    	 */var __extends$2=function(){var extendStatics=function(d,b){extendStatics=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(d,b){d.__proto__=b;}||function(d,b){for(var p in b)if(Object.prototype.hasOwnProperty.call(b,p))d[p]=b[p];};return extendStatics(d,b);};return function(d,b){if(typeof b!=="function"&&b!==null)throw new TypeError("Class extends value "+String(b)+" is not a constructor or null");extendStatics(d,b);function __(){this.constructor=d;}d.prototype=b===null?Object.create(b):(__.prototype=b.prototype,new __());};}();/**
     	 * NoopMeter is a noop implementation of the {@link Meter} interface. It reuses
     	 * constant NoopMetrics for all of its methods.
     	 */var NoopMeter=/** @class */function(){function NoopMeter(){}/**
@@ -7563,7 +7559,7 @@
     	     * @see {@link Meter.addBatchObservableCallback}
     	     */NoopMeter.prototype.addBatchObservableCallback=function(_callback,_observables){};/**
     	     * @see {@link Meter.removeBatchObservableCallback}
-    	     */NoopMeter.prototype.removeBatchObservableCallback=function(_callback){};return NoopMeter;}();var NoopMetric=/** @class */function(){function NoopMetric(){}return NoopMetric;}();var NoopCounterMetric=/** @class */function(_super){__extends$4(NoopCounterMetric,_super);function NoopCounterMetric(){return _super!==null&&_super.apply(this,arguments)||this;}NoopCounterMetric.prototype.add=function(_value,_attributes){};return NoopCounterMetric;}(NoopMetric);var NoopUpDownCounterMetric=/** @class */function(_super){__extends$4(NoopUpDownCounterMetric,_super);function NoopUpDownCounterMetric(){return _super!==null&&_super.apply(this,arguments)||this;}NoopUpDownCounterMetric.prototype.add=function(_value,_attributes){};return NoopUpDownCounterMetric;}(NoopMetric);var NoopGaugeMetric=/** @class */function(_super){__extends$4(NoopGaugeMetric,_super);function NoopGaugeMetric(){return _super!==null&&_super.apply(this,arguments)||this;}NoopGaugeMetric.prototype.record=function(_value,_attributes){};return NoopGaugeMetric;}(NoopMetric);var NoopHistogramMetric=/** @class */function(_super){__extends$4(NoopHistogramMetric,_super);function NoopHistogramMetric(){return _super!==null&&_super.apply(this,arguments)||this;}NoopHistogramMetric.prototype.record=function(_value,_attributes){};return NoopHistogramMetric;}(NoopMetric);var NoopObservableMetric=/** @class */function(){function NoopObservableMetric(){}NoopObservableMetric.prototype.addCallback=function(_callback){};NoopObservableMetric.prototype.removeCallback=function(_callback){};return NoopObservableMetric;}();var NoopObservableCounterMetric=/** @class */function(_super){__extends$4(NoopObservableCounterMetric,_super);function NoopObservableCounterMetric(){return _super!==null&&_super.apply(this,arguments)||this;}return NoopObservableCounterMetric;}(NoopObservableMetric);var NoopObservableGaugeMetric=/** @class */function(_super){__extends$4(NoopObservableGaugeMetric,_super);function NoopObservableGaugeMetric(){return _super!==null&&_super.apply(this,arguments)||this;}return NoopObservableGaugeMetric;}(NoopObservableMetric);var NoopObservableUpDownCounterMetric=/** @class */function(_super){__extends$4(NoopObservableUpDownCounterMetric,_super);function NoopObservableUpDownCounterMetric(){return _super!==null&&_super.apply(this,arguments)||this;}return NoopObservableUpDownCounterMetric;}(NoopObservableMetric);var NOOP_METER=new NoopMeter();// Synchronous instruments
+    	     */NoopMeter.prototype.removeBatchObservableCallback=function(_callback){};return NoopMeter;}();var NoopMetric=/** @class */function(){function NoopMetric(){}return NoopMetric;}();var NoopCounterMetric=/** @class */function(_super){__extends$2(NoopCounterMetric,_super);function NoopCounterMetric(){return _super!==null&&_super.apply(this,arguments)||this;}NoopCounterMetric.prototype.add=function(_value,_attributes){};return NoopCounterMetric;}(NoopMetric);var NoopUpDownCounterMetric=/** @class */function(_super){__extends$2(NoopUpDownCounterMetric,_super);function NoopUpDownCounterMetric(){return _super!==null&&_super.apply(this,arguments)||this;}NoopUpDownCounterMetric.prototype.add=function(_value,_attributes){};return NoopUpDownCounterMetric;}(NoopMetric);var NoopGaugeMetric=/** @class */function(_super){__extends$2(NoopGaugeMetric,_super);function NoopGaugeMetric(){return _super!==null&&_super.apply(this,arguments)||this;}NoopGaugeMetric.prototype.record=function(_value,_attributes){};return NoopGaugeMetric;}(NoopMetric);var NoopHistogramMetric=/** @class */function(_super){__extends$2(NoopHistogramMetric,_super);function NoopHistogramMetric(){return _super!==null&&_super.apply(this,arguments)||this;}NoopHistogramMetric.prototype.record=function(_value,_attributes){};return NoopHistogramMetric;}(NoopMetric);var NoopObservableMetric=/** @class */function(){function NoopObservableMetric(){}NoopObservableMetric.prototype.addCallback=function(_callback){};NoopObservableMetric.prototype.removeCallback=function(_callback){};return NoopObservableMetric;}();var NoopObservableCounterMetric=/** @class */function(_super){__extends$2(NoopObservableCounterMetric,_super);function NoopObservableCounterMetric(){return _super!==null&&_super.apply(this,arguments)||this;}return NoopObservableCounterMetric;}(NoopObservableMetric);var NoopObservableGaugeMetric=/** @class */function(_super){__extends$2(NoopObservableGaugeMetric,_super);function NoopObservableGaugeMetric(){return _super!==null&&_super.apply(this,arguments)||this;}return NoopObservableGaugeMetric;}(NoopObservableMetric);var NoopObservableUpDownCounterMetric=/** @class */function(_super){__extends$2(NoopObservableUpDownCounterMetric,_super);function NoopObservableUpDownCounterMetric(){return _super!==null&&_super.apply(this,arguments)||this;}return NoopObservableUpDownCounterMetric;}(NoopObservableMetric);var NOOP_METER=new NoopMeter();// Synchronous instruments
     	var NOOP_COUNTER_METRIC=new NoopCounterMetric();var NOOP_GAUGE_METRIC=new NoopGaugeMetric();var NOOP_HISTOGRAM_METRIC=new NoopHistogramMetric();var NOOP_UP_DOWN_COUNTER_METRIC=new NoopUpDownCounterMetric();// Asynchronous instruments
     	var NOOP_OBSERVABLE_COUNTER_METRIC=new NoopObservableCounterMetric();var NOOP_OBSERVABLE_GAUGE_METRIC=new NoopObservableGaugeMetric();var NOOP_OBSERVABLE_UP_DOWN_COUNTER_METRIC=new NoopObservableUpDownCounterMetric();/*
     	 * Copyright The OpenTelemetry Authors
@@ -8189,7 +8185,7 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var __values$4=function(o){var s=typeof Symbol==="function"&&Symbol.iterator,m=s&&o[s],i=0;if(m)return m.call(o);if(o&&typeof o.length==="number")return {next:function(){if(o&&i>=o.length)o=void 0;return {value:o&&o[i++],done:!o};}};throw new TypeError(s?"Object is not iterable.":"Symbol.iterator is not defined.");};var __read$4=function(o,n){var m=typeof Symbol==="function"&&o[Symbol.iterator];if(!m)return o;var i=m.call(o),r,ar=[],e;try{while((n===void 0||n-->0)&&!(r=i.next()).done)ar.push(r.value);}catch(error){e={error:error};}finally{try{if(r&&!r.done&&(m=i["return"]))m.call(i);}finally{if(e)throw e.error;}}return ar;};function sanitizeAttributes(attributes){var e_1,_a;var out={};if(typeof attributes!=='object'||attributes==null){return out;}try{for(var _b=__values$4(Object.entries(attributes)),_c=_b.next();!_c.done;_c=_b.next()){var _d=__read$4(_c.value,2),key=_d[0],val=_d[1];if(!isAttributeKey(key)){diag.warn("Invalid attribute key: "+key);continue;}if(!isAttributeValue(val)){diag.warn("Invalid attribute value set for key: "+key);continue;}if(Array.isArray(val)){out[key]=val.slice();}else {out[key]=val;}}}catch(e_1_1){e_1={error:e_1_1};}finally{try{if(_c&&!_c.done&&(_a=_b.return))_a.call(_b);}finally{if(e_1)throw e_1.error;}}return out;}function isAttributeKey(key){return typeof key==='string'&&key.length>0;}function isAttributeValue(val){if(val==null){return true;}if(Array.isArray(val)){return isHomogeneousAttributeValueArray(val);}return isValidPrimitiveAttributeValue(val);}function isHomogeneousAttributeValueArray(arr){var e_2,_a;var type;try{for(var arr_1=__values$4(arr),arr_1_1=arr_1.next();!arr_1_1.done;arr_1_1=arr_1.next()){var element=arr_1_1.value;// null/undefined elements are allowed
+    	 */var __values$3=function(o){var s=typeof Symbol==="function"&&Symbol.iterator,m=s&&o[s],i=0;if(m)return m.call(o);if(o&&typeof o.length==="number")return {next:function(){if(o&&i>=o.length)o=void 0;return {value:o&&o[i++],done:!o};}};throw new TypeError(s?"Object is not iterable.":"Symbol.iterator is not defined.");};var __read$4=function(o,n){var m=typeof Symbol==="function"&&o[Symbol.iterator];if(!m)return o;var i=m.call(o),r,ar=[],e;try{while((n===void 0||n-->0)&&!(r=i.next()).done)ar.push(r.value);}catch(error){e={error:error};}finally{try{if(r&&!r.done&&(m=i["return"]))m.call(i);}finally{if(e)throw e.error;}}return ar;};function sanitizeAttributes(attributes){var e_1,_a;var out={};if(typeof attributes!=='object'||attributes==null){return out;}try{for(var _b=__values$3(Object.entries(attributes)),_c=_b.next();!_c.done;_c=_b.next()){var _d=__read$4(_c.value,2),key=_d[0],val=_d[1];if(!isAttributeKey(key)){diag.warn("Invalid attribute key: "+key);continue;}if(!isAttributeValue(val)){diag.warn("Invalid attribute value set for key: "+key);continue;}if(Array.isArray(val)){out[key]=val.slice();}else {out[key]=val;}}}catch(e_1_1){e_1={error:e_1_1};}finally{try{if(_c&&!_c.done&&(_a=_b.return))_a.call(_b);}finally{if(e_1)throw e_1.error;}}return out;}function isAttributeKey(key){return typeof key==='string'&&key.length>0;}function isAttributeValue(val){if(val==null){return true;}if(Array.isArray(val)){return isHomogeneousAttributeValueArray(val);}return isValidPrimitiveAttributeValue(val);}function isHomogeneousAttributeValueArray(arr){var e_2,_a;var type;try{for(var arr_1=__values$3(arr),arr_1_1=arr_1.next();!arr_1_1.done;arr_1_1=arr_1.next()){var element=arr_1_1.value;// null/undefined elements are allowed
     	if(element==null)continue;if(!type){if(isValidPrimitiveAttributeValue(element)){type=typeof element;continue;}// encountered an invalid primitive
     	return false;}if(typeof element===type){continue;}return false;}}catch(e_2_1){e_2={error:e_2_1};}finally{try{if(arr_1_1&&!arr_1_1.done&&(_a=arr_1.return))_a.call(arr_1);}finally{if(e_2)throw e_2.error;}}return true;}function isValidPrimitiveAttributeValue(val){switch(typeof val){case 'number':case 'boolean':case 'string':return true;}return false;}/*
     	 * Copyright The OpenTelemetry Authors
@@ -8314,7 +8310,7 @@
     	 * - global (NodeJS implementation)
     	 * - <object> (When all else fails)
     	 *//** only globals that common to node and browsers are allowed */// eslint-disable-next-line node/no-unsupported-features/es-builtins, no-undef
-    	var _globalThis$1=typeof globalThis==='object'?globalThis:typeof self==='object'?self:typeof window==='object'?window:typeof commonjsGlobal==='object'?commonjsGlobal:{};/*
+    	var _globalThis$2=typeof globalThis==='object'?globalThis:typeof self==='object'?self:typeof window==='object'?window:typeof commonjsGlobal==='object'?commonjsGlobal:{};/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -8330,7 +8326,7 @@
     	 * limitations under the License.
     	 *//**
     	 * Gets the environment variables
-    	 */function getEnv(){var globalEnv=parseEnvironment(_globalThis$1);return Object.assign({},DEFAULT_ENVIRONMENT,globalEnv);}function getEnvWithoutDefaults(){return parseEnvironment(_globalThis$1);}/*
+    	 */function getEnv(){var globalEnv=parseEnvironment(_globalThis$2);return Object.assign({},DEFAULT_ENVIRONMENT,globalEnv);}function getEnvWithoutDefaults(){return parseEnvironment(_globalThis$2);}/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -8344,7 +8340,7 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var otperformance=performance;/*
+    	 */var otperformance$1=performance;/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -8373,7 +8369,7 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var TMP_EXCEPTION_TYPE='exception.type';var TMP_EXCEPTION_MESSAGE='exception.message';var TMP_EXCEPTION_STACKTRACE='exception.stacktrace';var TMP_HTTP_METHOD='http.method';var TMP_HTTP_URL='http.url';var TMP_HTTP_HOST='http.host';var TMP_HTTP_SCHEME='http.scheme';var TMP_HTTP_STATUS_CODE='http.status_code';var TMP_HTTP_USER_AGENT='http.user_agent';var TMP_HTTP_RESPONSE_CONTENT_LENGTH='http.response_content_length';var TMP_HTTP_RESPONSE_CONTENT_LENGTH_UNCOMPRESSED='http.response_content_length_uncompressed';/**
+    	 */var TMP_EXCEPTION_TYPE='exception.type';var TMP_EXCEPTION_MESSAGE='exception.message';var TMP_EXCEPTION_STACKTRACE='exception.stacktrace';/**
     	 * The type of the exception (its fully-qualified class name, if applicable). The dynamic type of the exception should be preferred over the static type in languages that support it.
     	 *
     	 * @deprecated use ATTR_EXCEPTION_TYPE
@@ -8385,43 +8381,7 @@
     	 * A stacktrace as a string in the natural representation for the language runtime. The representation is to be determined and documented by each language SIG.
     	 *
     	 * @deprecated use ATTR_EXCEPTION_STACKTRACE
-    	 */var SEMATTRS_EXCEPTION_STACKTRACE=TMP_EXCEPTION_STACKTRACE;/**
-    	 * HTTP request method.
-    	 *
-    	 * @deprecated use ATTR_HTTP_METHOD
-    	 */var SEMATTRS_HTTP_METHOD=TMP_HTTP_METHOD;/**
-    	 * Full HTTP request URL in the form `scheme://host[:port]/path?query[#fragment]`. Usually the fragment is not transmitted over HTTP, but if it is known, it should be included nevertheless.
-    	 *
-    	 * Note: `http.url` MUST NOT contain credentials passed via URL in form of `https://username:password@www.example.com/`. In such case the attribute&#39;s value should be `https://www.example.com/`.
-    	 *
-    	 * @deprecated use ATTR_HTTP_URL
-    	 */var SEMATTRS_HTTP_URL=TMP_HTTP_URL;/**
-    	 * The value of the [HTTP host header](https://tools.ietf.org/html/rfc7230#section-5.4). An empty Host header should also be reported, see note.
-    	 *
-    	 * Note: When the header is present but empty the attribute SHOULD be set to the empty string. Note that this is a valid situation that is expected in certain cases, according the aforementioned [section of RFC 7230](https://tools.ietf.org/html/rfc7230#section-5.4). When the header is not set the attribute MUST NOT be set.
-    	 *
-    	 * @deprecated use ATTR_HTTP_HOST
-    	 */var SEMATTRS_HTTP_HOST=TMP_HTTP_HOST;/**
-    	 * The URI scheme identifying the used protocol.
-    	 *
-    	 * @deprecated use ATTR_HTTP_SCHEME
-    	 */var SEMATTRS_HTTP_SCHEME=TMP_HTTP_SCHEME;/**
-    	 * [HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).
-    	 *
-    	 * @deprecated use ATTR_HTTP_STATUS_CODE
-    	 */var SEMATTRS_HTTP_STATUS_CODE=TMP_HTTP_STATUS_CODE;/**
-    	 * Value of the [HTTP User-Agent](https://tools.ietf.org/html/rfc7231#section-5.5.3) header sent by the client.
-    	 *
-    	 * @deprecated use ATTR_HTTP_USER_AGENT
-    	 */var SEMATTRS_HTTP_USER_AGENT=TMP_HTTP_USER_AGENT;/**
-    	 * The size of the response payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://tools.ietf.org/html/rfc7230#section-3.3.2) header. For requests using transport encoding, this should be the compressed size.
-    	 *
-    	 * @deprecated use ATTR_HTTP_RESPONSE_CONTENT_LENGTH
-    	 */var SEMATTRS_HTTP_RESPONSE_CONTENT_LENGTH=TMP_HTTP_RESPONSE_CONTENT_LENGTH;/**
-    	 * The size of the uncompressed response payload body after transport decoding. Not set if transport encoding not used.
-    	 *
-    	 * @deprecated use ATTR_HTTP_RESPONSE_CONTENT_LENGTH_UNCOMPRESSED
-    	 */var SEMATTRS_HTTP_RESPONSE_CONTENT_LENGTH_UNCOMPRESSED=TMP_HTTP_RESPONSE_CONTENT_LENGTH_UNCOMPRESSED;/*
+    	 */var SEMATTRS_EXCEPTION_STACKTRACE=TMP_EXCEPTION_STACKTRACE;/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -8475,7 +8435,7 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var _a$2;/** Constants describing the SDK in use */var SDK_INFO=(_a$2={},_a$2[SEMRESATTRS_TELEMETRY_SDK_NAME]='opentelemetry',_a$2[SEMRESATTRS_PROCESS_RUNTIME_NAME]='browser',_a$2[SEMRESATTRS_TELEMETRY_SDK_LANGUAGE]=TELEMETRYSDKLANGUAGEVALUES_WEBJS,_a$2[SEMRESATTRS_TELEMETRY_SDK_VERSION]=VERSION$2,_a$2);/*
+    	 */var _a$1;/** Constants describing the SDK in use */var SDK_INFO=(_a$1={},_a$1[SEMRESATTRS_TELEMETRY_SDK_NAME]='opentelemetry',_a$1[SEMRESATTRS_PROCESS_RUNTIME_NAME]='browser',_a$1[SEMRESATTRS_TELEMETRY_SDK_LANGUAGE]=TELEMETRYSDKLANGUAGEVALUES_WEBJS,_a$1[SEMRESATTRS_TELEMETRY_SDK_VERSION]=VERSION$2,_a$1);/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -8503,43 +8463,36 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var NANOSECOND_DIGITS=9;var NANOSECOND_DIGITS_IN_MILLIS=6;var MILLISECONDS_TO_NANOSECONDS=Math.pow(10,NANOSECOND_DIGITS_IN_MILLIS);var SECOND_TO_NANOSECONDS=Math.pow(10,NANOSECOND_DIGITS);/**
+    	 */var NANOSECOND_DIGITS$1=9;var NANOSECOND_DIGITS_IN_MILLIS$1=6;var MILLISECONDS_TO_NANOSECONDS$1=Math.pow(10,NANOSECOND_DIGITS_IN_MILLIS$1);var SECOND_TO_NANOSECONDS$1=Math.pow(10,NANOSECOND_DIGITS$1);/**
     	 * Converts a number of milliseconds from epoch to HrTime([seconds, remainder in nanoseconds]).
     	 * @param epochMillis
-    	 */function millisToHrTime(epochMillis){var epochSeconds=epochMillis/1000;// Decimals only.
+    	 */function millisToHrTime$1(epochMillis){var epochSeconds=epochMillis/1000;// Decimals only.
     	var seconds=Math.trunc(epochSeconds);// Round sub-nanosecond accuracy to nanosecond.
-    	var nanos=Math.round(epochMillis%1000*MILLISECONDS_TO_NANOSECONDS);return [seconds,nanos];}function getTimeOrigin(){var timeOrigin=otperformance.timeOrigin;if(typeof timeOrigin!=='number'){var perf=otperformance;timeOrigin=perf.timing&&perf.timing.fetchStart;}return timeOrigin;}/**
+    	var nanos=Math.round(epochMillis%1000*MILLISECONDS_TO_NANOSECONDS$1);return [seconds,nanos];}function getTimeOrigin$1(){var timeOrigin=otperformance$1.timeOrigin;if(typeof timeOrigin!=='number'){var perf=otperformance$1;timeOrigin=perf.timing&&perf.timing.fetchStart;}return timeOrigin;}/**
     	 * Returns an hrtime calculated via performance component.
     	 * @param performanceNow
-    	 */function hrTime(performanceNow){var timeOrigin=millisToHrTime(getTimeOrigin());var now=millisToHrTime(typeof performanceNow==='number'?performanceNow:otperformance.now());return addHrTimes(timeOrigin,now);}/**
-    	 *
-    	 * Converts a TimeInput to an HrTime, defaults to _hrtime().
-    	 * @param time
-    	 */function timeInputToHrTime(time){// process.hrtime
-    	if(isTimeInputHrTime(time)){return time;}else if(typeof time==='number'){// Must be a performance.now() if it's smaller than process start time.
-    	if(time<getTimeOrigin()){return hrTime(time);}else {// epoch milliseconds or performance.timeOrigin
-    	return millisToHrTime(time);}}else if(time instanceof Date){return millisToHrTime(time.getTime());}else {throw TypeError('Invalid input type');}}/**
+    	 */function hrTime$1(performanceNow){var timeOrigin=millisToHrTime$1(getTimeOrigin$1());var now=millisToHrTime$1(typeof performanceNow==='number'?performanceNow:otperformance$1.now());return addHrTimes$1(timeOrigin,now);}/**
     	 * Returns a duration of two hrTime.
     	 * @param startTime
     	 * @param endTime
     	 */function hrTimeDuration(startTime,endTime){var seconds=endTime[0]-startTime[0];var nanos=endTime[1]-startTime[1];// overflow
     	if(nanos<0){seconds-=1;// negate
-    	nanos+=SECOND_TO_NANOSECONDS;}return [seconds,nanos];}/**
+    	nanos+=SECOND_TO_NANOSECONDS$1;}return [seconds,nanos];}/**
     	 * Convert hrTime to timestamp, for example "2019-05-14T17:00:00.000123456Z"
     	 * @param time
-    	 */function hrTimeToTimeStamp(time){var precision=NANOSECOND_DIGITS;var tmp=""+'0'.repeat(precision)+time[1]+"Z";var nanoString=tmp.substr(tmp.length-precision-1);var date=new Date(time[0]*1000).toISOString();return date.replace('000Z',nanoString);}/**
+    	 */function hrTimeToTimeStamp(time){var precision=NANOSECOND_DIGITS$1;var tmp=""+'0'.repeat(precision)+time[1]+"Z";var nanoString=tmp.substr(tmp.length-precision-1);var date=new Date(time[0]*1000).toISOString();return date.replace('000Z',nanoString);}/**
     	 * Convert hrTime to nanoseconds.
     	 * @param time
-    	 */function hrTimeToNanoseconds(time){return time[0]*SECOND_TO_NANOSECONDS+time[1];}/**
+    	 */function hrTimeToNanoseconds$1(time){return time[0]*SECOND_TO_NANOSECONDS$1+time[1];}/**
     	 * check if time is HrTime
     	 * @param value
-    	 */function isTimeInputHrTime(value){return Array.isArray(value)&&value.length===2&&typeof value[0]==='number'&&typeof value[1]==='number';}/**
+    	 */function isTimeInputHrTime$1(value){return Array.isArray(value)&&value.length===2&&typeof value[0]==='number'&&typeof value[1]==='number';}/**
     	 * check if input value is a correct types.TimeInput
     	 * @param value
-    	 */function isTimeInput(value){return isTimeInputHrTime(value)||typeof value==='number'||value instanceof Date;}/**
+    	 */function isTimeInput(value){return isTimeInputHrTime$1(value)||typeof value==='number'||value instanceof Date;}/**
     	 * Given 2 HrTime formatted times, return their sum as an HrTime.
-    	 */function addHrTimes(time1,time2){var out=[time1[0]+time2[0],time1[1]+time2[1]];// Nanoseconds
-    	if(out[1]>=SECOND_TO_NANOSECONDS){out[1]-=SECOND_TO_NANOSECONDS;out[0]+=1;}return out;}/*
+    	 */function addHrTimes$1(time1,time2){var out=[time1[0]+time2[0],time1[1]+time2[1]];// Nanoseconds
+    	if(out[1]>=SECOND_TO_NANOSECONDS$1){out[1]-=SECOND_TO_NANOSECONDS$1;out[0]+=1;}return out;}/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -8567,7 +8520,7 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var __values$3=function(o){var s=typeof Symbol==="function"&&Symbol.iterator,m=s&&o[s],i=0;if(m)return m.call(o);if(o&&typeof o.length==="number")return {next:function(){if(o&&i>=o.length)o=void 0;return {value:o&&o[i++],done:!o};}};throw new TypeError(s?"Object is not iterable.":"Symbol.iterator is not defined.");};/** Combines multiple propagators into a single propagator. */var CompositePropagator=/** @class */function(){/**
+    	 */var __values$2=function(o){var s=typeof Symbol==="function"&&Symbol.iterator,m=s&&o[s],i=0;if(m)return m.call(o);if(o&&typeof o.length==="number")return {next:function(){if(o&&i>=o.length)o=void 0;return {value:o&&o[i++],done:!o};}};throw new TypeError(s?"Object is not iterable.":"Symbol.iterator is not defined.");};/** Combines multiple propagators into a single propagator. */var CompositePropagator=/** @class */function(){/**
     	     * Construct a composite propagator from a list of propagators.
     	     *
     	     * @param [config] Configuration object for composite propagator
@@ -8580,7 +8533,7 @@
     	     *
     	     * @param context Context to inject
     	     * @param carrier Carrier into which context will be injected
-    	     */CompositePropagator.prototype.inject=function(context,carrier,setter){var e_1,_a;try{for(var _b=__values$3(this._propagators),_c=_b.next();!_c.done;_c=_b.next()){var propagator=_c.value;try{propagator.inject(context,carrier,setter);}catch(err){diag.warn("Failed to inject with "+propagator.constructor.name+". Err: "+err.message);}}}catch(e_1_1){e_1={error:e_1_1};}finally{try{if(_c&&!_c.done&&(_a=_b.return))_a.call(_b);}finally{if(e_1)throw e_1.error;}}};/**
+    	     */CompositePropagator.prototype.inject=function(context,carrier,setter){var e_1,_a;try{for(var _b=__values$2(this._propagators),_c=_b.next();!_c.done;_c=_b.next()){var propagator=_c.value;try{propagator.inject(context,carrier,setter);}catch(err){diag.warn("Failed to inject with "+propagator.constructor.name+". Err: "+err.message);}}}catch(e_1_1){e_1={error:e_1_1};}finally{try{if(_c&&!_c.done&&(_a=_b.return))_a.call(_b);}finally{if(e_1)throw e_1.error;}}};/**
     	     * Run each of the configured propagators with the given context and carrier.
     	     * Propagators are run in the order they are configured, so if multiple
     	     * propagators write the same context key, the propagator later in the list
@@ -8791,31 +8744,13 @@
     	 * @param level - current deep level
     	 * @param objects - objects holder that has been already referenced - to prevent
     	 * cyclic dependency
-    	 */function mergeTwoObjects(one,two,level,objects){if(level===void 0){level=0;}var result;if(level>MAX_LEVEL){return undefined;}level++;if(isPrimitive(one)||isPrimitive(two)||isFunction$5(two)){result=takeValue(two);}else if(isArray$9(one)){result=one.slice();if(isArray$9(two)){for(var i=0,j=two.length;i<j;i++){result.push(takeValue(two[i]));}}else if(isObject$6(two)){var keys=Object.keys(two);for(var i=0,j=keys.length;i<j;i++){var key=keys[i];result[key]=takeValue(two[key]);}}}else if(isObject$6(one)){if(isObject$6(two)){if(!shouldMerge(one,two)){return two;}result=Object.assign({},one);var keys=Object.keys(two);for(var i=0,j=keys.length;i<j;i++){var key=keys[i];var twoValue=two[key];if(isPrimitive(twoValue)){if(typeof twoValue==='undefined'){delete result[key];}else {// result[key] = takeValue(twoValue);
+    	 */function mergeTwoObjects(one,two,level,objects){if(level===void 0){level=0;}var result;if(level>MAX_LEVEL){return undefined;}level++;if(isPrimitive(one)||isPrimitive(two)||isFunction$4(two)){result=takeValue(two);}else if(isArray$9(one)){result=one.slice();if(isArray$9(two)){for(var i=0,j=two.length;i<j;i++){result.push(takeValue(two[i]));}}else if(isObject$6(two)){var keys=Object.keys(two);for(var i=0,j=keys.length;i<j;i++){var key=keys[i];result[key]=takeValue(two[key]);}}}else if(isObject$6(one)){if(isObject$6(two)){if(!shouldMerge(one,two)){return two;}result=Object.assign({},one);var keys=Object.keys(two);for(var i=0,j=keys.length;i<j;i++){var key=keys[i];var twoValue=two[key];if(isPrimitive(twoValue)){if(typeof twoValue==='undefined'){delete result[key];}else {// result[key] = takeValue(twoValue);
     	result[key]=twoValue;}}else {var obj1=result[key];var obj2=twoValue;if(wasObjectReferenced(one,key,objects)||wasObjectReferenced(two,key,objects)){delete result[key];}else {if(isObject$6(obj1)&&isObject$6(obj2)){var arr1=objects.get(obj1)||[];var arr2=objects.get(obj2)||[];arr1.push({obj:one,key:key});arr2.push({obj:two,key:key});objects.set(obj1,arr1);objects.set(obj2,arr2);}result[key]=mergeTwoObjects(result[key],twoValue,level,objects);}}}}else {result=two;}}return result;}/**
     	 * Function to check if object has been already reference
     	 * @param obj
     	 * @param key
     	 * @param objects
-    	 */function wasObjectReferenced(obj,key,objects){var arr=objects.get(obj[key])||[];for(var i=0,j=arr.length;i<j;i++){var info=arr[i];if(info.key===key&&info.obj===obj){return true;}}return false;}function isArray$9(value){return Array.isArray(value);}function isFunction$5(value){return typeof value==='function';}function isObject$6(value){return !isPrimitive(value)&&!isArray$9(value)&&!isFunction$5(value)&&typeof value==='object';}function isPrimitive(value){return typeof value==='string'||typeof value==='number'||typeof value==='boolean'||typeof value==='undefined'||value instanceof Date||value instanceof RegExp||value===null;}function shouldMerge(one,two){if(!isPlainObject(one)||!isPlainObject(two)){return false;}return true;}var __values$2=function(o){var s=typeof Symbol==="function"&&Symbol.iterator,m=s&&o[s],i=0;if(m)return m.call(o);if(o&&typeof o.length==="number")return {next:function(){if(o&&i>=o.length)o=void 0;return {value:o&&o[i++],done:!o};}};throw new TypeError(s?"Object is not iterable.":"Symbol.iterator is not defined.");};/*
-    	 * Copyright The OpenTelemetry Authors
-    	 *
-    	 * Licensed under the Apache License, Version 2.0 (the "License");
-    	 * you may not use this file except in compliance with the License.
-    	 * You may obtain a copy of the License at
-    	 *
-    	 *      https://www.apache.org/licenses/LICENSE-2.0
-    	 *
-    	 * Unless required by applicable law or agreed to in writing, software
-    	 * distributed under the License is distributed on an "AS IS" BASIS,
-    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    	 * See the License for the specific language governing permissions and
-    	 * limitations under the License.
-    	 */function urlMatches(url,urlToMatch){if(typeof urlToMatch==='string'){return url===urlToMatch;}else {return !!url.match(urlToMatch);}}/**
-    	 * Check if {@param url} should be ignored when comparing against {@param ignoredUrls}
-    	 * @param url
-    	 * @param ignoredUrls
-    	 */function isUrlIgnored(url,ignoredUrls){var e_1,_a;if(!ignoredUrls){return false;}try{for(var ignoredUrls_1=__values$2(ignoredUrls),ignoredUrls_1_1=ignoredUrls_1.next();!ignoredUrls_1_1.done;ignoredUrls_1_1=ignoredUrls_1.next()){var ignoreUrl=ignoredUrls_1_1.value;if(urlMatches(url,ignoreUrl)){return true;}}}catch(e_1_1){e_1={error:e_1_1};}finally{try{if(ignoredUrls_1_1&&!ignoredUrls_1_1.done&&(_a=ignoredUrls_1.return))_a.call(ignoredUrls_1);}finally{if(e_1)throw e_1.error;}}return false;}/*
+    	 */function wasObjectReferenced(obj,key,objects){var arr=objects.get(obj[key])||[];for(var i=0,j=arr.length;i<j;i++){var info=arr[i];if(info.key===key&&info.obj===obj){return true;}}return false;}function isArray$9(value){return Array.isArray(value);}function isFunction$4(value){return typeof value==='function';}function isObject$6(value){return !isPrimitive(value)&&!isArray$9(value)&&!isFunction$4(value)&&typeof value==='object';}function isPrimitive(value){return typeof value==='string'||typeof value==='number'||typeof value==='boolean'||typeof value==='undefined'||value instanceof Date||value instanceof RegExp||value===null;}function shouldMerge(one,two){if(!isPlainObject(one)||!isPlainObject(two)){return false;}return true;}/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -8845,7 +8780,7 @@
     	 * limitations under the License.
     	 */var __read$3=function(o,n){var m=typeof Symbol==="function"&&o[Symbol.iterator];if(!m)return o;var i=m.call(o),r,ar=[],e;try{while((n===void 0||n-->0)&&!(r=i.next()).done)ar.push(r.value);}catch(error){e={error:error};}finally{try{if(r&&!r.done&&(m=i["return"]))m.call(i);}finally{if(e)throw e.error;}}return ar;};var __spreadArray$2=function(to,from,pack){if(pack||arguments.length===2)for(var i=0,l=from.length,ar;i<l;i++){if(ar||!(i in from)){if(!ar)ar=Array.prototype.slice.call(from,0,i);ar[i]=from[i];}}return to.concat(ar||Array.prototype.slice.call(from));};/**
     	 * Bind the callback and only invoke the callback once regardless how many times `BindOnceFuture.call` is invoked.
-    	 */var BindOnceFuture=/** @class */function(){function BindOnceFuture(_callback,_that){this._callback=_callback;this._that=_that;this._isCalled=false;this._deferred=new Deferred();}Object.defineProperty(BindOnceFuture.prototype,"isCalled",{get:function(){return this._isCalled;},enumerable:false,configurable:true});Object.defineProperty(BindOnceFuture.prototype,"promise",{get:function(){return this._deferred.promise;},enumerable:false,configurable:true});BindOnceFuture.prototype.call=function(){var _a;var _this=this;var args=[];for(var _i=0;_i<arguments.length;_i++){args[_i]=arguments[_i];}if(!this._isCalled){this._isCalled=true;try{Promise.resolve((_a=this._callback).call.apply(_a,__spreadArray$2([this._that],__read$3(args),false))).then(function(val){return _this._deferred.resolve(val);},function(err){return _this._deferred.reject(err);});}catch(err){this._deferred.reject(err);}}return this._deferred.promise;};return BindOnceFuture;}();class Instant{constructor(){let initialValue=arguments.length>0&&arguments[0]!==undefined?arguments[0]:hrTime();this.instant=initialValue;}static toISOString(instant){return hrTimeToTimeStamp(instant.instant);}static toNanoSeconds(instant){return hrTimeToNanoseconds(instant.instant);}}var commonjsGlobal$1=typeof globalThis!=='undefined'?globalThis:typeof window!=='undefined'?window:typeof commonjsGlobal!=='undefined'?commonjsGlobal:typeof self!=='undefined'?self:{};function getDefaultExportFromCjs(x){return x&&x.__esModule&&Object.prototype.hasOwnProperty.call(x,'default')?x['default']:x;}var errorStackParser={exports:{}};var stackframe={exports:{}};var hasRequiredStackframe;function requireStackframe(){if(hasRequiredStackframe)return stackframe.exports;hasRequiredStackframe=1;(function(module,exports){(function(root,factory){// Universal Module Definition (UMD) to support AMD, CommonJS/Node.js, Rhino, and browsers.
+    	 */var BindOnceFuture=/** @class */function(){function BindOnceFuture(_callback,_that){this._callback=_callback;this._that=_that;this._isCalled=false;this._deferred=new Deferred();}Object.defineProperty(BindOnceFuture.prototype,"isCalled",{get:function(){return this._isCalled;},enumerable:false,configurable:true});Object.defineProperty(BindOnceFuture.prototype,"promise",{get:function(){return this._deferred.promise;},enumerable:false,configurable:true});BindOnceFuture.prototype.call=function(){var _a;var _this=this;var args=[];for(var _i=0;_i<arguments.length;_i++){args[_i]=arguments[_i];}if(!this._isCalled){this._isCalled=true;try{Promise.resolve((_a=this._callback).call.apply(_a,__spreadArray$2([this._that],__read$3(args),false))).then(function(val){return _this._deferred.resolve(val);},function(err){return _this._deferred.reject(err);});}catch(err){this._deferred.reject(err);}}return this._deferred.promise;};return BindOnceFuture;}();class Instant{constructor(){let initialValue=arguments.length>0&&arguments[0]!==undefined?arguments[0]:hrTime$1();this.instant=initialValue;}static toISOString(instant){return hrTimeToTimeStamp(instant.instant);}static toNanoSeconds(instant){return hrTimeToNanoseconds$1(instant.instant);}}var commonjsGlobal$1=typeof globalThis!=='undefined'?globalThis:typeof window!=='undefined'?window:typeof commonjsGlobal!=='undefined'?commonjsGlobal:typeof self!=='undefined'?self:{};function getDefaultExportFromCjs(x){return x&&x.__esModule&&Object.prototype.hasOwnProperty.call(x,'default')?x['default']:x;}var errorStackParser={exports:{}};var stackframe={exports:{}};var hasRequiredStackframe;function requireStackframe(){if(hasRequiredStackframe)return stackframe.exports;hasRequiredStackframe=1;(function(module,exports){(function(root,factory){// Universal Module Definition (UMD) to support AMD, CommonJS/Node.js, Rhino, and browsers.
     	/* istanbul ignore next */{module.exports=factory();}})(commonjsGlobal$1,function(){function _isNumber(n){return !isNaN(parseFloat(n))&&isFinite(n);}function _capitalize(str){return str.charAt(0).toUpperCase()+str.substring(1);}function _getter(p){return function(){return this[p];};}var booleanProps=['isConstructor','isEval','isNative','isToplevel'];var numericProps=['columnNumber','lineNumber'];var stringProps=['fileName','functionName','source'];var arrayProps=['args'];var objectProps=['evalOrigin'];var props=booleanProps.concat(numericProps,stringProps,arrayProps,objectProps);function StackFrame(obj){if(!obj)return;for(var i=0;i<props.length;i++){if(obj[props[i]]!==undefined){this['set'+_capitalize(props[i])](obj[props[i]]);}}}StackFrame.prototype={getArgs:function(){return this.args;},setArgs:function(v){if(Object.prototype.toString.call(v)!=='[object Array]'){throw new TypeError('Args must be an Array');}this.args=v;},getEvalOrigin:function(){return this.evalOrigin;},setEvalOrigin:function(v){if(v instanceof StackFrame){this.evalOrigin=v;}else if(v instanceof Object){this.evalOrigin=new StackFrame(v);}else {throw new TypeError('Eval Origin must be an Object or StackFrame');}},toString:function(){var fileName=this.getFileName()||'';var lineNumber=this.getLineNumber()||'';var columnNumber=this.getColumnNumber()||'';var functionName=this.getFunctionName()||'';if(this.getIsEval()){if(fileName){return '[eval] ('+fileName+':'+lineNumber+':'+columnNumber+')';}return '[eval]:'+lineNumber+':'+columnNumber;}if(functionName){return functionName+' ('+fileName+':'+lineNumber+':'+columnNumber+')';}return fileName+':'+lineNumber+':'+columnNumber;}};StackFrame.fromString=function StackFrame$$fromString(str){var argsStartIndex=str.indexOf('(');var argsEndIndex=str.lastIndexOf(')');var functionName=str.substring(0,argsStartIndex);var args=str.substring(argsStartIndex+1,argsEndIndex).split(',');var locationString=str.substring(argsEndIndex+1);if(locationString.indexOf('@')===0){var parts=/@(.+?)(?::(\d+))?(?::(\d+))?$/.exec(locationString,'');var fileName=parts[1];var lineNumber=parts[2];var columnNumber=parts[3];}return new StackFrame({functionName:functionName,args:args||undefined,fileName:fileName,lineNumber:lineNumber||undefined,columnNumber:columnNumber||undefined});};for(var i=0;i<booleanProps.length;i++){StackFrame.prototype['get'+_capitalize(booleanProps[i])]=_getter(booleanProps[i]);StackFrame.prototype['set'+_capitalize(booleanProps[i])]=function(p){return function(v){this[p]=Boolean(v);};}(booleanProps[i]);}for(var j=0;j<numericProps.length;j++){StackFrame.prototype['get'+_capitalize(numericProps[j])]=_getter(numericProps[j]);StackFrame.prototype['set'+_capitalize(numericProps[j])]=function(p){return function(v){if(!_isNumber(v)){throw new TypeError(p+' must be a Number');}this[p]=Number(v);};}(numericProps[j]);}for(var k=0;k<stringProps.length;k++){StackFrame.prototype['get'+_capitalize(stringProps[k])]=_getter(stringProps[k]);StackFrame.prototype['set'+_capitalize(stringProps[k])]=function(p){return function(v){this[p]=String(v);};}(stringProps[k]);}return StackFrame;});})(stackframe);return stackframe.exports;}(function(module,exports){(function(root,factory){// Universal Module Definition (UMD) to support AMD, CommonJS/Node.js, Rhino, and browsers.
     	/* istanbul ignore next */{module.exports=factory(requireStackframe());}})(commonjsGlobal$1,function ErrorStackParser(StackFrame){var FIREFOX_SAFARI_STACK_REGEXP=/(^|@)\S+:\d+/;var CHROME_IE_STACK_REGEXP=/^\s*at .*(\S+:\d+|\(native\))/m;var SAFARI_NATIVE_CODE_REGEXP=/^(eval@)?(\[native code])?$/;return {/**
     		         * Given an Error object, extract the most information from it.
@@ -8863,7 +8798,7 @@
     	var locationParts=this.extractLocation(location?location[1]:sanitizedLine);var functionName=location&&sanitizedLine||undefined;var fileName=['eval','<anonymous>'].indexOf(locationParts[0])>-1?undefined:locationParts[0];return new StackFrame({functionName:functionName,fileName:fileName,lineNumber:locationParts[1],columnNumber:locationParts[2],source:line});},this);},parseFFOrSafari:function ErrorStackParser$$parseFFOrSafari(error){var filtered=error.stack.split('\n').filter(function(line){return !line.match(SAFARI_NATIVE_CODE_REGEXP);},this);return filtered.map(function(line){// Throw away eval information until we implement stacktrace.js/stackframe#8
     	if(line.indexOf(' > eval')>-1){line=line.replace(/ line (\d+)(?: > eval line \d+)* > eval:\d+:\d+/g,':$1');}if(line.indexOf('@')===-1&&line.indexOf(':')===-1){// Safari eval frames only have function names and nothing else
     	return new StackFrame({functionName:line});}else {var functionNameRegex=/((.*".+"[^@]*)?[^@]*)(?:@)/;var matches=line.match(functionNameRegex);var functionName=matches&&matches[1]?matches[1]:undefined;var locationParts=this.extractLocation(line.replace(functionNameRegex,''));return new StackFrame({functionName:functionName,fileName:locationParts[0],lineNumber:locationParts[1],columnNumber:locationParts[2],source:line});}},this);},parseOpera:function ErrorStackParser$$parseOpera(e){if(!e.stacktrace||e.message.indexOf('\n')>-1&&e.message.split('\n').length>e.stacktrace.split('\n').length){return this.parseOpera9(e);}else if(!e.stack){return this.parseOpera10(e);}else {return this.parseOpera11(e);}},parseOpera9:function ErrorStackParser$$parseOpera9(e){var lineRE=/Line (\d+).*script (?:in )?(\S+)/i;var lines=e.message.split('\n');var result=[];for(var i=2,len=lines.length;i<len;i+=2){var match=lineRE.exec(lines[i]);if(match){result.push(new StackFrame({fileName:match[2],lineNumber:match[1],source:lines[i]}));}}return result;},parseOpera10:function ErrorStackParser$$parseOpera10(e){var lineRE=/Line (\d+).*script (?:in )?(\S+)(?:: In function (\S+))?$/i;var lines=e.stacktrace.split('\n');var result=[];for(var i=0,len=lines.length;i<len;i+=2){var match=lineRE.exec(lines[i]);if(match){result.push(new StackFrame({functionName:match[3]||undefined,fileName:match[2],lineNumber:match[1],source:lines[i]}));}}return result;},// Opera 10.65+ Error.stack very similar to FF/Safari
-    	parseOpera11:function ErrorStackParser$$parseOpera11(error){var filtered=error.stack.split('\n').filter(function(line){return !!line.match(FIREFOX_SAFARI_STACK_REGEXP)&&!line.match(/^Error created at/);},this);return filtered.map(function(line){var tokens=line.split('@');var locationParts=this.extractLocation(tokens.pop());var functionCall=tokens.shift()||'';var functionName=functionCall.replace(/<anonymous function(: (\w+))?>/,'$2').replace(/\([^)]*\)/g,'')||undefined;var argsRaw;if(functionCall.match(/\(([^)]*)\)/)){argsRaw=functionCall.replace(/^[^(]+\(([^)]*)\)$/,'$1');}var args=argsRaw===undefined||argsRaw==='[arguments not available]'?undefined:argsRaw.split(',');return new StackFrame({functionName:functionName,args:args,fileName:locationParts[0],lineNumber:locationParts[1],columnNumber:locationParts[2],source:line});},this);}};});})(errorStackParser);var errorStackParserExports=errorStackParser.exports;var ErrorStackParser=/*@__PURE__*/getDefaultExportFromCjs(errorStackParserExports);var _a$1,_ErrorRecord_sanitizeErrorStack;class ErrorRecord{constructor(error){this.name=error.name;this.message=error.message;if(error.stack){this.stack=__classPrivateFieldGet(_a$1,_a$1,"m",_ErrorRecord_sanitizeErrorStack).call(_a$1,error);}}}_a$1=ErrorRecord,_ErrorRecord_sanitizeErrorStack=function _ErrorRecord_sanitizeErrorStack(error){const stackParsed=ErrorStackParser.parse(error);const customError=error;const extraStack=(customError===null||customError===void 0?void 0:customError.extraStack)?`ExtraStack: ${customError.extraStack}`:"";const stackString=stackParsed.map(stackframe=>stackframe.source).join("\n");return `${error.name}: ${error.message}\n${stackString}\n${extraStack}`;};class Log{constructor(_ref){let{type,category,message,error,visibility,timestamp=new Instant(),span,errorCode,attributes}=_ref;this.type=type;this.category=category;this.message=message;if(error){this.error=new ErrorRecord(error);}this.visibility=visibility;this.timestamp=timestamp;this.span=span;this.errorCode=errorCode;this.attributes=attributes;}}_exports.Log=Log;var _CircuitBreakerRunner_instances,_CircuitBreakerRunner_openCircuits,_CircuitBreakerRunner_openCircuit,_CircuitBreakerRunner_runClosedCircuit,_CircuitBreakerRunner_runOpenedCircuit;const RETRY_FACTOR=5;const MAX_ITERATIONS_UNTIL_RETRY=10;class CircuitBreakerRunner{constructor(){let openCircuits=arguments.length>0&&arguments[0]!==undefined?arguments[0]:new Map();_CircuitBreakerRunner_instances.add(this);_CircuitBreakerRunner_openCircuits.set(this,void 0);__classPrivateFieldSet(this,_CircuitBreakerRunner_openCircuits,openCircuits);}closeCircuit(id){__classPrivateFieldGet(this,_CircuitBreakerRunner_openCircuits,"f").delete(id);}run(id,task){return __awaiter$3(this,void 0,void 0,function*(){const circuit=__classPrivateFieldGet(this,_CircuitBreakerRunner_openCircuits,"f").get(id);if(circuit===undefined){return __classPrivateFieldGet(this,_CircuitBreakerRunner_instances,"m",_CircuitBreakerRunner_runClosedCircuit).call(this,id,task);}else if(circuit.iterationsUntilRetry>0){circuit.iterationsUntilRetry--;return 2;}else {return __classPrivateFieldGet(this,_CircuitBreakerRunner_instances,"m",_CircuitBreakerRunner_runOpenedCircuit).call(this,id,circuit,task);}});}}_CircuitBreakerRunner_openCircuits=new WeakMap(),_CircuitBreakerRunner_instances=new WeakSet(),_CircuitBreakerRunner_openCircuit=function _CircuitBreakerRunner_openCircuit(id){__classPrivateFieldGet(this,_CircuitBreakerRunner_openCircuits,"f").set(id,{retriesFailed:0,iterationsUntilRetry:RETRY_FACTOR});},_CircuitBreakerRunner_runClosedCircuit=function _CircuitBreakerRunner_runClosedCircuit(id,task){return __awaiter$3(this,void 0,void 0,function*(){try{yield task();return 0;}catch(e){__classPrivateFieldGet(this,_CircuitBreakerRunner_instances,"m",_CircuitBreakerRunner_openCircuit).call(this,id);console.debug(`Circuit breaker ${id} was opened: ${e}`);return 1;}});},_CircuitBreakerRunner_runOpenedCircuit=function _CircuitBreakerRunner_runOpenedCircuit(id,circuit,task){return __awaiter$3(this,void 0,void 0,function*(){try{yield task();this.closeCircuit(id);console.debug(`Circuit breaker ${id} was closed`);return 0;}catch(_a){circuit.retriesFailed++;circuit.iterationsUntilRetry=Math.min(circuit.retriesFailed*RETRY_FACTOR,MAX_ITERATIONS_UNTIL_RETRY);return 1;}});};const E_CANCELED=new Error('request for lock canceled');var __awaiter$2=function(thisArg,_arguments,P,generator){function adopt(value){return value instanceof P?value:new P(function(resolve){resolve(value);});}return new(P||(P=Promise))(function(resolve,reject){function fulfilled(value){try{step(generator.next(value));}catch(e){reject(e);}}function rejected(value){try{step(generator["throw"](value));}catch(e){reject(e);}}function step(result){result.done?resolve(result.value):adopt(result.value).then(fulfilled,rejected);}step((generator=generator.apply(thisArg,_arguments||[])).next());});};class Semaphore{constructor(_value){let _cancelError=arguments.length>1&&arguments[1]!==undefined?arguments[1]:E_CANCELED;this._value=_value;this._cancelError=_cancelError;this._queue=[];this._weightedWaiters=[];}acquire(){let weight=arguments.length>0&&arguments[0]!==undefined?arguments[0]:1;let priority=arguments.length>1&&arguments[1]!==undefined?arguments[1]:0;if(weight<=0)throw new Error(`invalid weight ${weight}: must be positive`);return new Promise((resolve,reject)=>{const task={resolve,reject,weight,priority};const i=findIndexFromEnd(this._queue,other=>priority<=other.priority);if(i===-1&&weight<=this._value){// Needs immediate dispatch, skip the queue
+    	parseOpera11:function ErrorStackParser$$parseOpera11(error){var filtered=error.stack.split('\n').filter(function(line){return !!line.match(FIREFOX_SAFARI_STACK_REGEXP)&&!line.match(/^Error created at/);},this);return filtered.map(function(line){var tokens=line.split('@');var locationParts=this.extractLocation(tokens.pop());var functionCall=tokens.shift()||'';var functionName=functionCall.replace(/<anonymous function(: (\w+))?>/,'$2').replace(/\([^)]*\)/g,'')||undefined;var argsRaw;if(functionCall.match(/\(([^)]*)\)/)){argsRaw=functionCall.replace(/^[^(]+\(([^)]*)\)$/,'$1');}var args=argsRaw===undefined||argsRaw==='[arguments not available]'?undefined:argsRaw.split(',');return new StackFrame({functionName:functionName,args:args,fileName:locationParts[0],lineNumber:locationParts[1],columnNumber:locationParts[2],source:line});},this);}};});})(errorStackParser);var errorStackParserExports=errorStackParser.exports;var ErrorStackParser=/*@__PURE__*/getDefaultExportFromCjs(errorStackParserExports);var _a,_ErrorRecord_sanitizeErrorStack;class ErrorRecord{constructor(error){this.name=error.name;this.message=error.message;if(error.stack){this.stack=__classPrivateFieldGet(_a,_a,"m",_ErrorRecord_sanitizeErrorStack).call(_a,error);}}}_a=ErrorRecord,_ErrorRecord_sanitizeErrorStack=function _ErrorRecord_sanitizeErrorStack(error){const stackParsed=ErrorStackParser.parse(error);const customError=error;const extraStack=(customError===null||customError===void 0?void 0:customError.extraStack)?`ExtraStack: ${customError.extraStack}`:"";const stackString=stackParsed.map(stackframe=>stackframe.source).join("\n");return `${error.name}: ${error.message}\n${stackString}\n${extraStack}`;};class Log{constructor(_ref){let{type,category,message,error,visibility,timestamp=new Instant(),span,errorCode,attributes}=_ref;this.type=type;this.category=category;this.message=message;if(error){this.error=new ErrorRecord(error);}this.visibility=visibility;this.timestamp=timestamp;this.span=span;this.errorCode=errorCode;this.attributes=attributes;}}_exports.Log=Log;var _CircuitBreakerRunner_instances,_CircuitBreakerRunner_openCircuits,_CircuitBreakerRunner_openCircuit,_CircuitBreakerRunner_runClosedCircuit,_CircuitBreakerRunner_runOpenedCircuit;const RETRY_FACTOR=5;const MAX_ITERATIONS_UNTIL_RETRY=10;class CircuitBreakerRunner{constructor(){let openCircuits=arguments.length>0&&arguments[0]!==undefined?arguments[0]:new Map();_CircuitBreakerRunner_instances.add(this);_CircuitBreakerRunner_openCircuits.set(this,void 0);__classPrivateFieldSet(this,_CircuitBreakerRunner_openCircuits,openCircuits);}closeCircuit(id){__classPrivateFieldGet(this,_CircuitBreakerRunner_openCircuits,"f").delete(id);}run(id,task){return __awaiter$3(this,void 0,void 0,function*(){const circuit=__classPrivateFieldGet(this,_CircuitBreakerRunner_openCircuits,"f").get(id);if(circuit===undefined){return __classPrivateFieldGet(this,_CircuitBreakerRunner_instances,"m",_CircuitBreakerRunner_runClosedCircuit).call(this,id,task);}else if(circuit.iterationsUntilRetry>0){circuit.iterationsUntilRetry--;return 2;}else {return __classPrivateFieldGet(this,_CircuitBreakerRunner_instances,"m",_CircuitBreakerRunner_runOpenedCircuit).call(this,id,circuit,task);}});}}_CircuitBreakerRunner_openCircuits=new WeakMap(),_CircuitBreakerRunner_instances=new WeakSet(),_CircuitBreakerRunner_openCircuit=function _CircuitBreakerRunner_openCircuit(id){__classPrivateFieldGet(this,_CircuitBreakerRunner_openCircuits,"f").set(id,{retriesFailed:0,iterationsUntilRetry:RETRY_FACTOR});},_CircuitBreakerRunner_runClosedCircuit=function _CircuitBreakerRunner_runClosedCircuit(id,task){return __awaiter$3(this,void 0,void 0,function*(){try{yield task();return 0;}catch(e){__classPrivateFieldGet(this,_CircuitBreakerRunner_instances,"m",_CircuitBreakerRunner_openCircuit).call(this,id);console.debug(`Circuit breaker ${id} was opened: ${e}`);return 1;}});},_CircuitBreakerRunner_runOpenedCircuit=function _CircuitBreakerRunner_runOpenedCircuit(id,circuit,task){return __awaiter$3(this,void 0,void 0,function*(){try{yield task();this.closeCircuit(id);console.debug(`Circuit breaker ${id} was closed`);return 0;}catch(_a){circuit.retriesFailed++;circuit.iterationsUntilRetry=Math.min(circuit.retriesFailed*RETRY_FACTOR,MAX_ITERATIONS_UNTIL_RETRY);return 1;}});};const E_CANCELED=new Error('request for lock canceled');var __awaiter$2=function(thisArg,_arguments,P,generator){function adopt(value){return value instanceof P?value:new P(function(resolve){resolve(value);});}return new(P||(P=Promise))(function(resolve,reject){function fulfilled(value){try{step(generator.next(value));}catch(e){reject(e);}}function rejected(value){try{step(generator["throw"](value));}catch(e){reject(e);}}function step(result){result.done?resolve(result.value):adopt(result.value).then(fulfilled,rejected);}step((generator=generator.apply(thisArg,_arguments||[])).next());});};class Semaphore{constructor(_value){let _cancelError=arguments.length>1&&arguments[1]!==undefined?arguments[1]:E_CANCELED;this._value=_value;this._cancelError=_cancelError;this._queue=[];this._weightedWaiters=[];}acquire(){let weight=arguments.length>0&&arguments[0]!==undefined?arguments[0]:1;let priority=arguments.length>1&&arguments[1]!==undefined?arguments[1]:0;if(weight<=0)throw new Error(`invalid weight ${weight}: must be positive`);return new Promise((resolve,reject)=>{const task={resolve,reject,weight,priority};const i=findIndexFromEnd(this._queue,other=>priority<=other.priority);if(i===-1&&weight<=this._value){// Needs immediate dispatch, skip the queue
     	this._dispatchItem(task);}else {this._queue.splice(i+1,0,task);}});}runExclusive(callback_1){return __awaiter$2(this,arguments,void 0,function(callback){var _this2=this;let weight=arguments.length>1&&arguments[1]!==undefined?arguments[1]:1;let priority=arguments.length>2&&arguments[2]!==undefined?arguments[2]:0;return function*(){const[value,release]=yield _this2.acquire(weight,priority);try{return yield callback(value);}finally{release();}}();});}waitForUnlock(){let weight=arguments.length>0&&arguments[0]!==undefined?arguments[0]:1;let priority=arguments.length>1&&arguments[1]!==undefined?arguments[1]:0;if(weight<=0)throw new Error(`invalid weight ${weight}: must be positive`);if(this._couldLockImmediately(weight,priority)){return Promise.resolve();}else {return new Promise(resolve=>{if(!this._weightedWaiters[weight-1])this._weightedWaiters[weight-1]=[];insertSorted(this._weightedWaiters[weight-1],{resolve,priority});});}}isLocked(){return this._value<=0;}getValue(){return this._value;}setValue(value){this._value=value;this._dispatchQueue();}release(){let weight=arguments.length>0&&arguments[0]!==undefined?arguments[0]:1;if(weight<=0)throw new Error(`invalid weight ${weight}: must be positive`);this._value+=weight;this._dispatchQueue();}cancel(){this._queue.forEach(entry=>entry.reject(this._cancelError));this._queue=[];}_dispatchQueue(){this._drainUnlockWaiters();while(this._queue.length>0&&this._queue[0].weight<=this._value){this._dispatchItem(this._queue.shift());this._drainUnlockWaiters();}}_dispatchItem(item){const previousValue=this._value;this._value-=item.weight;item.resolve([previousValue,this._newReleaser(item.weight)]);}_newReleaser(weight){let called=false;return ()=>{if(called)return;called=true;this.release(weight);};}_drainUnlockWaiters(){if(this._queue.length===0){for(let weight=this._value;weight>0;weight--){const waiters=this._weightedWaiters[weight-1];if(!waiters)continue;waiters.forEach(waiter=>waiter.resolve());this._weightedWaiters[weight-1]=[];}}else {const queuedPriority=this._queue[0].priority;for(let weight=this._value;weight>0;weight--){const waiters=this._weightedWaiters[weight-1];if(!waiters)continue;const i=waiters.findIndex(waiter=>waiter.priority<=queuedPriority);(i===-1?waiters:waiters.splice(0,i)).forEach(waiter=>waiter.resolve());}}}_couldLockImmediately(weight,priority){return (this._queue.length===0||this._queue[0].priority<priority)&&weight<=this._value;}}function insertSorted(a,v){const i=findIndexFromEnd(a,other=>v.priority<=other.priority);a.splice(i+1,0,v);}function findIndexFromEnd(a,predicate){for(let i=a.length-1;i>=0;i--){if(predicate(a[i])){return i;}}return  -1;}var __awaiter$1=function(thisArg,_arguments,P,generator){function adopt(value){return value instanceof P?value:new P(function(resolve){resolve(value);});}return new(P||(P=Promise))(function(resolve,reject){function fulfilled(value){try{step(generator.next(value));}catch(e){reject(e);}}function rejected(value){try{step(generator["throw"](value));}catch(e){reject(e);}}function step(result){result.done?resolve(result.value):adopt(result.value).then(fulfilled,rejected);}step((generator=generator.apply(thisArg,_arguments||[])).next());});};class Mutex{constructor(cancelError){this._semaphore=new Semaphore(1,cancelError);}acquire(){return __awaiter$1(this,arguments,void 0,function(){var _this3=this;let priority=arguments.length>0&&arguments[0]!==undefined?arguments[0]:0;return function*(){const[,releaser]=yield _this3._semaphore.acquire(1,priority);return releaser;}();});}runExclusive(callback){let priority=arguments.length>1&&arguments[1]!==undefined?arguments[1]:0;return this._semaphore.runExclusive(()=>callback(),1,priority);}isLocked(){return this._semaphore.isLocked();}waitForUnlock(){let priority=arguments.length>0&&arguments[0]!==undefined?arguments[0]:0;return this._semaphore.waitForUnlock(1,priority);}release(){if(this._semaphore.isLocked())this._semaphore.release();}cancel(){return this._semaphore.cancel();}}var LogType;(function(LogType){LogType[LogType["Debug"]=1]="Debug";LogType[LogType["Info"]=2]="Info";LogType[LogType["Warning"]=3]="Warning";LogType[LogType["Error"]=4]="Error";LogType[LogType["Trace"]=5]="Trace";})(LogType||(LogType={}));const mapKeyToLogType={Debug:LogType.Debug,Info:LogType.Info,Warning:LogType.Warning,Error:LogType.Error,Trace:LogType.Trace};var LogType$1=_exports.LogType=LogType;class LogRecord{constructor(logId,log,logType,transportId){this.logId=logId;this.log=log;this.logType=logType;this.transportId=transportId;}}const DB_NAME="logger-offline-db";const DB_LOGS_TABLE_NAME="logs";const DB_TRACES_TABLE_NAME="spans";const DB_INDEX_BY_LOG_TYPE="byLogType";const DB_INDEX_BY_TRANSPORT_ID="byTransportId";const DB_INDEX_BY_AGGREGATE_SIGNATURE="byAggregateSignature";const DB_INDEX_BY_PARENT_ID="byParentId";const DB_FIELD_LOG_TYPE="logType";const DB_FIELD_TRANSPORT_ID="transportId";const DB_FIELD_AGGREGATE_SIGNATURE="aggregateSignature";const DB_FIELD_PARENT_ID="parentId";const instanceOfAny=(object,constructors)=>constructors.some(c=>object instanceof c);let idbProxyableTypes;let cursorAdvanceMethods;// This is a function to prevent it throwing up in node environments.
     	function getIdbProxyableTypes(){return idbProxyableTypes||(idbProxyableTypes=[IDBDatabase,IDBObjectStore,IDBIndex,IDBCursor,IDBTransaction]);}// This is a function to prevent it throwing up in node environments.
     	function getCursorAdvanceMethods(){return cursorAdvanceMethods||(cursorAdvanceMethods=[IDBCursor.prototype.advance,IDBCursor.prototype.continue,IDBCursor.prototype.continuePrimaryKey]);}const cursorRequestMap=new WeakMap();const transactionDoneMap=new WeakMap();const transactionStoreNamesMap=new WeakMap();const transformCache=new WeakMap();const reverseTransformCache=new WeakMap();function promisifyRequest(request){const promise=new Promise((resolve,reject)=>{const unlisten=()=>{request.removeEventListener('success',success);request.removeEventListener('error',error);};const success=()=>{resolve(wrap$1(request.result));unlisten();};const error=()=>{reject(request.error);unlisten();};request.addEventListener('success',success);request.addEventListener('error',error);});promise.then(value=>{// Since cursoring reuses the IDBRequest (*sigh*), we cache it for later retrieval
@@ -8912,7 +8847,7 @@
     	// Must reject with op rejection first.
     	// Must resolve with op value.
     	// Must handle both promises (no unhandled rejections)
-    	return (await Promise.all([target[targetFuncName](...args),isWrite&&tx.done]))[0];};cachedMethods.set(prop,method);return method;}replaceTraps(oldTraps=>({...oldTraps,get:(target,prop,receiver)=>getMethod(target,prop)||oldTraps.get(target,prop,receiver),has:(target,prop)=>!!getMethod(target,prop)||oldTraps.has(target,prop)}));var _IndexedDB_instances,_IndexedDB_dbName,_IndexedDB_tableName,_IndexedDB_propertyKey,_IndexedDB_version,_IndexedDB_indices,_IndexedDB_cursorToRecord,_IndexedDB_mapCursorToRecords,_IndexedDB_deleteWithCursor;const BATCH_SIZE=100;const SORT_ASC="next";const SORT_DESC="prev";class IndexedDB{constructor(_ref2){let{dbName,tableName,version,indices,cursorToRecord,propertyKey}=_ref2;_IndexedDB_instances.add(this);_IndexedDB_dbName.set(this,void 0);_IndexedDB_tableName.set(this,void 0);_IndexedDB_propertyKey.set(this,void 0);_IndexedDB_version.set(this,void 0);_IndexedDB_indices.set(this,void 0);_IndexedDB_cursorToRecord.set(this,void 0);__classPrivateFieldSet(this,_IndexedDB_dbName,dbName);__classPrivateFieldSet(this,_IndexedDB_tableName,tableName);__classPrivateFieldSet(this,_IndexedDB_version,version);__classPrivateFieldSet(this,_IndexedDB_indices,indices);__classPrivateFieldSet(this,_IndexedDB_cursorToRecord,cursorToRecord);__classPrivateFieldSet(this,_IndexedDB_propertyKey,propertyKey);}open(){return __awaiter$3(this,void 0,void 0,function*(){const tableName=__classPrivateFieldGet(this,_IndexedDB_tableName,"f");const indices=__classPrivateFieldGet(this,_IndexedDB_indices,"f");const createStoreOptions={keyPath:__classPrivateFieldGet(this,_IndexedDB_propertyKey,"f"),autoIncrement:!__classPrivateFieldGet(this,_IndexedDB_propertyKey,"f")};return openDB(__classPrivateFieldGet(this,_IndexedDB_dbName,"f"),__classPrivateFieldGet(this,_IndexedDB_version,"f"),{upgrade(db,oldVersion){if(oldVersion<1){const logsStore=db.createObjectStore(tableName,createStoreOptions);for(const index of indices){logsStore.createIndex(index.name,index.field);}}}});});}getAll(){return __awaiter$3(this,arguments,void 0,function(){var _this4=this;let{maxRecords=BATCH_SIZE,sortAsc=true}=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};return function*(){const db=yield _this4.open();try{const tx=db.transaction(__classPrivateFieldGet(_this4,_IndexedDB_tableName,"f"));const store=tx.objectStore(__classPrivateFieldGet(_this4,_IndexedDB_tableName,"f"));return yield __classPrivateFieldGet(_this4,_IndexedDB_instances,"m",_IndexedDB_mapCursorToRecords).call(_this4,yield store.openCursor(null,sortAsc?SORT_ASC:SORT_DESC),maxRecords);}finally{db.close();}}();});}getByIndex(index_1,value_1){return __awaiter$3(this,arguments,void 0,function(index,value){var _this5=this;let maxRecords=arguments.length>2&&arguments[2]!==undefined?arguments[2]:BATCH_SIZE;let condition=arguments.length>3?arguments[3]:undefined;return function*(){const db=yield _this5.open();try{const tx=db.transaction(__classPrivateFieldGet(_this5,_IndexedDB_tableName,"f"));const store=tx.objectStore(__classPrivateFieldGet(_this5,_IndexedDB_tableName,"f"));return yield __classPrivateFieldGet(_this5,_IndexedDB_instances,"m",_IndexedDB_mapCursorToRecords).call(_this5,yield store.index(index).openCursor(value),maxRecords,condition);}finally{db.close();}}();});}put(values){return __awaiter$3(this,void 0,void 0,function*(){const db=yield this.open();try{const tx=db.transaction(__classPrivateFieldGet(this,_IndexedDB_tableName,"f"),"readwrite");const store=tx.objectStore(__classPrivateFieldGet(this,_IndexedDB_tableName,"f"));for(const value of values){yield store.put(value);}}finally{db.close();}});}count(){return __awaiter$3(this,void 0,void 0,function*(){const db=yield this.open();try{return yield db.count(__classPrivateFieldGet(this,_IndexedDB_tableName,"f"));}finally{db.close();}});}delete(key){return __awaiter$3(this,void 0,void 0,function*(){const db=yield this.open();try{yield db.delete(__classPrivateFieldGet(this,_IndexedDB_tableName,"f"),key);}finally{db.close();}});}deleteMultiple(keys){return __awaiter$3(this,void 0,void 0,function*(){const db=yield this.open();try{const deleteTasks=keys.map(key=>db.delete(__classPrivateFieldGet(this,_IndexedDB_tableName,"f"),key));yield Promise.all(deleteTasks);}finally{db.close();}});}deleteByIndex(index_1,value_1){return __awaiter$3(this,arguments,void 0,function(index,value){var _this6=this;let maxRecords=arguments.length>2&&arguments[2]!==undefined?arguments[2]:BATCH_SIZE;return function*(){const db=yield _this6.open();try{const tx=db.transaction(__classPrivateFieldGet(_this6,_IndexedDB_tableName,"f"),"readwrite");const store=tx.objectStore(__classPrivateFieldGet(_this6,_IndexedDB_tableName,"f"));return yield __classPrivateFieldGet(_this6,_IndexedDB_instances,"m",_IndexedDB_deleteWithCursor).call(_this6,yield store.index(index).openCursor(value),maxRecords);}finally{db.close();}}();});}deleteRecords(){return __awaiter$3(this,arguments,void 0,function(){var _this7=this;let maxRecords=arguments.length>0&&arguments[0]!==undefined?arguments[0]:BATCH_SIZE;return function*(){const db=yield _this7.open();try{const tx=db.transaction(__classPrivateFieldGet(_this7,_IndexedDB_tableName,"f"),"readwrite");const store=tx.objectStore(__classPrivateFieldGet(_this7,_IndexedDB_tableName,"f"));return yield __classPrivateFieldGet(_this7,_IndexedDB_instances,"m",_IndexedDB_deleteWithCursor).call(_this7,yield store.openCursor(null,SORT_ASC),maxRecords);}finally{db.close();}}();});}}_IndexedDB_dbName=new WeakMap(),_IndexedDB_tableName=new WeakMap(),_IndexedDB_propertyKey=new WeakMap(),_IndexedDB_version=new WeakMap(),_IndexedDB_indices=new WeakMap(),_IndexedDB_cursorToRecord=new WeakMap(),_IndexedDB_instances=new WeakSet(),_IndexedDB_mapCursorToRecords=function _IndexedDB_mapCursorToRecords(cursor_1){return __awaiter$3(this,arguments,void 0,function(cursor){var _this8=this;let maxRecords=arguments.length>1&&arguments[1]!==undefined?arguments[1]:BATCH_SIZE;let condition=arguments.length>2?arguments[2]:undefined;return function*(){const result=[];while(cursor&&result.length<maxRecords){const record=__classPrivateFieldGet(_this8,_IndexedDB_cursorToRecord,"f").call(_this8,cursor);if(!condition||condition(record)){result.push(record);}cursor=yield cursor.continue();}return result;}();});},_IndexedDB_deleteWithCursor=function _IndexedDB_deleteWithCursor(cursor,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){let deletedRecords=0;while(cursor&&deletedRecords<maxRecords){yield cursor.delete();deletedRecords++;cursor=yield cursor.continue();}return deletedRecords;});};const DB_VERSION$1=1;class LogsIndexedDB extends IndexedDB{constructor(){let dbName=arguments.length>0&&arguments[0]!==undefined?arguments[0]:DB_NAME;super({dbName,tableName:DB_LOGS_TABLE_NAME,cursorToRecord:cursor=>new LogRecord(cursor.primaryKey,cursor.value.log,cursor.value.logType,cursor.value.transportId),indices:[{name:DB_INDEX_BY_TRANSPORT_ID,field:DB_FIELD_TRANSPORT_ID},{name:DB_INDEX_BY_LOG_TYPE,field:DB_FIELD_LOG_TYPE}],version:DB_VERSION$1});}getByTransportId(transportId,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return this.getByIndex("byTransportId",transportId,maxRecords);});}getByLogType(logType,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return this.getByIndex("byLogType",logType,maxRecords);});}putLog(log,transportId){return __awaiter$3(this,void 0,void 0,function*(){return this.put([{log,logType:log.type,transportId}]);});}deleteByLogType(logType,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return this.deleteByIndex("byLogType",logType,maxRecords);});}}var _LogsStorage_database;const NR_LOGS_TO_DISCARD=200;const MAX_RECORDS$1=10000;class LogsStorage{constructor(_ref3){let{databaseName,database=new LogsIndexedDB(databaseName)}=_ref3;_LogsStorage_database.set(this,void 0);__classPrivateFieldSet(this,_LogsStorage_database,database);}readLogs(maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_LogsStorage_database,"f").getAll({sortAsc:true,maxRecords});});}readLogsByTransport(transportId,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_LogsStorage_database,"f").getByTransportId(transportId,maxRecords);});}removeLogs(logKeys){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_LogsStorage_database,"f").deleteMultiple(logKeys);});}insertLog(log,transportId){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_LogsStorage_database,"f").putLog(log,transportId);});}countLogs(){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_LogsStorage_database,"f").count();});}isFull(){return __awaiter$3(this,void 0,void 0,function*(){const logsCount=yield __classPrivateFieldGet(this,_LogsStorage_database,"f").count();return logsCount>=MAX_RECORDS$1;});}discardLogs(){return __awaiter$3(this,arguments,void 0,function(){var _this9=this;let maxLogsToDiscard=arguments.length>0&&arguments[0]!==undefined?arguments[0]:NR_LOGS_TO_DISCARD;return function*(){const logTypesKeys=Object.keys(LogType$1).filter(key=>isNaN(Number(key)));let logsLeftToDiscard=maxLogsToDiscard;for(const logTypeKey of logTypesKeys){const logType=mapKeyToLogType[logTypeKey];const logsDeleted=yield __classPrivateFieldGet(_this9,_LogsStorage_database,"f").deleteByLogType(logType,logsLeftToDiscard);logsLeftToDiscard-=logsDeleted;if(logsLeftToDiscard<=0){break;}}return logsLeftToDiscard;}();});}}_LogsStorage_database=new WeakMap();var AggregationAttributes;(function(AggregationAttributes){AggregationAttributes["IsAggregateProxy"]="outsystems.aggregation.proxy";AggregationAttributes["AggregationSize"]="outsystems.aggregation.size";AggregationAttributes["IsOutlier"]="outsystems.aggregation.outlier";AggregationAttributes["AverageDuration"]="outsystems.aggregation.duration.average";AggregationAttributes["MaxDuration"]="outsystems.aggregation.duration.max";AggregationAttributes["MinDuration"]="outsystems.aggregation.duration.min";AggregationAttributes["IsNonAggregable"]="osinternal.spanIsNonAggregable";AggregationAttributes["ChildrenNames"]="osinternal.childrenNames";AggregationAttributes["functionKey"]="outsystems.function.key";})(AggregationAttributes||(AggregationAttributes={}));const NON_AGGREGABLE_PREFIX="NonAggregable";function compareStrings(a,b){if(a<b){return  -1;}else if(b<a){return 1;}else {return 0;}}function defaultGetSpanObjectId(span){return span.attributes[AggregationAttributes.functionKey];}function makeAggregateSignature(span,transportId,getSpanObjectId){var _a;const name=span.name;const objectId=getSpanObjectId===null||getSpanObjectId===void 0?void 0:getSpanObjectId(span);const children=(_a=span.attributes[AggregationAttributes.ChildrenNames])!==null&&_a!==void 0?_a:[];children.sort(compareStrings);const nonAggregable=span.attributes[AggregationAttributes.IsNonAggregable]?`${NON_AGGREGABLE_PREFIX}.`:"";return `${nonAggregable}${transportId}.${name}.${objectId}(${children.join(",")})`;}function canAggregateSpan(span,children){return !(span.attributes[AggregationAttributes.IsNonAggregable]||children.some(child=>child.attributes[AggregationAttributes.IsNonAggregable]));}const thresholds={absolute:(_ref4,value)=>{let{min,max}=_ref4;const under=typeof min==="number"&&value<min;const over=typeof max==="number"&&value>max;return under||over;},relative:(_ref5,value,baseline)=>{let{min,max}=_ref5;return thresholds.absolute({min:typeof min==="number"?baseline+min:undefined,max:typeof max==="number"?baseline+max:undefined},value);},ratio:(_ref6,value,baseline)=>{let{lower,upper,max,min}=_ref6;return thresholds.relative({min:typeof lower==="number"?Math.min(baseline*lower,min!==null&&min!==void 0?min:Infinity):undefined,max:typeof upper==="number"?Math.max(baseline*upper,max!==null&&max!==void 0?max:-Infinity):undefined},value,baseline);}};function applyThreshold(params,value,baseline){return thresholds[params.type](params,value,baseline);}var _ThresholdOutlierDetector_thresholds;class ThresholdOutlierDetector{constructor(thresholds){_ThresholdOutlierDetector_thresholds.set(this,void 0);__classPrivateFieldSet(this,_ThresholdOutlierDetector_thresholds,thresholds);}isOutlier(span,proxy){for(const[attribute,params]of Object.entries(__classPrivateFieldGet(this,_ThresholdOutlierDetector_thresholds,"f"))){const value=span.attributes[attribute];const baseline=proxy.attributes[attribute];if(value===undefined&&baseline===undefined){continue;}if(value===undefined||baseline===undefined||applyThreshold(params,value,baseline)){return true;}}return false;}}_ThresholdOutlierDetector_thresholds=new WeakMap();var _SpanAggregator_instances,_SpanAggregator_storage,_SpanAggregator_outlierDetector,_SpanAggregator_getSpanObjectId,_SpanAggregator_findProxy,_SpanAggregator_updateProxy,_SpanAggregator_createEnrichedSpan,_SpanAggregator_toOutlierSpan,_SpanAggregator_toNonAggregableSpan,_SpanAggregator_adopt;class SpanAggregator{constructor(_ref7){let{storage,outlierDetector=new ThresholdOutlierDetector({[AggregationAttributes.AverageDuration]:{type:"ratio",upper:0.1,max:50e6}}),getSpanObjectId=defaultGetSpanObjectId}=_ref7;_SpanAggregator_instances.add(this);_SpanAggregator_storage.set(this,void 0);_SpanAggregator_outlierDetector.set(this,void 0);_SpanAggregator_getSpanObjectId.set(this,void 0);__classPrivateFieldSet(this,_SpanAggregator_storage,storage);__classPrivateFieldSet(this,_SpanAggregator_outlierDetector,outlierDetector);__classPrivateFieldSet(this,_SpanAggregator_getSpanObjectId,getSpanObjectId);}aggregate(span,transportId){return __awaiter$3(this,void 0,void 0,function*(){const children=yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").readSpansByParentId(span.spanId);const enrichedSpan=__classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_createEnrichedSpan).call(this,span);const canAggregate=canAggregateSpan(enrichedSpan,children);if(!canAggregate){yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").insertSpans([__classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_toNonAggregableSpan).call(this,enrichedSpan)],transportId);return;}const proxy=yield __classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_findProxy).call(this,enrichedSpan,transportId);if(!proxy){yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").insertSpans([enrichedSpan],transportId);}else if(__classPrivateFieldGet(this,_SpanAggregator_outlierDetector,"f").isOutlier(enrichedSpan,proxy)){yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").insertSpans([__classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_toOutlierSpan).call(this,enrichedSpan)],transportId);}else {const newProxy=__classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_updateProxy).call(this,span,proxy);const adoptedChildren=__classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_adopt).call(this,children,newProxy);yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").insertSpans([newProxy,...adoptedChildren],transportId);}});}}_SpanAggregator_storage=new WeakMap(),_SpanAggregator_outlierDetector=new WeakMap(),_SpanAggregator_getSpanObjectId=new WeakMap(),_SpanAggregator_instances=new WeakSet(),_SpanAggregator_findProxy=function _SpanAggregator_findProxy(span,transportId){return __awaiter$3(this,void 0,void 0,function*(){const signature=makeAggregateSignature(span,transportId,__classPrivateFieldGet(this,_SpanAggregator_getSpanObjectId,"f"));const[proxy]=yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").readSpansByAggregateSignature(signature);return proxy;});},_SpanAggregator_updateProxy=function _SpanAggregator_updateProxy(span,proxy){var _a;const oldSize=(_a=proxy.attributes[AggregationAttributes.AggregationSize])!==null&&_a!==void 0?_a:1;const oldAverage=proxy.attributes[AggregationAttributes.AverageDuration];const oldMax=proxy.attributes[AggregationAttributes.MaxDuration];const oldMin=proxy.attributes[AggregationAttributes.MinDuration];const spanDuration=span.endTimeUnixNano-span.startTimeUnixNano;return Object.assign(Object.assign({},proxy),{attributes:Object.assign(Object.assign({},proxy.attributes),{[AggregationAttributes.IsAggregateProxy]:true,[AggregationAttributes.AggregationSize]:oldSize+1,[AggregationAttributes.AverageDuration]:(oldAverage*oldSize+spanDuration)/(oldSize+1),[AggregationAttributes.MaxDuration]:Math.max(oldMax,spanDuration),[AggregationAttributes.MinDuration]:Math.min(oldMin,spanDuration)}),parentSpanId:proxy.parentSpanId===span.spanId?span.parentSpanId:proxy.parentSpanId});},_SpanAggregator_createEnrichedSpan=function _SpanAggregator_createEnrichedSpan(span){const duration=span.endTimeUnixNano-span.startTimeUnixNano;return Object.assign(Object.assign({},span),{attributes:Object.assign(Object.assign({},span.attributes),{[AggregationAttributes.IsAggregateProxy]:false,[AggregationAttributes.AverageDuration]:duration,[AggregationAttributes.MaxDuration]:duration,[AggregationAttributes.MinDuration]:duration})});},_SpanAggregator_toOutlierSpan=function _SpanAggregator_toOutlierSpan(span){return Object.assign(Object.assign({},span),{attributes:Object.assign(Object.assign({},span.attributes),{[AggregationAttributes.IsOutlier]:true,[AggregationAttributes.IsNonAggregable]:true})});},_SpanAggregator_toNonAggregableSpan=function _SpanAggregator_toNonAggregableSpan(span){return Object.assign(Object.assign({},span),{attributes:Object.assign(Object.assign({},span.attributes),{[AggregationAttributes.IsNonAggregable]:true})});},_SpanAggregator_adopt=function _SpanAggregator_adopt(children,newParent){return children.flatMap(child=>child.spanId!==newParent.spanId?[Object.assign(Object.assign({},child),{parentSpanId:newParent.spanId})]:[]);};class SpanRecord{constructor(_ref8){let{spanId,span,transportId,aggregateSignature}=_ref8;this.spanId=spanId;this.span=span;this.transportId=transportId;this.parentId=span.parentSpanId;this.aggregateSignature=aggregateSignature!==null&&aggregateSignature!==void 0?aggregateSignature:"";}}var _TracesIndexedDB_instances,_TracesIndexedDB_spanToRecord;const DB_VERSION=1;class TracesIndexedDB extends IndexedDB{constructor(){let dbName=arguments.length>0&&arguments[0]!==undefined?arguments[0]:DB_NAME;let propertyKey=arguments.length>1?arguments[1]:undefined;super({dbName,tableName:DB_TRACES_TABLE_NAME,version:DB_VERSION,propertyKey,cursorToRecord:cursor=>new SpanRecord({spanId:cursor.primaryKey,span:cursor.value.span,transportId:cursor.value.transportId,aggregateSignature:cursor.value.aggregateSignature}),indices:[{name:DB_INDEX_BY_TRANSPORT_ID,field:DB_FIELD_TRANSPORT_ID},{name:DB_INDEX_BY_AGGREGATE_SIGNATURE,field:DB_FIELD_AGGREGATE_SIGNATURE},{name:DB_INDEX_BY_PARENT_ID,field:DB_FIELD_PARENT_ID}]});_TracesIndexedDB_instances.add(this);}getByAggregateSignature(aggregateSignature,maxRecords){return this.getByIndex("byAggregateSignature",aggregateSignature,maxRecords);}getByParentId(parentId,maxRecords){return this.getByIndex("byParentId",parentId,maxRecords);}getByTransportId(transportId,maxRecords){return this.getByIndex("byTransportId",transportId,maxRecords);}getTopLevelByTransportId(transportId,maxRecords){return this.getByIndex("byTransportId",transportId,maxRecords,record=>record.parentId===undefined);}putSpans(spans,transportId){return this.put(spans.map(span=>__classPrivateFieldGet(this,_TracesIndexedDB_instances,"m",_TracesIndexedDB_spanToRecord).call(this,span,transportId)));}}_TracesIndexedDB_instances=new WeakSet(),_TracesIndexedDB_spanToRecord=function _TracesIndexedDB_spanToRecord(span,transportId){return {span,transportId,spanId:span.spanId,aggregateSignature:makeAggregateSignature(span,transportId,span=>span.attributes["outsystems.function.key"]),parentId:span.parentSpanId};};var _TracesStorage_database;const NR_SPANS_TO_DISCARD=200;const MAX_RECORDS=10000;class TracesStorage{constructor(_ref9){let{databaseName,autoincrement=true,database=autoincrement?new TracesIndexedDB(databaseName):new TracesIndexedDB(databaseName,"spanId")}=_ref9;_TracesStorage_database.set(this,void 0);__classPrivateFieldSet(this,_TracesStorage_database,database);}readSpans(maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").getAll({sortAsc:true,maxRecords});});}readSpansByTransport(transportId,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){const topLevelSpans=yield __classPrivateFieldGet(this,_TracesStorage_database,"f").getTopLevelByTransportId(transportId,maxRecords);return topLevelSpans.length>0?topLevelSpans:__classPrivateFieldGet(this,_TracesStorage_database,"f").getByTransportId(transportId,maxRecords);});}readSpansByParentId(parentId,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").getByParentId(parentId,maxRecords);});}readSpansByAggregateSignature(aggregateSignature,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").getByAggregateSignature(aggregateSignature,maxRecords);});}removeSpans(spanKeys){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").deleteMultiple(spanKeys);});}insertSpan(span,transportId){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").putSpans([span],transportId);});}insertSerializableSpans(spans,transportId){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").putSpans(spans,transportId);});}countSpans(){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").count();});}isFull(){return __awaiter$3(this,void 0,void 0,function*(){const spansCount=yield __classPrivateFieldGet(this,_TracesStorage_database,"f").count();return spansCount>=MAX_RECORDS;});}discardSpans(){return __awaiter$3(this,arguments,void 0,function(){var _this10=this;let maxSpansToDiscard=arguments.length>0&&arguments[0]!==undefined?arguments[0]:NR_SPANS_TO_DISCARD;return function*(){return __classPrivateFieldGet(_this10,_TracesStorage_database,"f").deleteRecords(maxSpansToDiscard);}();});}}_TracesStorage_database=new WeakMap();function makeSpanAggregator(storage){return new SpanAggregator({storage:{insertSpans:(spans,transportId)=>__awaiter$3(this,void 0,void 0,function*(){yield storage.insertSerializableSpans(spans,transportId);}),readSpansByAggregateSignature:aggregateSignature=>__awaiter$3(this,void 0,void 0,function*(){const records=yield storage.readSpansByAggregateSignature(aggregateSignature);return records.map(record=>record.span);}),readSpansByParentId:parentId=>__awaiter$3(this,void 0,void 0,function*(){const records=yield storage.readSpansByParentId(parentId);return records.map(record=>record.span);})},getSpanObjectId:span=>span.attributes["outsystems.function.key"]});}var _OfflineManager_offlineLogsStorage,_OfflineManager_offlineTracesStorage,_OfflineManager_legacyOfflineTracesStorage,_OfflineManager_hasLegacySpans,_OfflineManager_isOnline,_OfflineManager_aggregateSpans,_OfflineManager_spanAggregator,_OfflineManager_mutexDispatchOnWriteSpans,_OfflineManager_mutexDispatchOnWriteLogs;const LOG_BATCH_SIZE=100;const SPAN_BATCH_SIZE=1000;const mutexDispatchOnWriteLogs=new Mutex();const mutexDispatchOnWriteSpans=new Mutex();const LOGS_DB_NAME="logs";const TRACES_DB_NAME="spans_v2";const TRACES_DB_NAME_LEGACY="spans";class OfflineManager{constructor(_ref10){let{databaseNameSuffix,isOnline=()=>true,offlineLogsStorage=new LogsStorage({databaseName:`${LOGS_DB_NAME}-${databaseNameSuffix}`}),offlineTracesStorage=new TracesStorage({databaseName:`${TRACES_DB_NAME}-${databaseNameSuffix}`,autoincrement:false}),legacyOfflineTracesStorage=new TracesStorage({databaseName:`${TRACES_DB_NAME_LEGACY}-${databaseNameSuffix}`}),flushLegacyTraces=false,aggregateSpans=false,spanAggregator=makeSpanAggregator(offlineTracesStorage),mutexDispatchLogs=mutexDispatchOnWriteLogs,mutexDispatchSpans=mutexDispatchOnWriteSpans}=_ref10;_OfflineManager_offlineLogsStorage.set(this,void 0);_OfflineManager_offlineTracesStorage.set(this,void 0);_OfflineManager_legacyOfflineTracesStorage.set(this,void 0);_OfflineManager_hasLegacySpans.set(this,true);_OfflineManager_isOnline.set(this,void 0);_OfflineManager_aggregateSpans.set(this,void 0);_OfflineManager_spanAggregator.set(this,void 0);_OfflineManager_mutexDispatchOnWriteSpans.set(this,void 0);_OfflineManager_mutexDispatchOnWriteLogs.set(this,void 0);__classPrivateFieldSet(this,_OfflineManager_offlineLogsStorage,offlineLogsStorage);__classPrivateFieldSet(this,_OfflineManager_offlineTracesStorage,offlineTracesStorage);__classPrivateFieldSet(this,_OfflineManager_legacyOfflineTracesStorage,legacyOfflineTracesStorage);__classPrivateFieldSet(this,_OfflineManager_isOnline,isOnline);__classPrivateFieldSet(this,_OfflineManager_hasLegacySpans,flushLegacyTraces);__classPrivateFieldSet(this,_OfflineManager_aggregateSpans,aggregateSpans);__classPrivateFieldSet(this,_OfflineManager_spanAggregator,spanAggregator);__classPrivateFieldSet(this,_OfflineManager_mutexDispatchOnWriteLogs,mutexDispatchLogs);__classPrivateFieldSet(this,_OfflineManager_mutexDispatchOnWriteSpans,mutexDispatchSpans);}setAggregateSpansStatus(value){__classPrivateFieldSet(this,_OfflineManager_aggregateSpans,value);}writeLog(log_1,transport_1){return __awaiter$3(this,arguments,void 0,function(log,transport){var _this11=this;let logsBatchSize=arguments.length>2&&arguments[2]!==undefined?arguments[2]:LOG_BATCH_SIZE;return function*(){try{const isStorageFull=yield __classPrivateFieldGet(_this11,_OfflineManager_offlineLogsStorage,"f").isFull();if(isStorageFull){yield __classPrivateFieldGet(_this11,_OfflineManager_offlineLogsStorage,"f").discardLogs();}yield __classPrivateFieldGet(_this11,_OfflineManager_offlineLogsStorage,"f").insertLog(log,transport.getTransportId());if((yield __classPrivateFieldGet(_this11,_OfflineManager_offlineLogsStorage,"f").countLogs())>=logsBatchSize){yield _this11.flushTransportLogs(transport);}}catch(e){console.debug("Error writing log to storage",e);}}();});}writeSpan(span_1,transport_1){return __awaiter$3(this,arguments,void 0,function(span,transport){var _this12=this;let logsBatchSize=arguments.length>2&&arguments[2]!==undefined?arguments[2]:SPAN_BATCH_SIZE;return function*(){try{const isStorageFull=yield __classPrivateFieldGet(_this12,_OfflineManager_offlineTracesStorage,"f").isFull();if(isStorageFull){yield __classPrivateFieldGet(_this12,_OfflineManager_offlineTracesStorage,"f").discardSpans();}yield __classPrivateFieldGet(_this12,_OfflineManager_mutexDispatchOnWriteSpans,"f").runExclusive(()=>__awaiter$3(_this12,void 0,void 0,function*(){if(__classPrivateFieldGet(this,_OfflineManager_aggregateSpans,"f")){yield __classPrivateFieldGet(this,_OfflineManager_spanAggregator,"f").aggregate(span,transport.getTransportId());}else {yield __classPrivateFieldGet(this,_OfflineManager_offlineTracesStorage,"f").insertSpan(span,transport.getTransportId());}}));if((yield __classPrivateFieldGet(_this12,_OfflineManager_offlineTracesStorage,"f").countSpans())>=logsBatchSize){yield _this12.flushTransportSpans(transport);}}catch(e){console.debug("Error writing trace to storage",e);}}();});}processTransportLogs(transport_1){return __awaiter$3(this,arguments,void 0,function(transport){var _this13=this;let logsBatchSize=arguments.length>1&&arguments[1]!==undefined?arguments[1]:LOG_BATCH_SIZE;return function*(){yield __classPrivateFieldGet(_this13,_OfflineManager_mutexDispatchOnWriteLogs,"f").runExclusive(()=>__awaiter$3(_this13,void 0,void 0,function*(){yield this.internalLogProcess(transport,logsBatchSize,true);}));}();});}flushTransportLogs(transport_1){return __awaiter$3(this,arguments,void 0,function(transport){var _this14=this;let logsBatchSize=arguments.length>1&&arguments[1]!==undefined?arguments[1]:LOG_BATCH_SIZE;return function*(){yield __classPrivateFieldGet(_this14,_OfflineManager_mutexDispatchOnWriteLogs,"f").runExclusive(()=>__awaiter$3(_this14,void 0,void 0,function*(){yield this.internalLogProcess(transport,logsBatchSize,false);}));}();});}internalLogProcess(transport,logsBatchSize,processCompleteBatchOnly){return __awaiter$3(this,void 0,void 0,function*(){if(transport.requiresConnectivity()&&!__classPrivateFieldGet(this,_OfflineManager_isOnline,"f").call(this)){return;}try{const batchSizeThreshold=processCompleteBatchOnly?logsBatchSize:1;let logsToProcess=yield __classPrivateFieldGet(this,_OfflineManager_offlineLogsStorage,"f").readLogsByTransport(transport.getTransportId(),logsBatchSize);while(logsToProcess.length>=batchSizeThreshold){yield transport.writeAll(logsToProcess.map(record=>record.log));yield __classPrivateFieldGet(this,_OfflineManager_offlineLogsStorage,"f").removeLogs(logsToProcess.map(record=>record.logId));logsToProcess=yield __classPrivateFieldGet(this,_OfflineManager_offlineLogsStorage,"f").readLogsByTransport(transport.getTransportId(),logsBatchSize);}}catch(e){console.debug("Error in internal log processing",e);throw e;}});}processTransportSpans(transport_1){return __awaiter$3(this,arguments,void 0,function(transport){var _this15=this;let spansBatchSize=arguments.length>1&&arguments[1]!==undefined?arguments[1]:SPAN_BATCH_SIZE;return function*(){yield __classPrivateFieldGet(_this15,_OfflineManager_mutexDispatchOnWriteSpans,"f").runExclusive(()=>__awaiter$3(_this15,void 0,void 0,function*(){yield this.internalSpanProcess(transport,spansBatchSize,true);}));}();});}flushTransportSpans(transport_1){return __awaiter$3(this,arguments,void 0,function(transport){var _this16=this;let spansBatchSize=arguments.length>1&&arguments[1]!==undefined?arguments[1]:SPAN_BATCH_SIZE;return function*(){yield __classPrivateFieldGet(_this16,_OfflineManager_mutexDispatchOnWriteSpans,"f").runExclusive(()=>__awaiter$3(_this16,void 0,void 0,function*(){yield this.internalSpanProcess(transport,spansBatchSize,false);}));}();});}internalSpanProcess(transport,spansBatchSize,processCompleteBatchOnly){return __awaiter$3(this,void 0,void 0,function*(){if(transport.requiresConnectivity()&&!__classPrivateFieldGet(this,_OfflineManager_isOnline,"f").call(this)){return;}if(__classPrivateFieldGet(this,_OfflineManager_hasLegacySpans,"f")){try{const pending=yield this.writeSpansToTransport({transport,spansBatchSize,storage:__classPrivateFieldGet(this,_OfflineManager_legacyOfflineTracesStorage,"f"),processCompleteBatchOnly:false});__classPrivateFieldSet(this,_OfflineManager_hasLegacySpans,pending>0,"f");}catch(e){console.warn("Error in processing legacy spans",e);}}yield this.writeSpansToTransport({transport,spansBatchSize,processCompleteBatchOnly,storage:__classPrivateFieldGet(this,_OfflineManager_offlineTracesStorage,"f")});});}writeSpansToTransport(_a){return __awaiter$3(this,arguments,void 0,function(_ref11){let{transport,spansBatchSize,processCompleteBatchOnly,storage}=_ref11;return function*(){try{const batchSizeThreshold=processCompleteBatchOnly?spansBatchSize:1;let spansToProcess=yield storage.readSpansByTransport(transport.getTransportId(),spansBatchSize);if(spansToProcess.length===0){return 0;}while(spansToProcess.length>=batchSizeThreshold){yield transport.writeAll(spansToProcess.map(record=>record.span));yield storage.removeSpans(spansToProcess.map(record=>record.spanId));spansToProcess=yield storage.readSpansByTransport(transport.getTransportId(),spansBatchSize);}return yield storage.countSpans();}catch(e){console.debug("Error processing spans",e);throw e;}}();});}}_OfflineManager_offlineLogsStorage=new WeakMap(),_OfflineManager_offlineTracesStorage=new WeakMap(),_OfflineManager_legacyOfflineTracesStorage=new WeakMap(),_OfflineManager_hasLegacySpans=new WeakMap(),_OfflineManager_isOnline=new WeakMap(),_OfflineManager_aggregateSpans=new WeakMap(),_OfflineManager_spanAggregator=new WeakMap(),_OfflineManager_mutexDispatchOnWriteSpans=new WeakMap(),_OfflineManager_mutexDispatchOnWriteLogs=new WeakMap();const TIMER_INTERVAL=60000;class TaskScheduler{constructor(){let timerInterval=arguments.length>0&&arguments[0]!==undefined?arguments[0]:TIMER_INTERVAL;this.timerInterval=timerInterval;this.tasksToRun=new Map();}scheduleNextRun(){if(this.currentTaskTimeout){clearTimeout(this.currentTaskTimeout);}this.currentTaskTimeout=setTimeout(()=>this.runTask(),this.timerInterval);}runTask(){return __awaiter$3(this,void 0,void 0,function*(){if(this.currentTaskTimeout){this.stop();const tasks=Array.from(this.tasksToRun.values());const taskPromises=tasks.map(task=>task());yield Promise.all(taskPromises);this.scheduleNextRun();}});}start(){this.scheduleNextRun();}stop(){if(this.currentTaskTimeout){clearTimeout(this.currentTaskTimeout);this.currentTaskTimeout=undefined;}}addTask(id,task){this.tasksToRun.set(id,task);}deleteTask(id){this.tasksToRun.delete(id);}getTask(id){return this.tasksToRun.get(id);}setTimerInterval(timerInterval){this.timerInterval=timerInterval;this.start();}}class TransportManager{constructor(_ref12){let{logTransports=[],traceTransports=[],databaseNameSuffix,isOnline,aggregateSpans,offlineManager=new OfflineManager({databaseNameSuffix,isOnline,flushLegacyTraces:true,aggregateSpans}),taskScheduler=new TaskScheduler(),circuitBreakerRunner=new CircuitBreakerRunner()}=_ref12;this.logTransports=logTransports;this.traceTransports=traceTransports;this.offlineManager=offlineManager;this.taskScheduler=taskScheduler;this.circuitBreakerRunner=circuitBreakerRunner;this.taskScheduler.addTask("flush-logs",()=>__awaiter$3(this,void 0,void 0,function*(){return this.flushLogs();}));this.taskScheduler.addTask("flush-spans",()=>__awaiter$3(this,void 0,void 0,function*(){return this.flushSpans();}));this.taskScheduler.start();}addLogTransport(transport){const newTransportId=transport.getTransportId();const predicate=element=>element.getTransportId()===newTransportId;if(!this.logTransports.some(predicate)){this.logTransports.push(transport);}}addTraceTransport(transport){const newTransportId=transport.getTransportId();const predicate=element=>element.getTransportId()===newTransportId;if(!this.traceTransports.some(predicate)){this.traceTransports.push(transport);}}removeLogTransport(transportId){const predicate=element=>element.getTransportId()===transportId;const transportIndex=this.logTransports.findIndex(predicate);if(transportIndex!==-1){this.logTransports.splice(transportIndex,1);this.circuitBreakerRunner.closeCircuit(transportId);}}removeTraceTransport(transportId){const predicate=element=>element.getTransportId()===transportId;const transportIndex=this.traceTransports.findIndex(predicate);if(transportIndex!==-1){this.traceTransports.splice(transportIndex,1);this.circuitBreakerRunner.closeCircuit(transportId);}}setAllLogTypeBaselines(logType){for(const transport of this.logTransports){transport.setLogTypeBaseline(logType);}}setTagId(tagId){var _a,_b;for(const transport of this.traceTransports){(_a=transport.setTagId)===null||_a===void 0?void 0:_a.call(transport,tagId);}for(const transport of this.logTransports){(_b=transport.setTagId)===null||_b===void 0?void 0:_b.call(transport,tagId);}}setResourceAttributes(attributes){var _a,_b;for(const transport of this.traceTransports){(_a=transport.setResourceAttributes)===null||_a===void 0?void 0:_a.call(transport,attributes);}for(const transport of this.logTransports){(_b=transport.setResourceAttributes)===null||_b===void 0?void 0:_b.call(transport,attributes);}}enableTracing(){for(const transport of this.traceTransports){transport.enableTracing();}}disableTracing(){for(const transport of this.traceTransports){transport.disableTracing();}}flushLogs(){return __awaiter$3(this,void 0,void 0,function*(){const promises=this.logTransports.map(transport=>__awaiter$3(this,void 0,void 0,function*(){const transportId=transport.getTransportId();yield this.circuitBreakerRunner.run(transportId,()=>this.offlineManager.flushTransportLogs(transport));}));yield Promise.all(promises);});}flushSpans(){return __awaiter$3(this,void 0,void 0,function*(){const promises=this.traceTransports.map(transport=>__awaiter$3(this,void 0,void 0,function*(){const transportId=transport.getTransportId();yield this.circuitBreakerRunner.run(transportId,()=>{if(!transport.hasWriteBuffer()&&typeof transport.flush==="function"){return transport.flush();}return this.offlineManager.flushTransportSpans(transport);});}));yield Promise.all(promises);});}processLog(log){return __awaiter$3(this,void 0,void 0,function*(){const transportsAboveLogBaseline=this.logTransports.filter(transport=>transport.getLogTypeBaseline()<=log.type);for(const transport of transportsAboveLogBaseline){if(transport.hasWriteBuffer()){yield this.offlineManager.writeLog(log,transport);}else {const transportId=transport.getTransportId();const runResult=yield this.circuitBreakerRunner.run(transportId,()=>transport.write(log));if(runResult!==0){yield this.offlineManager.writeLog(log,transport);}}}});}processSpan(span){return __awaiter$3(this,void 0,void 0,function*(){const transportWithTracingEnabled=this.traceTransports.filter(transport=>transport.isTracingEnabled());for(const transport of transportWithTracingEnabled){if(transport.hasWriteBuffer()){yield this.offlineManager.writeSpan(span,transport);}else {const transportId=transport.getTransportId();const runResult=yield this.circuitBreakerRunner.run(transportId,()=>transport.write(span));if(runResult!==0){yield this.offlineManager.writeSpan(span,transport);}}}});}setSchedulerTimerInterval(timerInterval){this.taskScheduler.setTimerInterval(timerInterval);}setAggregateSpansStatus(value){this.offlineManager.setAggregateSpansStatus(value);}}var Visibility;(function(Visibility){Visibility[Visibility["Internal"]=0]="Internal";Visibility[Visibility["External"]=1]="External";Visibility[Visibility["Client"]=2]="Client";})(Visibility||(Visibility={}));var Visibility$1=_exports.Visibility=Visibility;/** Detect free variable `global` from Node.js. */var freeGlobal$1=typeof commonjsGlobal$1=='object'&&commonjsGlobal$1&&commonjsGlobal$1.Object===Object&&commonjsGlobal$1;var _freeGlobal=freeGlobal$1;var freeGlobal=_freeGlobal;/** Detect free variable `self`. */var freeSelf=typeof self=='object'&&self&&self.Object===Object&&self;/** Used as a reference to the global object. */var root$8=freeGlobal||freeSelf||Function('return this')();var _root=root$8;var root$7=_root;/** Built-in value references. */var Symbol$5=root$7.Symbol;var _Symbol=Symbol$5;var Symbol$4=_Symbol;/** Used for built-in method references. */var objectProto$d=Object.prototype;/** Used to check objects for own properties. */var hasOwnProperty$a=objectProto$d.hasOwnProperty;/**
+    	return (await Promise.all([target[targetFuncName](...args),isWrite&&tx.done]))[0];};cachedMethods.set(prop,method);return method;}replaceTraps(oldTraps=>({...oldTraps,get:(target,prop,receiver)=>getMethod(target,prop)||oldTraps.get(target,prop,receiver),has:(target,prop)=>!!getMethod(target,prop)||oldTraps.has(target,prop)}));var _IndexedDB_instances,_IndexedDB_dbName,_IndexedDB_tableName,_IndexedDB_propertyKey,_IndexedDB_version,_IndexedDB_indices,_IndexedDB_cursorToRecord,_IndexedDB_mapCursorToRecords,_IndexedDB_deleteWithCursor;const BATCH_SIZE=100;const SORT_ASC="next";const SORT_DESC="prev";class IndexedDB{constructor(_ref2){let{dbName,tableName,version,indices,cursorToRecord,propertyKey}=_ref2;_IndexedDB_instances.add(this);_IndexedDB_dbName.set(this,void 0);_IndexedDB_tableName.set(this,void 0);_IndexedDB_propertyKey.set(this,void 0);_IndexedDB_version.set(this,void 0);_IndexedDB_indices.set(this,void 0);_IndexedDB_cursorToRecord.set(this,void 0);__classPrivateFieldSet(this,_IndexedDB_dbName,dbName);__classPrivateFieldSet(this,_IndexedDB_tableName,tableName);__classPrivateFieldSet(this,_IndexedDB_version,version);__classPrivateFieldSet(this,_IndexedDB_indices,indices);__classPrivateFieldSet(this,_IndexedDB_cursorToRecord,cursorToRecord);__classPrivateFieldSet(this,_IndexedDB_propertyKey,propertyKey);}open(){return __awaiter$3(this,void 0,void 0,function*(){const tableName=__classPrivateFieldGet(this,_IndexedDB_tableName,"f");const indices=__classPrivateFieldGet(this,_IndexedDB_indices,"f");const createStoreOptions={keyPath:__classPrivateFieldGet(this,_IndexedDB_propertyKey,"f"),autoIncrement:!__classPrivateFieldGet(this,_IndexedDB_propertyKey,"f")};return openDB(__classPrivateFieldGet(this,_IndexedDB_dbName,"f"),__classPrivateFieldGet(this,_IndexedDB_version,"f"),{upgrade(db,oldVersion){if(oldVersion<1){const logsStore=db.createObjectStore(tableName,createStoreOptions);for(const index of indices){logsStore.createIndex(index.name,index.field);}}}});});}getAll(){return __awaiter$3(this,arguments,void 0,function(){var _this4=this;let{maxRecords=BATCH_SIZE,sortAsc=true}=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};return function*(){const db=yield _this4.open();try{const tx=db.transaction(__classPrivateFieldGet(_this4,_IndexedDB_tableName,"f"));const store=tx.objectStore(__classPrivateFieldGet(_this4,_IndexedDB_tableName,"f"));return yield __classPrivateFieldGet(_this4,_IndexedDB_instances,"m",_IndexedDB_mapCursorToRecords).call(_this4,yield store.openCursor(null,sortAsc?SORT_ASC:SORT_DESC),maxRecords);}finally{db.close();}}();});}getByIndex(index_1,value_1){return __awaiter$3(this,arguments,void 0,function(index,value){var _this5=this;let maxRecords=arguments.length>2&&arguments[2]!==undefined?arguments[2]:BATCH_SIZE;let condition=arguments.length>3?arguments[3]:undefined;return function*(){const db=yield _this5.open();try{const tx=db.transaction(__classPrivateFieldGet(_this5,_IndexedDB_tableName,"f"));const store=tx.objectStore(__classPrivateFieldGet(_this5,_IndexedDB_tableName,"f"));return yield __classPrivateFieldGet(_this5,_IndexedDB_instances,"m",_IndexedDB_mapCursorToRecords).call(_this5,yield store.index(index).openCursor(value),maxRecords,condition);}finally{db.close();}}();});}put(values){return __awaiter$3(this,void 0,void 0,function*(){const db=yield this.open();try{const tx=db.transaction(__classPrivateFieldGet(this,_IndexedDB_tableName,"f"),"readwrite");const store=tx.objectStore(__classPrivateFieldGet(this,_IndexedDB_tableName,"f"));for(const value of values){yield store.put(value);}}finally{db.close();}});}count(){return __awaiter$3(this,void 0,void 0,function*(){const db=yield this.open();try{return yield db.count(__classPrivateFieldGet(this,_IndexedDB_tableName,"f"));}finally{db.close();}});}delete(key){return __awaiter$3(this,void 0,void 0,function*(){const db=yield this.open();try{yield db.delete(__classPrivateFieldGet(this,_IndexedDB_tableName,"f"),key);}finally{db.close();}});}deleteMultiple(keys){return __awaiter$3(this,void 0,void 0,function*(){const db=yield this.open();try{const deleteTasks=keys.map(key=>db.delete(__classPrivateFieldGet(this,_IndexedDB_tableName,"f"),key));yield Promise.all(deleteTasks);}finally{db.close();}});}deleteByIndex(index_1,value_1){return __awaiter$3(this,arguments,void 0,function(index,value){var _this6=this;let maxRecords=arguments.length>2&&arguments[2]!==undefined?arguments[2]:BATCH_SIZE;return function*(){const db=yield _this6.open();try{const tx=db.transaction(__classPrivateFieldGet(_this6,_IndexedDB_tableName,"f"),"readwrite");const store=tx.objectStore(__classPrivateFieldGet(_this6,_IndexedDB_tableName,"f"));return yield __classPrivateFieldGet(_this6,_IndexedDB_instances,"m",_IndexedDB_deleteWithCursor).call(_this6,yield store.index(index).openCursor(value),maxRecords);}finally{db.close();}}();});}deleteRecords(){return __awaiter$3(this,arguments,void 0,function(){var _this7=this;let maxRecords=arguments.length>0&&arguments[0]!==undefined?arguments[0]:BATCH_SIZE;return function*(){const db=yield _this7.open();try{const tx=db.transaction(__classPrivateFieldGet(_this7,_IndexedDB_tableName,"f"),"readwrite");const store=tx.objectStore(__classPrivateFieldGet(_this7,_IndexedDB_tableName,"f"));return yield __classPrivateFieldGet(_this7,_IndexedDB_instances,"m",_IndexedDB_deleteWithCursor).call(_this7,yield store.openCursor(null,SORT_ASC),maxRecords);}finally{db.close();}}();});}}_IndexedDB_dbName=new WeakMap(),_IndexedDB_tableName=new WeakMap(),_IndexedDB_propertyKey=new WeakMap(),_IndexedDB_version=new WeakMap(),_IndexedDB_indices=new WeakMap(),_IndexedDB_cursorToRecord=new WeakMap(),_IndexedDB_instances=new WeakSet(),_IndexedDB_mapCursorToRecords=function _IndexedDB_mapCursorToRecords(cursor_1){return __awaiter$3(this,arguments,void 0,function(cursor){var _this8=this;let maxRecords=arguments.length>1&&arguments[1]!==undefined?arguments[1]:BATCH_SIZE;let condition=arguments.length>2?arguments[2]:undefined;return function*(){const result=[];while(cursor&&result.length<maxRecords){const record=__classPrivateFieldGet(_this8,_IndexedDB_cursorToRecord,"f").call(_this8,cursor);if(!condition||condition(record)){result.push(record);}cursor=yield cursor.continue();}return result;}();});},_IndexedDB_deleteWithCursor=function _IndexedDB_deleteWithCursor(cursor,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){let deletedRecords=0;while(cursor&&deletedRecords<maxRecords){yield cursor.delete();deletedRecords++;cursor=yield cursor.continue();}return deletedRecords;});};const DB_VERSION$1=1;class LogsIndexedDB extends IndexedDB{constructor(){let dbName=arguments.length>0&&arguments[0]!==undefined?arguments[0]:DB_NAME;super({dbName,tableName:DB_LOGS_TABLE_NAME,cursorToRecord:cursor=>new LogRecord(cursor.primaryKey,cursor.value.log,cursor.value.logType,cursor.value.transportId),indices:[{name:DB_INDEX_BY_TRANSPORT_ID,field:DB_FIELD_TRANSPORT_ID},{name:DB_INDEX_BY_LOG_TYPE,field:DB_FIELD_LOG_TYPE}],version:DB_VERSION$1});}getByTransportId(transportId,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return this.getByIndex("byTransportId",transportId,maxRecords);});}getByLogType(logType,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return this.getByIndex("byLogType",logType,maxRecords);});}putLog(log,transportId){return __awaiter$3(this,void 0,void 0,function*(){return this.put([{log,logType:log.type,transportId}]);});}deleteByLogType(logType,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return this.deleteByIndex("byLogType",logType,maxRecords);});}}var _LogsStorage_database;const NR_LOGS_TO_DISCARD=200;const MAX_RECORDS$1=10000;class LogsStorage{constructor(_ref3){let{databaseName,database=new LogsIndexedDB(databaseName)}=_ref3;_LogsStorage_database.set(this,void 0);__classPrivateFieldSet(this,_LogsStorage_database,database);}readLogs(maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_LogsStorage_database,"f").getAll({sortAsc:true,maxRecords});});}readLogsByTransport(transportId,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_LogsStorage_database,"f").getByTransportId(transportId,maxRecords);});}removeLogs(logKeys){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_LogsStorage_database,"f").deleteMultiple(logKeys);});}insertLog(log,transportId){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_LogsStorage_database,"f").putLog(log,transportId);});}countLogs(){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_LogsStorage_database,"f").count();});}isFull(){return __awaiter$3(this,void 0,void 0,function*(){const logsCount=yield __classPrivateFieldGet(this,_LogsStorage_database,"f").count();return logsCount>=MAX_RECORDS$1;});}discardLogs(){return __awaiter$3(this,arguments,void 0,function(){var _this9=this;let maxLogsToDiscard=arguments.length>0&&arguments[0]!==undefined?arguments[0]:NR_LOGS_TO_DISCARD;return function*(){const logTypesKeys=Object.keys(LogType$1).filter(key=>isNaN(Number(key)));let logsLeftToDiscard=maxLogsToDiscard;for(const logTypeKey of logTypesKeys){const logType=mapKeyToLogType[logTypeKey];const logsDeleted=yield __classPrivateFieldGet(_this9,_LogsStorage_database,"f").deleteByLogType(logType,logsLeftToDiscard);logsLeftToDiscard-=logsDeleted;if(logsLeftToDiscard<=0){break;}}return logsLeftToDiscard;}();});}}_LogsStorage_database=new WeakMap();var AggregationAttributes;(function(AggregationAttributes){AggregationAttributes["IsAggregateProxy"]="outsystems.aggregation.proxy";AggregationAttributes["AggregationSize"]="outsystems.aggregation.size";AggregationAttributes["IsOutlier"]="outsystems.aggregation.outlier";AggregationAttributes["AverageDuration"]="outsystems.aggregation.duration.average";AggregationAttributes["MaxDuration"]="outsystems.aggregation.duration.max";AggregationAttributes["MinDuration"]="outsystems.aggregation.duration.min";AggregationAttributes["IsNonAggregable"]="osinternal.spanIsNonAggregable";AggregationAttributes["ChildrenNames"]="osinternal.childrenNames";AggregationAttributes["functionKey"]="outsystems.function.key";})(AggregationAttributes||(AggregationAttributes={}));const NON_AGGREGABLE_PREFIX="NonAggregable";function compareStrings(a,b){if(a<b){return  -1;}else if(b<a){return 1;}else {return 0;}}function defaultGetSpanObjectId(span){return span.attributes[AggregationAttributes.functionKey];}function makeAggregateSignature(span,transportId,getSpanObjectId){var _a;const name=span.name;const objectId=getSpanObjectId===null||getSpanObjectId===void 0?void 0:getSpanObjectId(span);const children=(_a=span.attributes[AggregationAttributes.ChildrenNames])!==null&&_a!==void 0?_a:[];children.sort(compareStrings);const nonAggregable=span.attributes[AggregationAttributes.IsNonAggregable]?`${NON_AGGREGABLE_PREFIX}.`:"";return `${nonAggregable}${transportId}.${name}.${objectId}(${children.join(",")})`;}function canAggregateSpan(span,children){return !(span.attributes[AggregationAttributes.IsNonAggregable]||children.some(child=>child.attributes[AggregationAttributes.IsNonAggregable]));}const thresholds={absolute:(_ref4,value)=>{let{min,max}=_ref4;const under=typeof min==="number"&&value<min;const over=typeof max==="number"&&value>max;return under||over;},relative:(_ref5,value,baseline)=>{let{min,max}=_ref5;return thresholds.absolute({min:typeof min==="number"?baseline+min:undefined,max:typeof max==="number"?baseline+max:undefined},value);},ratio:(_ref6,value,baseline)=>{let{lower,upper,max,min}=_ref6;return thresholds.relative({min:typeof lower==="number"?Math.min(baseline*lower,min!==null&&min!==void 0?min:Infinity):undefined,max:typeof upper==="number"?Math.max(baseline*upper,max!==null&&max!==void 0?max:-Infinity):undefined},value,baseline);}};function applyThreshold(params,value,baseline){return thresholds[params.type](params,value,baseline);}var _ThresholdOutlierDetector_thresholds;class ThresholdOutlierDetector{constructor(thresholds){_ThresholdOutlierDetector_thresholds.set(this,void 0);__classPrivateFieldSet(this,_ThresholdOutlierDetector_thresholds,thresholds);}isOutlier(span,proxy){for(const[attribute,params]of Object.entries(__classPrivateFieldGet(this,_ThresholdOutlierDetector_thresholds,"f"))){const value=span.attributes[attribute];const baseline=proxy.attributes[attribute];if(value===undefined&&baseline===undefined){continue;}if(value===undefined||baseline===undefined||applyThreshold(params,value,baseline)){return true;}}return false;}}_ThresholdOutlierDetector_thresholds=new WeakMap();var _SpanAggregator_instances,_SpanAggregator_storage,_SpanAggregator_outlierDetector,_SpanAggregator_getSpanObjectId,_SpanAggregator_findProxy,_SpanAggregator_updateProxy,_SpanAggregator_createEnrichedSpan,_SpanAggregator_toOutlierSpan,_SpanAggregator_toNonAggregableSpan,_SpanAggregator_adopt;class SpanAggregator{constructor(_ref7){let{storage,outlierDetector=new ThresholdOutlierDetector({[AggregationAttributes.AverageDuration]:{type:"ratio",upper:0.1,max:50e6}}),getSpanObjectId=defaultGetSpanObjectId}=_ref7;_SpanAggregator_instances.add(this);_SpanAggregator_storage.set(this,void 0);_SpanAggregator_outlierDetector.set(this,void 0);_SpanAggregator_getSpanObjectId.set(this,void 0);__classPrivateFieldSet(this,_SpanAggregator_storage,storage);__classPrivateFieldSet(this,_SpanAggregator_outlierDetector,outlierDetector);__classPrivateFieldSet(this,_SpanAggregator_getSpanObjectId,getSpanObjectId);}aggregate(span,transportId){return __awaiter$3(this,void 0,void 0,function*(){const children=yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").readSpansByParentId(span.spanId);const enrichedSpan=__classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_createEnrichedSpan).call(this,span);const canAggregate=canAggregateSpan(enrichedSpan,children);if(!canAggregate){yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").insertSpans([__classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_toNonAggregableSpan).call(this,enrichedSpan)],transportId);return;}const proxy=yield __classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_findProxy).call(this,enrichedSpan,transportId);if(!proxy){yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").insertSpans([enrichedSpan],transportId);}else if(__classPrivateFieldGet(this,_SpanAggregator_outlierDetector,"f").isOutlier(enrichedSpan,proxy)){yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").insertSpans([__classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_toOutlierSpan).call(this,enrichedSpan)],transportId);}else {const newProxy=__classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_updateProxy).call(this,span,proxy);const adoptedChildren=__classPrivateFieldGet(this,_SpanAggregator_instances,"m",_SpanAggregator_adopt).call(this,children,newProxy);yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").insertSpans([newProxy,...adoptedChildren],transportId);}});}}_SpanAggregator_storage=new WeakMap(),_SpanAggregator_outlierDetector=new WeakMap(),_SpanAggregator_getSpanObjectId=new WeakMap(),_SpanAggregator_instances=new WeakSet(),_SpanAggregator_findProxy=function _SpanAggregator_findProxy(span,transportId){return __awaiter$3(this,void 0,void 0,function*(){const signature=makeAggregateSignature(span,transportId,__classPrivateFieldGet(this,_SpanAggregator_getSpanObjectId,"f"));const[proxy]=yield __classPrivateFieldGet(this,_SpanAggregator_storage,"f").readSpansByAggregateSignature(signature);return proxy;});},_SpanAggregator_updateProxy=function _SpanAggregator_updateProxy(span,proxy){var _a;const oldSize=(_a=proxy.attributes[AggregationAttributes.AggregationSize])!==null&&_a!==void 0?_a:1;const oldAverage=proxy.attributes[AggregationAttributes.AverageDuration];const oldMax=proxy.attributes[AggregationAttributes.MaxDuration];const oldMin=proxy.attributes[AggregationAttributes.MinDuration];const spanDuration=span.endTimeUnixNano-span.startTimeUnixNano;return Object.assign(Object.assign({},proxy),{attributes:Object.assign(Object.assign({},proxy.attributes),{[AggregationAttributes.IsAggregateProxy]:true,[AggregationAttributes.AggregationSize]:oldSize+1,[AggregationAttributes.AverageDuration]:(oldAverage*oldSize+spanDuration)/(oldSize+1),[AggregationAttributes.MaxDuration]:Math.max(oldMax,spanDuration),[AggregationAttributes.MinDuration]:Math.min(oldMin,spanDuration)}),parentSpanId:proxy.parentSpanId===span.spanId?span.parentSpanId:proxy.parentSpanId});},_SpanAggregator_createEnrichedSpan=function _SpanAggregator_createEnrichedSpan(span){const duration=span.endTimeUnixNano-span.startTimeUnixNano;return Object.assign(Object.assign({},span),{attributes:Object.assign(Object.assign({},span.attributes),{[AggregationAttributes.IsAggregateProxy]:false,[AggregationAttributes.AverageDuration]:duration,[AggregationAttributes.MaxDuration]:duration,[AggregationAttributes.MinDuration]:duration})});},_SpanAggregator_toOutlierSpan=function _SpanAggregator_toOutlierSpan(span){return Object.assign(Object.assign({},span),{attributes:Object.assign(Object.assign({},span.attributes),{[AggregationAttributes.IsOutlier]:true,[AggregationAttributes.IsNonAggregable]:true})});},_SpanAggregator_toNonAggregableSpan=function _SpanAggregator_toNonAggregableSpan(span){return Object.assign(Object.assign({},span),{attributes:Object.assign(Object.assign({},span.attributes),{[AggregationAttributes.IsNonAggregable]:true})});},_SpanAggregator_adopt=function _SpanAggregator_adopt(children,newParent){return children.flatMap(child=>child.spanId!==newParent.spanId?[Object.assign(Object.assign({},child),{parentSpanId:newParent.spanId})]:[]);};class SpanRecord{constructor(_ref8){let{spanId,span,transportId,aggregateSignature}=_ref8;this.spanId=spanId;this.span=span;this.transportId=transportId;this.parentId=span.parentSpanId;this.aggregateSignature=aggregateSignature!==null&&aggregateSignature!==void 0?aggregateSignature:"";}}var _TracesIndexedDB_instances,_TracesIndexedDB_spanToRecord;const DB_VERSION=1;class TracesIndexedDB extends IndexedDB{constructor(){let dbName=arguments.length>0&&arguments[0]!==undefined?arguments[0]:DB_NAME;let propertyKey=arguments.length>1?arguments[1]:undefined;super({dbName,tableName:DB_TRACES_TABLE_NAME,version:DB_VERSION,propertyKey,cursorToRecord:cursor=>new SpanRecord({spanId:cursor.primaryKey,span:cursor.value.span,transportId:cursor.value.transportId,aggregateSignature:cursor.value.aggregateSignature}),indices:[{name:DB_INDEX_BY_TRANSPORT_ID,field:DB_FIELD_TRANSPORT_ID},{name:DB_INDEX_BY_AGGREGATE_SIGNATURE,field:DB_FIELD_AGGREGATE_SIGNATURE},{name:DB_INDEX_BY_PARENT_ID,field:DB_FIELD_PARENT_ID}]});_TracesIndexedDB_instances.add(this);}getByAggregateSignature(aggregateSignature,maxRecords){return this.getByIndex("byAggregateSignature",aggregateSignature,maxRecords);}getByParentId(parentId,maxRecords){return this.getByIndex("byParentId",parentId,maxRecords);}getByTransportId(transportId,maxRecords){return this.getByIndex("byTransportId",transportId,maxRecords);}getTopLevelByTransportId(transportId,maxRecords){return this.getByIndex("byTransportId",transportId,maxRecords,record=>record.parentId===undefined);}putSpans(spans,transportId){return this.put(spans.map(span=>__classPrivateFieldGet(this,_TracesIndexedDB_instances,"m",_TracesIndexedDB_spanToRecord).call(this,span,transportId)));}}_TracesIndexedDB_instances=new WeakSet(),_TracesIndexedDB_spanToRecord=function _TracesIndexedDB_spanToRecord(span,transportId){return {span,transportId,spanId:span.spanId,aggregateSignature:makeAggregateSignature(span,transportId,span=>span.attributes["outsystems.function.key"]),parentId:span.parentSpanId};};var _TracesStorage_database;const NR_SPANS_TO_DISCARD=200;const MAX_RECORDS=10000;class TracesStorage{constructor(_ref9){let{databaseName,autoincrement=true,database=autoincrement?new TracesIndexedDB(databaseName):new TracesIndexedDB(databaseName,"spanId")}=_ref9;_TracesStorage_database.set(this,void 0);__classPrivateFieldSet(this,_TracesStorage_database,database);}readSpans(maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").getAll({sortAsc:true,maxRecords});});}readSpansByTransport(transportId,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){const topLevelSpans=yield __classPrivateFieldGet(this,_TracesStorage_database,"f").getTopLevelByTransportId(transportId,maxRecords);return topLevelSpans.length>0?topLevelSpans:__classPrivateFieldGet(this,_TracesStorage_database,"f").getByTransportId(transportId,maxRecords);});}readSpansByParentId(parentId,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").getByParentId(parentId,maxRecords);});}readSpansByAggregateSignature(aggregateSignature,maxRecords){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").getByAggregateSignature(aggregateSignature,maxRecords);});}removeSpans(spanKeys){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").deleteMultiple(spanKeys);});}insertSpan(span,transportId){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").putSpans([span],transportId);});}insertSerializableSpans(spans,transportId){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").putSpans(spans,transportId);});}countSpans(){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_TracesStorage_database,"f").count();});}isFull(){return __awaiter$3(this,void 0,void 0,function*(){const spansCount=yield __classPrivateFieldGet(this,_TracesStorage_database,"f").count();return spansCount>=MAX_RECORDS;});}discardSpans(){return __awaiter$3(this,arguments,void 0,function(){var _this0=this;let maxSpansToDiscard=arguments.length>0&&arguments[0]!==undefined?arguments[0]:NR_SPANS_TO_DISCARD;return function*(){return __classPrivateFieldGet(_this0,_TracesStorage_database,"f").deleteRecords(maxSpansToDiscard);}();});}}_TracesStorage_database=new WeakMap();function makeSpanAggregator(storage){return new SpanAggregator({storage:{insertSpans:(spans,transportId)=>__awaiter$3(this,void 0,void 0,function*(){yield storage.insertSerializableSpans(spans,transportId);}),readSpansByAggregateSignature:aggregateSignature=>__awaiter$3(this,void 0,void 0,function*(){const records=yield storage.readSpansByAggregateSignature(aggregateSignature);return records.map(record=>record.span);}),readSpansByParentId:parentId=>__awaiter$3(this,void 0,void 0,function*(){const records=yield storage.readSpansByParentId(parentId);return records.map(record=>record.span);})},getSpanObjectId:span=>span.attributes["outsystems.function.key"]});}var _OfflineManager_offlineLogsStorage,_OfflineManager_offlineTracesStorage,_OfflineManager_legacyOfflineTracesStorage,_OfflineManager_hasLegacySpans,_OfflineManager_isOnline,_OfflineManager_aggregateSpans,_OfflineManager_spanAggregator,_OfflineManager_mutexDispatchOnWriteSpans,_OfflineManager_mutexDispatchOnWriteLogs;const LOG_BATCH_SIZE=100;const SPAN_BATCH_SIZE=1000;const mutexDispatchOnWriteLogs=new Mutex();const mutexDispatchOnWriteSpans=new Mutex();const LOGS_DB_NAME="logs";const TRACES_DB_NAME="spans_v2";const TRACES_DB_NAME_LEGACY="spans";class OfflineManager{constructor(_ref0){let{databaseNameSuffix,isOnline=()=>true,offlineLogsStorage=new LogsStorage({databaseName:`${LOGS_DB_NAME}-${databaseNameSuffix}`}),offlineTracesStorage=new TracesStorage({databaseName:`${TRACES_DB_NAME}-${databaseNameSuffix}`,autoincrement:false}),legacyOfflineTracesStorage=new TracesStorage({databaseName:`${TRACES_DB_NAME_LEGACY}-${databaseNameSuffix}`}),flushLegacyTraces=false,aggregateSpans=false,spanAggregator=makeSpanAggregator(offlineTracesStorage),mutexDispatchLogs=mutexDispatchOnWriteLogs,mutexDispatchSpans=mutexDispatchOnWriteSpans}=_ref0;_OfflineManager_offlineLogsStorage.set(this,void 0);_OfflineManager_offlineTracesStorage.set(this,void 0);_OfflineManager_legacyOfflineTracesStorage.set(this,void 0);_OfflineManager_hasLegacySpans.set(this,true);_OfflineManager_isOnline.set(this,void 0);_OfflineManager_aggregateSpans.set(this,void 0);_OfflineManager_spanAggregator.set(this,void 0);_OfflineManager_mutexDispatchOnWriteSpans.set(this,void 0);_OfflineManager_mutexDispatchOnWriteLogs.set(this,void 0);__classPrivateFieldSet(this,_OfflineManager_offlineLogsStorage,offlineLogsStorage);__classPrivateFieldSet(this,_OfflineManager_offlineTracesStorage,offlineTracesStorage);__classPrivateFieldSet(this,_OfflineManager_legacyOfflineTracesStorage,legacyOfflineTracesStorage);__classPrivateFieldSet(this,_OfflineManager_isOnline,isOnline);__classPrivateFieldSet(this,_OfflineManager_hasLegacySpans,flushLegacyTraces);__classPrivateFieldSet(this,_OfflineManager_aggregateSpans,aggregateSpans);__classPrivateFieldSet(this,_OfflineManager_spanAggregator,spanAggregator);__classPrivateFieldSet(this,_OfflineManager_mutexDispatchOnWriteLogs,mutexDispatchLogs);__classPrivateFieldSet(this,_OfflineManager_mutexDispatchOnWriteSpans,mutexDispatchSpans);}setAggregateSpansStatus(value){__classPrivateFieldSet(this,_OfflineManager_aggregateSpans,value);}writeLog(log_1,transport_1){return __awaiter$3(this,arguments,void 0,function(log,transport){var _this1=this;let logsBatchSize=arguments.length>2&&arguments[2]!==undefined?arguments[2]:LOG_BATCH_SIZE;return function*(){try{const isStorageFull=yield __classPrivateFieldGet(_this1,_OfflineManager_offlineLogsStorage,"f").isFull();if(isStorageFull){yield __classPrivateFieldGet(_this1,_OfflineManager_offlineLogsStorage,"f").discardLogs();}yield __classPrivateFieldGet(_this1,_OfflineManager_offlineLogsStorage,"f").insertLog(log,transport.getTransportId());if((yield __classPrivateFieldGet(_this1,_OfflineManager_offlineLogsStorage,"f").countLogs())>=logsBatchSize){yield _this1.flushTransportLogs(transport);}}catch(e){console.debug("Error writing log to storage",e);}}();});}writeSpan(span_1,transport_1){return __awaiter$3(this,arguments,void 0,function(span,transport){var _this10=this;let logsBatchSize=arguments.length>2&&arguments[2]!==undefined?arguments[2]:SPAN_BATCH_SIZE;return function*(){try{const isStorageFull=yield __classPrivateFieldGet(_this10,_OfflineManager_offlineTracesStorage,"f").isFull();if(isStorageFull){yield __classPrivateFieldGet(_this10,_OfflineManager_offlineTracesStorage,"f").discardSpans();}yield __classPrivateFieldGet(_this10,_OfflineManager_mutexDispatchOnWriteSpans,"f").runExclusive(()=>__awaiter$3(_this10,void 0,void 0,function*(){if(__classPrivateFieldGet(this,_OfflineManager_aggregateSpans,"f")){yield __classPrivateFieldGet(this,_OfflineManager_spanAggregator,"f").aggregate(span,transport.getTransportId());}else {yield __classPrivateFieldGet(this,_OfflineManager_offlineTracesStorage,"f").insertSpan(span,transport.getTransportId());}}));if((yield __classPrivateFieldGet(_this10,_OfflineManager_offlineTracesStorage,"f").countSpans())>=logsBatchSize){yield _this10.flushTransportSpans(transport);}}catch(e){console.debug("Error writing trace to storage",e);}}();});}processTransportLogs(transport_1){return __awaiter$3(this,arguments,void 0,function(transport){var _this11=this;let logsBatchSize=arguments.length>1&&arguments[1]!==undefined?arguments[1]:LOG_BATCH_SIZE;return function*(){yield __classPrivateFieldGet(_this11,_OfflineManager_mutexDispatchOnWriteLogs,"f").runExclusive(()=>__awaiter$3(_this11,void 0,void 0,function*(){yield this.internalLogProcess(transport,logsBatchSize,true);}));}();});}flushTransportLogs(transport_1){return __awaiter$3(this,arguments,void 0,function(transport){var _this12=this;let logsBatchSize=arguments.length>1&&arguments[1]!==undefined?arguments[1]:LOG_BATCH_SIZE;return function*(){yield __classPrivateFieldGet(_this12,_OfflineManager_mutexDispatchOnWriteLogs,"f").runExclusive(()=>__awaiter$3(_this12,void 0,void 0,function*(){yield this.internalLogProcess(transport,logsBatchSize,false);}));}();});}internalLogProcess(transport,logsBatchSize,processCompleteBatchOnly){return __awaiter$3(this,void 0,void 0,function*(){if(transport.requiresConnectivity()&&!__classPrivateFieldGet(this,_OfflineManager_isOnline,"f").call(this)){return;}try{const batchSizeThreshold=processCompleteBatchOnly?logsBatchSize:1;let logsToProcess=yield __classPrivateFieldGet(this,_OfflineManager_offlineLogsStorage,"f").readLogsByTransport(transport.getTransportId(),logsBatchSize);while(logsToProcess.length>=batchSizeThreshold){yield transport.writeAll(logsToProcess.map(record=>record.log));yield __classPrivateFieldGet(this,_OfflineManager_offlineLogsStorage,"f").removeLogs(logsToProcess.map(record=>record.logId));logsToProcess=yield __classPrivateFieldGet(this,_OfflineManager_offlineLogsStorage,"f").readLogsByTransport(transport.getTransportId(),logsBatchSize);}}catch(e){console.debug("Error in internal log processing",e);throw e;}});}processTransportSpans(transport_1){return __awaiter$3(this,arguments,void 0,function(transport){var _this13=this;let spansBatchSize=arguments.length>1&&arguments[1]!==undefined?arguments[1]:SPAN_BATCH_SIZE;return function*(){yield __classPrivateFieldGet(_this13,_OfflineManager_mutexDispatchOnWriteSpans,"f").runExclusive(()=>__awaiter$3(_this13,void 0,void 0,function*(){yield this.internalSpanProcess(transport,spansBatchSize,true);}));}();});}flushTransportSpans(transport_1){return __awaiter$3(this,arguments,void 0,function(transport){var _this14=this;let spansBatchSize=arguments.length>1&&arguments[1]!==undefined?arguments[1]:SPAN_BATCH_SIZE;return function*(){yield __classPrivateFieldGet(_this14,_OfflineManager_mutexDispatchOnWriteSpans,"f").runExclusive(()=>__awaiter$3(_this14,void 0,void 0,function*(){yield this.internalSpanProcess(transport,spansBatchSize,false);}));}();});}internalSpanProcess(transport,spansBatchSize,processCompleteBatchOnly){return __awaiter$3(this,void 0,void 0,function*(){if(transport.requiresConnectivity()&&!__classPrivateFieldGet(this,_OfflineManager_isOnline,"f").call(this)){return;}if(__classPrivateFieldGet(this,_OfflineManager_hasLegacySpans,"f")){try{const pending=yield this.writeSpansToTransport({transport,spansBatchSize,storage:__classPrivateFieldGet(this,_OfflineManager_legacyOfflineTracesStorage,"f"),processCompleteBatchOnly:false});__classPrivateFieldSet(this,_OfflineManager_hasLegacySpans,pending>0,"f");}catch(e){console.warn("Error in processing legacy spans",e);}}yield this.writeSpansToTransport({transport,spansBatchSize,processCompleteBatchOnly,storage:__classPrivateFieldGet(this,_OfflineManager_offlineTracesStorage,"f")});});}writeSpansToTransport(_a){return __awaiter$3(this,arguments,void 0,function(_ref1){let{transport,spansBatchSize,processCompleteBatchOnly,storage}=_ref1;return function*(){try{const batchSizeThreshold=processCompleteBatchOnly?spansBatchSize:1;let spansToProcess=yield storage.readSpansByTransport(transport.getTransportId(),spansBatchSize);if(spansToProcess.length===0){return 0;}while(spansToProcess.length>=batchSizeThreshold){yield transport.writeAll(spansToProcess.map(record=>record.span));yield storage.removeSpans(spansToProcess.map(record=>record.spanId));spansToProcess=yield storage.readSpansByTransport(transport.getTransportId(),spansBatchSize);}return yield storage.countSpans();}catch(e){console.debug("Error processing spans",e);throw e;}}();});}}_OfflineManager_offlineLogsStorage=new WeakMap(),_OfflineManager_offlineTracesStorage=new WeakMap(),_OfflineManager_legacyOfflineTracesStorage=new WeakMap(),_OfflineManager_hasLegacySpans=new WeakMap(),_OfflineManager_isOnline=new WeakMap(),_OfflineManager_aggregateSpans=new WeakMap(),_OfflineManager_spanAggregator=new WeakMap(),_OfflineManager_mutexDispatchOnWriteSpans=new WeakMap(),_OfflineManager_mutexDispatchOnWriteLogs=new WeakMap();const TIMER_INTERVAL=60000;class TaskScheduler{constructor(){let timerInterval=arguments.length>0&&arguments[0]!==undefined?arguments[0]:TIMER_INTERVAL;this.timerInterval=timerInterval;this.tasksToRun=new Map();}scheduleNextRun(){if(this.currentTaskTimeout){clearTimeout(this.currentTaskTimeout);}this.currentTaskTimeout=setTimeout(()=>this.runTask(),this.timerInterval);}runTask(){return __awaiter$3(this,void 0,void 0,function*(){if(this.currentTaskTimeout){this.stop();const tasks=Array.from(this.tasksToRun.values());const taskPromises=tasks.map(task=>task());yield Promise.all(taskPromises);this.scheduleNextRun();}});}start(){this.scheduleNextRun();}stop(){if(this.currentTaskTimeout){clearTimeout(this.currentTaskTimeout);this.currentTaskTimeout=undefined;}}addTask(id,task){this.tasksToRun.set(id,task);}deleteTask(id){this.tasksToRun.delete(id);}getTask(id){return this.tasksToRun.get(id);}setTimerInterval(timerInterval){this.timerInterval=timerInterval;this.start();}}class TransportManager{constructor(_ref10){let{logTransports=[],traceTransports=[],databaseNameSuffix,isOnline,aggregateSpans,offlineManager=new OfflineManager({databaseNameSuffix,isOnline,flushLegacyTraces:true,aggregateSpans}),taskScheduler=new TaskScheduler(),circuitBreakerRunner=new CircuitBreakerRunner()}=_ref10;this.logTransports=logTransports;this.traceTransports=traceTransports;this.offlineManager=offlineManager;this.taskScheduler=taskScheduler;this.circuitBreakerRunner=circuitBreakerRunner;this.taskScheduler.addTask("flush-logs",()=>__awaiter$3(this,void 0,void 0,function*(){return this.flushLogs();}));this.taskScheduler.addTask("flush-spans",()=>__awaiter$3(this,void 0,void 0,function*(){return this.flushSpans();}));this.taskScheduler.start();}addLogTransport(transport){const newTransportId=transport.getTransportId();const predicate=element=>element.getTransportId()===newTransportId;if(!this.logTransports.some(predicate)){this.logTransports.push(transport);}}addTraceTransport(transport){const newTransportId=transport.getTransportId();const predicate=element=>element.getTransportId()===newTransportId;if(!this.traceTransports.some(predicate)){this.traceTransports.push(transport);}}removeLogTransport(transportId){const predicate=element=>element.getTransportId()===transportId;const transportIndex=this.logTransports.findIndex(predicate);if(transportIndex!==-1){this.logTransports.splice(transportIndex,1);this.circuitBreakerRunner.closeCircuit(transportId);}}removeTraceTransport(transportId){const predicate=element=>element.getTransportId()===transportId;const transportIndex=this.traceTransports.findIndex(predicate);if(transportIndex!==-1){this.traceTransports.splice(transportIndex,1);this.circuitBreakerRunner.closeCircuit(transportId);}}setAllLogTypeBaselines(logType){for(const transport of this.logTransports){transport.setLogTypeBaseline(logType);}}setTagId(tagId){var _a,_b;for(const transport of this.traceTransports){(_a=transport.setTagId)===null||_a===void 0?void 0:_a.call(transport,tagId);}for(const transport of this.logTransports){(_b=transport.setTagId)===null||_b===void 0?void 0:_b.call(transport,tagId);}}setResourceAttributes(attributes){var _a,_b;for(const transport of this.traceTransports){(_a=transport.setResourceAttributes)===null||_a===void 0?void 0:_a.call(transport,attributes);}for(const transport of this.logTransports){(_b=transport.setResourceAttributes)===null||_b===void 0?void 0:_b.call(transport,attributes);}}enableTracing(){for(const transport of this.traceTransports){transport.enableTracing();}}disableTracing(){for(const transport of this.traceTransports){transport.disableTracing();}}flushLogs(){return __awaiter$3(this,void 0,void 0,function*(){const promises=this.logTransports.map(transport=>__awaiter$3(this,void 0,void 0,function*(){const transportId=transport.getTransportId();yield this.circuitBreakerRunner.run(transportId,()=>this.offlineManager.flushTransportLogs(transport));}));yield Promise.all(promises);});}flushSpans(){return __awaiter$3(this,void 0,void 0,function*(){const promises=this.traceTransports.map(transport=>__awaiter$3(this,void 0,void 0,function*(){const transportId=transport.getTransportId();yield this.circuitBreakerRunner.run(transportId,()=>{if(!transport.hasWriteBuffer()&&typeof transport.flush==="function"){return transport.flush();}return this.offlineManager.flushTransportSpans(transport);});}));yield Promise.all(promises);});}processLog(log){return __awaiter$3(this,void 0,void 0,function*(){const transportsAboveLogBaseline=this.logTransports.filter(transport=>transport.getLogTypeBaseline()<=log.type);for(const transport of transportsAboveLogBaseline){if(transport.hasWriteBuffer()){yield this.offlineManager.writeLog(log,transport);}else {const transportId=transport.getTransportId();const runResult=yield this.circuitBreakerRunner.run(transportId,()=>transport.write(log));if(runResult!==0){yield this.offlineManager.writeLog(log,transport);}}}});}processSpan(span){return __awaiter$3(this,void 0,void 0,function*(){const transportWithTracingEnabled=this.traceTransports.filter(transport=>transport.isTracingEnabled());for(const transport of transportWithTracingEnabled){if(transport.hasWriteBuffer()){yield this.offlineManager.writeSpan(span,transport);}else {const transportId=transport.getTransportId();const runResult=yield this.circuitBreakerRunner.run(transportId,()=>transport.write(span));if(runResult!==0){yield this.offlineManager.writeSpan(span,transport);}}}});}setSchedulerTimerInterval(timerInterval){this.taskScheduler.setTimerInterval(timerInterval);}setAggregateSpansStatus(value){this.offlineManager.setAggregateSpansStatus(value);}}var Visibility;(function(Visibility){Visibility[Visibility["Internal"]=0]="Internal";Visibility[Visibility["External"]=1]="External";Visibility[Visibility["Client"]=2]="Client";})(Visibility||(Visibility={}));var Visibility$1=_exports.Visibility=Visibility;/** Detect free variable `global` from Node.js. */var freeGlobal$1=typeof commonjsGlobal$1=='object'&&commonjsGlobal$1&&commonjsGlobal$1.Object===Object&&commonjsGlobal$1;var _freeGlobal=freeGlobal$1;var freeGlobal=_freeGlobal;/** Detect free variable `self`. */var freeSelf=typeof self=='object'&&self&&self.Object===Object&&self;/** Used as a reference to the global object. */var root$8=freeGlobal||freeSelf||Function('return this')();var _root=root$8;var root$7=_root;/** Built-in value references. */var Symbol$5=root$7.Symbol;var _Symbol=Symbol$5;var Symbol$4=_Symbol;/** Used for built-in method references. */var objectProto$d=Object.prototype;/** Used to check objects for own properties. */var hasOwnProperty$a=objectProto$d.hasOwnProperty;/**
     	 * Used to resolve the
     	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
     	 * of values.
@@ -8978,9 +8913,9 @@
     	 *
     	 * _.isFunction(/abc/);
     	 * // => false
-    	 */function isFunction$4(value){if(!isObject$4(value)){return false;}// The use of `Object#toString` avoids issues with the `typeof` operator
+    	 */function isFunction$3(value){if(!isObject$4(value)){return false;}// The use of `Object#toString` avoids issues with the `typeof` operator
     	// in Safari 9 which returns 'object' for typed arrays and other constructors.
-    	var tag=baseGetTag$4(value);return tag==funcTag$1||tag==genTag||tag==asyncTag||tag==proxyTag;}var isFunction_1=isFunction$4;var root$6=_root;/** Used to detect overreaching core-js shims. */var coreJsData$1=root$6['__core-js_shared__'];var _coreJsData=coreJsData$1;var coreJsData=_coreJsData;/** Used to detect methods masquerading as native. */var maskSrcKey=function(){var uid=/[^.]+$/.exec(coreJsData&&coreJsData.keys&&coreJsData.keys.IE_PROTO||'');return uid?'Symbol(src)_1.'+uid:'';}();/**
+    	var tag=baseGetTag$4(value);return tag==funcTag$1||tag==genTag||tag==asyncTag||tag==proxyTag;}var isFunction_1=isFunction$3;var root$6=_root;/** Used to detect overreaching core-js shims. */var coreJsData$1=root$6['__core-js_shared__'];var _coreJsData=coreJsData$1;var coreJsData=_coreJsData;/** Used to detect methods masquerading as native. */var maskSrcKey=function(){var uid=/[^.]+$/.exec(coreJsData&&coreJsData.keys&&coreJsData.keys.IE_PROTO||'');return uid?'Symbol(src)_1.'+uid:'';}();/**
     	 * Checks if `func` has its source masked.
     	 *
     	 * @private
@@ -8992,7 +8927,7 @@
     	 * @private
     	 * @param {Function} func The function to convert.
     	 * @returns {string} Returns the source code.
-    	 */function toSource$2(func){if(func!=null){try{return funcToString$1.call(func);}catch(e){}try{return func+'';}catch(e){}}return '';}var _toSource=toSource$2;var isFunction$3=isFunction_1,isMasked=_isMasked,isObject$3=isObject_1,toSource$1=_toSource;/**
+    	 */function toSource$2(func){if(func!=null){try{return funcToString$1.call(func);}catch(e){}try{return func+'';}catch(e){}}return '';}var _toSource=toSource$2;var isFunction$2=isFunction_1,isMasked=_isMasked,isObject$3=isObject_1,toSource$1=_toSource;/**
     	 * Used to match `RegExp`
     	 * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
     	 */var reRegExpChar=/[\\^$.*+?()[\]{}|]/g;/** Used to detect host constructors (Safari). */var reIsHostCtor=/^\[object .+?Constructor\]$/;/** Used for built-in method references. */var funcProto=Function.prototype,objectProto$b=Object.prototype;/** Used to resolve the decompiled source of functions. */var funcToString=funcProto.toString;/** Used to check objects for own properties. */var hasOwnProperty$9=objectProto$b.hasOwnProperty;/** Used to detect if a method is native. */var reIsNative=RegExp('^'+funcToString.call(hasOwnProperty$9).replace(reRegExpChar,'\\$&').replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,'$1.*?')+'$');/**
@@ -9002,7 +8937,7 @@
     	 * @param {*} value The value to check.
     	 * @returns {boolean} Returns `true` if `value` is a native function,
     	 *  else `false`.
-    	 */function baseIsNative$1(value){if(!isObject$3(value)||isMasked(value)){return false;}var pattern=isFunction$3(value)?reIsNative:reIsHostCtor;return pattern.test(toSource$1(value));}var _baseIsNative=baseIsNative$1;/**
+    	 */function baseIsNative$1(value){if(!isObject$3(value)||isMasked(value)){return false;}var pattern=isFunction$2(value)?reIsNative:reIsHostCtor;return pattern.test(toSource$1(value));}var _baseIsNative=baseIsNative$1;/**
     	 * Gets the value at `key` of `object`.
     	 *
     	 * @private
@@ -9236,7 +9171,7 @@
     	 * @private
     	 * @param {Object} object The object to query.
     	 * @returns {Array} Returns the array of property names.
-    	 */function baseKeys$1(object){if(!isPrototype$1(object)){return nativeKeys(object);}var result=[];for(var key in Object(object)){if(hasOwnProperty$6.call(object,key)&&key!='constructor'){result.push(key);}}return result;}var _baseKeys=baseKeys$1;var isFunction$2=isFunction_1,isLength$1=isLength_1;/**
+    	 */function baseKeys$1(object){if(!isPrototype$1(object)){return nativeKeys(object);}var result=[];for(var key in Object(object)){if(hasOwnProperty$6.call(object,key)&&key!='constructor'){result.push(key);}}return result;}var _baseKeys=baseKeys$1;var isFunction$1=isFunction_1,isLength$1=isLength_1;/**
     	 * Checks if `value` is array-like. A value is considered array-like if it's
     	 * not a function and has a `value.length` that's an integer greater than or
     	 * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
@@ -9260,7 +9195,7 @@
     	 *
     	 * _.isArrayLike(_.noop);
     	 * // => false
-    	 */function isArrayLike$2(value){return value!=null&&isLength$1(value.length)&&!isFunction$2(value);}var isArrayLike_1=isArrayLike$2;var arrayLikeKeys$1=_arrayLikeKeys,baseKeys=_baseKeys,isArrayLike$1=isArrayLike_1;/**
+    	 */function isArrayLike$2(value){return value!=null&&isLength$1(value.length)&&!isFunction$1(value);}var isArrayLike_1=isArrayLike$2;var arrayLikeKeys$1=_arrayLikeKeys,baseKeys=_baseKeys,isArrayLike$1=isArrayLike_1;/**
     	 * Creates an array of the own enumerable property names of `object`.
     	 *
     	 * **Note:** Non-object values are coerced to objects. See the
@@ -10142,7 +10077,7 @@
     	 *
     	 * _.pickBy(object, _.isNumber);
     	 * // => { 'a': 1, 'c': 3 }
-    	 */function pickBy(object,predicate){if(object==null){return {};}var props=arrayMap(getAllKeysIn(object),function(prop){return [prop];});predicate=baseIteratee(predicate);return basePickBy(object,props,function(value,path){return predicate(value,path[0]);});}var pickBy_1=pickBy;var pickBy$1=/*@__PURE__*/getDefaultExportFromCjs(pickBy_1);const DefaultErrorCode="OS-CLRT-00000";const evaluateObjFuncValues=objFuncValues=>{const fullLogAttributes=mapValues$1(objFuncValues,getFieldValue=>getFieldValue());const filteredLogAttributes=pickBy$1(fullLogAttributes,fieldValue=>fieldValue!==undefined&&fieldValue!==null);return filteredLogAttributes;};const mapVisibilityToNumber={[Visibility$1.Internal]:1,[Visibility$1.External]:2,[Visibility$1.Client]:3};const getExceptionAttributes=log=>{var _a,_b,_c;const exceptionAttributes={};if(log.type===LogType$1.Error&&log.error){exceptionAttributes["exception.type"]=log.error.name;exceptionAttributes["exception.message"]=removeQueryParametersUrl(log.error.message);exceptionAttributes["exception.stacktrace"]=(_a=log.error.stack)!==null&&_a!==void 0?_a:"";exceptionAttributes["outsystems.error.code"]=(_c=(_b=log.errorCode)===null||_b===void 0?void 0:_b.toString())!==null&&_c!==void 0?_c:DefaultErrorCode.toString();}return exceptionAttributes;};const getTraceFields=log=>{const traceAttributes={};const trace=log.span;if(trace){traceAttributes["traceId"]=trace.traceId;traceAttributes["spanId"]=trace.spanId;}return traceAttributes;};const convertObjectToAttributesList=attributes=>{const mapTypeToValueName=value=>{if(typeof value==="boolean"){return "boolValue";}if(typeof value==="number"){if(value%1===0){return "intValue";}return "doubleValue";}return "stringValue";};const attributesList=Object.entries(attributes).map(_ref13=>{let[key,value]=_ref13;return {key,value:{[mapTypeToValueName(value)]:value}};});return attributesList;};const sanitizeUrlAttribute=attributes=>{if(attributes["http.url"]){attributes["http.url"]=removeQueryParametersUrl(attributes["http.url"]);}return attributes;};const removeQueryParametersUrl=url=>{return url.replace(/((outsystems|https|http):\/\/[^ ]*?)\?[^ ]*/g,"$1");};var _Logger_transportManager,_Logger_getTimestamp,_Logger_baseAttributes;class Logger{constructor(_ref14){let{baseAttributes={},transportManager,getTimestamp}=_ref14;_Logger_transportManager.set(this,void 0);_Logger_getTimestamp.set(this,void 0);_Logger_baseAttributes.set(this,void 0);__classPrivateFieldSet(this,_Logger_transportManager,transportManager);__classPrivateFieldSet(this,_Logger_getTimestamp,getTimestamp);__classPrivateFieldSet(this,_Logger_baseAttributes,baseAttributes);}static build(_a){return __awaiter$3(this,arguments,void 0,function(_ref15){let{transports=[],baseAttributes,databaseNameSuffix,transportManager=new TransportManager({databaseNameSuffix,logTransports:transports}),getTimestamp=()=>new Instant()}=_ref15;return function*(){return new Logger({baseAttributes,transportManager,getTimestamp});}();});}addTransport(transport){__classPrivateFieldGet(this,_Logger_transportManager,"f").addLogTransport(transport);}removeTransport(transportId){__classPrivateFieldGet(this,_Logger_transportManager,"f").removeLogTransport(transportId);}setLogTypeBaseline(){let logType=arguments.length>0&&arguments[0]!==undefined?arguments[0]:LogType$1.Error;__classPrivateFieldGet(this,_Logger_transportManager,"f").setAllLogTypeBaselines(logType);}flush(){return __awaiter$3(this,void 0,void 0,function*(){__classPrivateFieldGet(this,_Logger_transportManager,"f").flushLogs();});}setSchedulerTimerInterval(timerInterval){__classPrivateFieldGet(this,_Logger_transportManager,"f").setSchedulerTimerInterval(timerInterval);}error(_ref16){let{category,message,error,errorCode,visibility=Visibility$1.Internal,span,attributes}=_ref16;const errorLog=new Log({type:LogType$1.Error,category,message,error,visibility,timestamp:__classPrivateFieldGet(this,_Logger_getTimestamp,"f").call(this),errorCode,span,attributes:Object.assign(Object.assign({},evaluateObjFuncValues(__classPrivateFieldGet(this,_Logger_baseAttributes,"f"))),attributes)});__classPrivateFieldGet(this,_Logger_transportManager,"f").processLog(errorLog);}warning(_ref17){let{category,message,visibility=Visibility$1.Internal,span,attributes}=_ref17;const warningLog=new Log({type:LogType$1.Warning,category,message,visibility,timestamp:__classPrivateFieldGet(this,_Logger_getTimestamp,"f").call(this),span,attributes:Object.assign(Object.assign({},evaluateObjFuncValues(__classPrivateFieldGet(this,_Logger_baseAttributes,"f"))),attributes)});__classPrivateFieldGet(this,_Logger_transportManager,"f").processLog(warningLog);}info(_ref18){let{category,message,visibility=Visibility$1.External,span,attributes}=_ref18;const infoLog=new Log({type:LogType$1.Info,category,message,visibility,timestamp:__classPrivateFieldGet(this,_Logger_getTimestamp,"f").call(this),span,attributes:Object.assign(Object.assign({},evaluateObjFuncValues(__classPrivateFieldGet(this,_Logger_baseAttributes,"f"))),attributes)});__classPrivateFieldGet(this,_Logger_transportManager,"f").processLog(infoLog);}debug(_ref19){let{category,message,visibility=Visibility$1.Internal,span,attributes}=_ref19;const debugLog=new Log({type:LogType$1.Debug,category,message,visibility,timestamp:__classPrivateFieldGet(this,_Logger_getTimestamp,"f").call(this),span,attributes:Object.assign(Object.assign({},evaluateObjFuncValues(__classPrivateFieldGet(this,_Logger_baseAttributes,"f"))),attributes)});__classPrivateFieldGet(this,_Logger_transportManager,"f").processLog(debugLog);}log(logObject){return __awaiter$3(this,void 0,void 0,function*(){yield __classPrivateFieldGet(this,_Logger_transportManager,"f").processLog(logObject);});}}_exports.Logger=Logger;_Logger_transportManager=new WeakMap(),_Logger_getTimestamp=new WeakMap(),_Logger_baseAttributes=new WeakMap();/*
+    	 */function pickBy(object,predicate){if(object==null){return {};}var props=arrayMap(getAllKeysIn(object),function(prop){return [prop];});predicate=baseIteratee(predicate);return basePickBy(object,props,function(value,path){return predicate(value,path[0]);});}var pickBy_1=pickBy;var pickBy$1=/*@__PURE__*/getDefaultExportFromCjs(pickBy_1);const DefaultErrorCode="OS-CLRT-00000";const evaluateObjFuncValues=objFuncValues=>{const fullLogAttributes=mapValues$1(objFuncValues,getFieldValue=>getFieldValue());const filteredLogAttributes=pickBy$1(fullLogAttributes,fieldValue=>fieldValue!==undefined&&fieldValue!==null);return filteredLogAttributes;};const mapVisibilityToNumber={[Visibility$1.Internal]:1,[Visibility$1.External]:2,[Visibility$1.Client]:3};const getExceptionAttributes=log=>{var _a,_b,_c;const exceptionAttributes={};if(log.type===LogType$1.Error&&log.error){exceptionAttributes["exception.type"]=log.error.name;exceptionAttributes["exception.message"]=removeQueryParametersUrl(log.error.message);exceptionAttributes["exception.stacktrace"]=(_a=log.error.stack)!==null&&_a!==void 0?_a:"";exceptionAttributes["outsystems.error.code"]=(_c=(_b=log.errorCode)===null||_b===void 0?void 0:_b.toString())!==null&&_c!==void 0?_c:DefaultErrorCode.toString();}return exceptionAttributes;};const getTraceFields=log=>{const traceAttributes={};const trace=log.span;if(trace){traceAttributes["traceId"]=trace.traceId;traceAttributes["spanId"]=trace.spanId;}return traceAttributes;};const convertObjectToAttributesList=attributes=>{const mapTypeToValueName=value=>{if(typeof value==="boolean"){return "boolValue";}if(typeof value==="number"){if(value%1===0){return "intValue";}return "doubleValue";}return "stringValue";};const attributesList=Object.entries(attributes).map(_ref11=>{let[key,value]=_ref11;return {key,value:{[mapTypeToValueName(value)]:value}};});return attributesList;};const sanitizeUrlAttribute=attributes=>{if(attributes["http.url"]){attributes["http.url"]=removeQueryParametersUrl(attributes["http.url"]);}return attributes;};const removeQueryParametersUrl=url=>{return url.replace(/((outsystems|https|http):\/\/[^ ]*?)\?[^ ]*/g,"$1");};var _Logger_transportManager,_Logger_getTimestamp,_Logger_baseAttributes;class Logger{constructor(_ref12){let{baseAttributes={},transportManager,getTimestamp}=_ref12;_Logger_transportManager.set(this,void 0);_Logger_getTimestamp.set(this,void 0);_Logger_baseAttributes.set(this,void 0);__classPrivateFieldSet(this,_Logger_transportManager,transportManager);__classPrivateFieldSet(this,_Logger_getTimestamp,getTimestamp);__classPrivateFieldSet(this,_Logger_baseAttributes,baseAttributes);}static build(_a){return __awaiter$3(this,arguments,void 0,function(_ref13){let{transports=[],baseAttributes,databaseNameSuffix,transportManager=new TransportManager({databaseNameSuffix,logTransports:transports}),getTimestamp=()=>new Instant()}=_ref13;return function*(){return new Logger({baseAttributes,transportManager,getTimestamp});}();});}addTransport(transport){__classPrivateFieldGet(this,_Logger_transportManager,"f").addLogTransport(transport);}removeTransport(transportId){__classPrivateFieldGet(this,_Logger_transportManager,"f").removeLogTransport(transportId);}setLogTypeBaseline(){let logType=arguments.length>0&&arguments[0]!==undefined?arguments[0]:LogType$1.Error;__classPrivateFieldGet(this,_Logger_transportManager,"f").setAllLogTypeBaselines(logType);}flush(){return __awaiter$3(this,void 0,void 0,function*(){__classPrivateFieldGet(this,_Logger_transportManager,"f").flushLogs();});}setSchedulerTimerInterval(timerInterval){__classPrivateFieldGet(this,_Logger_transportManager,"f").setSchedulerTimerInterval(timerInterval);}error(_ref14){let{category,message,error,errorCode,visibility=Visibility$1.Internal,span,attributes}=_ref14;const errorLog=new Log({type:LogType$1.Error,category,message,error,visibility,timestamp:__classPrivateFieldGet(this,_Logger_getTimestamp,"f").call(this),errorCode,span,attributes:Object.assign(Object.assign({},evaluateObjFuncValues(__classPrivateFieldGet(this,_Logger_baseAttributes,"f"))),attributes)});__classPrivateFieldGet(this,_Logger_transportManager,"f").processLog(errorLog);}warning(_ref15){let{category,message,visibility=Visibility$1.Internal,span,attributes}=_ref15;const warningLog=new Log({type:LogType$1.Warning,category,message,visibility,timestamp:__classPrivateFieldGet(this,_Logger_getTimestamp,"f").call(this),span,attributes:Object.assign(Object.assign({},evaluateObjFuncValues(__classPrivateFieldGet(this,_Logger_baseAttributes,"f"))),attributes)});__classPrivateFieldGet(this,_Logger_transportManager,"f").processLog(warningLog);}info(_ref16){let{category,message,visibility=Visibility$1.External,span,attributes}=_ref16;const infoLog=new Log({type:LogType$1.Info,category,message,visibility,timestamp:__classPrivateFieldGet(this,_Logger_getTimestamp,"f").call(this),span,attributes:Object.assign(Object.assign({},evaluateObjFuncValues(__classPrivateFieldGet(this,_Logger_baseAttributes,"f"))),attributes)});__classPrivateFieldGet(this,_Logger_transportManager,"f").processLog(infoLog);}debug(_ref17){let{category,message,visibility=Visibility$1.Internal,span,attributes}=_ref17;const debugLog=new Log({type:LogType$1.Debug,category,message,visibility,timestamp:__classPrivateFieldGet(this,_Logger_getTimestamp,"f").call(this),span,attributes:Object.assign(Object.assign({},evaluateObjFuncValues(__classPrivateFieldGet(this,_Logger_baseAttributes,"f"))),attributes)});__classPrivateFieldGet(this,_Logger_transportManager,"f").processLog(debugLog);}log(logObject){return __awaiter$3(this,void 0,void 0,function*(){yield __classPrivateFieldGet(this,_Logger_transportManager,"f").processLog(logObject);});}}_exports.Logger=Logger;_Logger_transportManager=new WeakMap(),_Logger_getTimestamp=new WeakMap(),_Logger_baseAttributes=new WeakMap();/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -10357,7 +10292,7 @@
     	// some property is readonly in safari, such as HtmlCanvasElement.prototype.toBlob
     	const desc=proto&&ObjectGetOwnPropertyDescriptor(proto,name);if(isPropertyWritable(desc)){const patchDelegate=patchFn(delegate,delegateName,name);proto[name]=function(){return patchDelegate(this,arguments);};attachOriginToPatched(proto[name],delegate);}}return delegate;}// TODO: @JiaLiPassion, support cancel task later if necessary
     	function patchMacroTask(obj,funcName,metaCreator){let setNative=null;function scheduleTask(task){const data=task.data;data.args[data.cbIdx]=function(){task.invoke.apply(this,arguments);};setNative.apply(data.target,data.args);return task;}setNative=patchMethod(obj,funcName,delegate=>function(self,args){const meta=metaCreator(self,args);if(meta.cbIdx>=0&&typeof args[meta.cbIdx]==='function'){return scheduleMacroTaskWithCurrentZone(meta.name,args[meta.cbIdx],meta,scheduleTask);}else {// cause an error by calling it directly.
-    	return delegate.apply(self,args);}});}function attachOriginToPatched(patched,original){patched[zoneSymbol('OriginalDelegate')]=original;}let isDetectedIEOrEdge=false;let ieOrEdge=false;function isIE(){try{const ua=internalWindow.navigator.userAgent;if(ua.indexOf('MSIE ')!==-1||ua.indexOf('Trident/')!==-1){return true;}}catch(error){}return false;}function isIEOrEdge(){if(isDetectedIEOrEdge){return ieOrEdge;}isDetectedIEOrEdge=true;try{const ua=internalWindow.navigator.userAgent;if(ua.indexOf('MSIE ')!==-1||ua.indexOf('Trident/')!==-1||ua.indexOf('Edge/')!==-1){ieOrEdge=true;}}catch(error){}return ieOrEdge;}function isFunction$1(value){return typeof value==='function';}function isNumber(value){return typeof value==='number';}/**
+    	return delegate.apply(self,args);}});}function attachOriginToPatched(patched,original){patched[zoneSymbol('OriginalDelegate')]=original;}let isDetectedIEOrEdge=false;let ieOrEdge=false;function isIE(){try{const ua=internalWindow.navigator.userAgent;if(ua.indexOf('MSIE ')!==-1||ua.indexOf('Trident/')!==-1){return true;}}catch(error){}return false;}function isIEOrEdge(){if(isDetectedIEOrEdge){return ieOrEdge;}isDetectedIEOrEdge=true;try{const ua=internalWindow.navigator.userAgent;if(ua.indexOf('MSIE ')!==-1||ua.indexOf('Trident/')!==-1||ua.indexOf('Edge/')!==-1){ieOrEdge=true;}}catch(error){}return ieOrEdge;}function isFunction(value){return typeof value==='function';}function isNumber(value){return typeof value==='number';}/**
     	 * @fileoverview
     	 * @suppress {missingRequire}
     	 */// Note that passive event listeners are now supported by most modern browsers,
@@ -10516,7 +10451,7 @@
     	// to this so that we do not cause potentally leaks when using `setTimeout`
     	// since this can be periodic when using `.refresh`.
     	if(isNumber(handleOrId)){data.handleId=handleOrId;}else {data.handle=handleOrId;// On Node.js a timeout and interval can be restarted over and over again by using the `.refresh` method.
-    	data.isRefreshable=isFunction$1(handleOrId.refresh);}return task;}function clearTask(task){const{handle,handleId}=task.data;return clearNative.call(window,handle!==null&&handle!==void 0?handle:handleId);}setNative=patchMethod(window,setName,delegate=>function(self,args){if(isFunction$1(args[0])){var _ref20;const options={isRefreshable:false,isPeriodic:nameSuffix==='Interval',delay:nameSuffix==='Timeout'||nameSuffix==='Interval'?args[1]||0:undefined,args:args};const callback=args[0];args[0]=function timer(){try{return callback.apply(this,arguments);}finally{// issue-934, task will be cancelled
+    	data.isRefreshable=isFunction(handleOrId.refresh);}return task;}function clearTask(task){const{handle,handleId}=task.data;return clearNative.call(window,handle!==null&&handle!==void 0?handle:handleId);}setNative=patchMethod(window,setName,delegate=>function(self,args){if(isFunction(args[0])){var _ref18;const options={isRefreshable:false,isPeriodic:nameSuffix==='Interval',delay:nameSuffix==='Timeout'||nameSuffix==='Interval'?args[1]||0:undefined,args:args};const callback=args[0];args[0]=function timer(){try{return callback.apply(this,arguments);}finally{// issue-934, task will be cancelled
     	// even it is a periodic task such as
     	// setInterval
     	// https://github.com/angular/angular/issues/40387
@@ -10532,7 +10467,7 @@
     	// mapping in local cache for clearTimeout
     	tasksByHandleId[handleId]=task;}else if(handle){// for nodejs env, we save task
     	// reference in timerId Object for clearTimeout
-    	handle[taskSymbol]=task;if(isRefreshable&&!isPeriodic){const originalRefresh=handle.refresh;handle.refresh=function(){const{zone,state}=task;if(state==='notScheduled'){task._state='scheduled';zone._updateTaskCount(task,1);}else if(state==='running'){task._state='scheduling';}return originalRefresh.call(this);};}}return (_ref20=handle!==null&&handle!==void 0?handle:handleId)!==null&&_ref20!==void 0?_ref20:task;}else {// cause an error by calling it directly.
+    	handle[taskSymbol]=task;if(isRefreshable&&!isPeriodic){const originalRefresh=handle.refresh;handle.refresh=function(){const{zone,state}=task;if(state==='notScheduled'){task._state='scheduled';zone._updateTaskCount(task,1);}else if(state==='running'){task._state='scheduling';}return originalRefresh.call(this);};}}return (_ref18=handle!==null&&handle!==void 0?handle:handleId)!==null&&_ref18!==void 0?_ref18:task;}else {// cause an error by calling it directly.
     	return delegate.apply(window,args);}});clearNative=patchMethod(window,cancelName,delegate=>function(self,args){var _task;const id=args[0];let task;if(isNumber(id)){// non nodejs env.
     	task=tasksByHandleId[id];delete tasksByHandleId[id];}else {// nodejs env ?? other environments.
     	task=id===null||id===void 0?void 0:id[taskSymbol];if(task){id[taskSymbol]=null;}else {task=id;}}if((_task=task)!==null&&_task!==void 0&&_task.type){if(task.cancelFn){// Do not cancel already canceled functions
@@ -10671,7 +10606,7 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var NoopLogger=/** @class */function(){function NoopLogger(){}NoopLogger.prototype.emit=function(_logRecord){};return NoopLogger;}();/*
+    	 */class NoopLogger{emit(_logRecord){}}const NOOP_LOGGER=new NoopLogger();/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -10685,7 +10620,51 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var NoopLoggerProvider=/** @class */function(){function NoopLoggerProvider(){}NoopLoggerProvider.prototype.getLogger=function(_name,_version,_options){return new NoopLogger();};return NoopLoggerProvider;}();var NOOP_LOGGER_PROVIDER=new NoopLoggerProvider();/*
+    	 */class NoopLoggerProvider{getLogger(_name,_version,_options){return new NoopLogger();}}const NOOP_LOGGER_PROVIDER=new NoopLoggerProvider();/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */class ProxyLogger{constructor(_provider,name,version,options){this._provider=_provider;this.name=name;this.version=version;this.options=options;}/**
+    	     * Emit a log record. This method should only be used by log appenders.
+    	     *
+    	     * @param logRecord
+    	     */emit(logRecord){this._getLogger().emit(logRecord);}/**
+    	     * Try to get a logger from the proxy logger provider.
+    	     * If the proxy logger provider has no delegate, return a noop logger.
+    	     */_getLogger(){if(this._delegate){return this._delegate;}const logger=this._provider._getDelegateLogger(this.name,this.version,this.options);if(!logger){return NOOP_LOGGER;}this._delegate=logger;return this._delegate;}}/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */class ProxyLoggerProvider{getLogger(name,version,options){var _a;return (_a=this._getDelegateLogger(name,version,options))!==null&&_a!==void 0?_a:new ProxyLogger(this,name,version,options);}/**
+    	     * Get the delegate logger provider.
+    	     * Used by tests only.
+    	     * @internal
+    	     */_getDelegate(){var _a;return (_a=this._delegate)!==null&&_a!==void 0?_a:NOOP_LOGGER_PROVIDER;}/**
+    	     * Set the delegate logger provider
+    	     * @internal
+    	     */_setDelegate(delegate){this._delegate=delegate;}/**
+    	     * @internal
+    	     */_getDelegateLogger(name,version,options){var _a;return (_a=this._delegate)===null||_a===void 0?void 0:_a.getLogger(name,version,options);}}/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -10707,8 +10686,8 @@
     	 * - window (fallback for older browser implementations)
     	 * - global (NodeJS implementation)
     	 * - <object> (When all else fails)
-    	 *//** only globals that common to node and browsers are allowed */// eslint-disable-next-line node/no-unsupported-features/es-builtins, no-undef
-    	var _globalThis=typeof globalThis==='object'?globalThis:typeof self==='object'?self:typeof window==='object'?window:typeof commonjsGlobal==='object'?commonjsGlobal:{};/*
+    	 *//** only globals that common to node and browsers are allowed */// eslint-disable-next-line n/no-unsupported-features/es-builtins, no-undef
+    	const _globalThis$1=typeof globalThis==='object'?globalThis:typeof self==='object'?self:typeof window==='object'?window:typeof commonjsGlobal==='object'?commonjsGlobal:{};/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -10722,20 +10701,20 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var GLOBAL_LOGS_API_KEY=Symbol.for('io.opentelemetry.js.api.logs');var _global=_globalThis;/**
+    	 */const GLOBAL_LOGS_API_KEY=Symbol.for('io.opentelemetry.js.api.logs');const _global=_globalThis$1;/**
     	 * Make a function which accepts a version integer and returns the instance of an API if the version
     	 * is compatible, or a fallback version (usually NOOP) if it is not.
     	 *
     	 * @param requiredVersion Backwards compatibility version which is required to return the instance
     	 * @param instance Instance which should be returned if the required version is compatible
     	 * @param fallback Fallback instance, usually NOOP, which will be returned if the required version is not compatible
-    	 */function makeGetter(requiredVersion,instance,fallback){return function(version){return version===requiredVersion?instance:fallback;};}/**
+    	 */function makeGetter(requiredVersion,instance,fallback){return version=>version===requiredVersion?instance:fallback;}/**
     	 * A number which should be incremented each time a backwards incompatible
     	 * change is made to the API. This number is used when an API package
     	 * attempts to access the global API to ensure it is getting a compatible
     	 * version. If the global API is not compatible with the API package
     	 * attempting to get it, a NOOP API implementation will be returned.
-    	 */var API_BACKWARDS_COMPATIBILITY_VERSION=1;/*
+    	 */const API_BACKWARDS_COMPATIBILITY_VERSION=1;/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -10749,15 +10728,15 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var LogsAPI=/** @class */function(){function LogsAPI(){}LogsAPI.getInstance=function(){if(!this._instance){this._instance=new LogsAPI();}return this._instance;};LogsAPI.prototype.setGlobalLoggerProvider=function(provider){if(_global[GLOBAL_LOGS_API_KEY]){return this.getLoggerProvider();}_global[GLOBAL_LOGS_API_KEY]=makeGetter(API_BACKWARDS_COMPATIBILITY_VERSION,provider,NOOP_LOGGER_PROVIDER);return provider;};/**
+    	 */class LogsAPI{constructor(){this._proxyLoggerProvider=new ProxyLoggerProvider();}static getInstance(){if(!this._instance){this._instance=new LogsAPI();}return this._instance;}setGlobalLoggerProvider(provider){if(_global[GLOBAL_LOGS_API_KEY]){return this.getLoggerProvider();}_global[GLOBAL_LOGS_API_KEY]=makeGetter(API_BACKWARDS_COMPATIBILITY_VERSION,provider,NOOP_LOGGER_PROVIDER);this._proxyLoggerProvider._setDelegate(provider);return provider;}/**
     	     * Returns the global logger provider.
     	     *
     	     * @returns LoggerProvider
-    	     */LogsAPI.prototype.getLoggerProvider=function(){var _a,_b;return (_b=(_a=_global[GLOBAL_LOGS_API_KEY])===null||_a===void 0?void 0:_a.call(_global,API_BACKWARDS_COMPATIBILITY_VERSION))!==null&&_b!==void 0?_b:NOOP_LOGGER_PROVIDER;};/**
+    	     */getLoggerProvider(){var _a,_b;return (_b=(_a=_global[GLOBAL_LOGS_API_KEY])===null||_a===void 0?void 0:_a.call(_global,API_BACKWARDS_COMPATIBILITY_VERSION))!==null&&_b!==void 0?_b:this._proxyLoggerProvider;}/**
     	     * Returns a logger from the global logger provider.
     	     *
     	     * @returns Logger
-    	     */LogsAPI.prototype.getLogger=function(name,version,options){return this.getLoggerProvider().getLogger(name,version,options);};/** Remove the global logger provider */LogsAPI.prototype.disable=function(){delete _global[GLOBAL_LOGS_API_KEY];};return LogsAPI;}();/*
+    	     */getLogger(name,version,options){return this.getLoggerProvider().getLogger(name,version,options);}/** Remove the global logger provider */disable(){delete _global[GLOBAL_LOGS_API_KEY];this._proxyLoggerProvider=new ProxyLoggerProvider();}}/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -10771,11 +10750,25 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var logs=LogsAPI.getInstance();function isFunction(funktion){return typeof funktion==='function';}// Default to complaining loudly when things don't go according to plan.
-    	var logger=console.error.bind(console);// Sets a property on an object, preserving its enumerability.
+    	 */const logs=LogsAPI.getInstance();/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */// Default to complaining loudly when things don't go according to plan.
+    	// eslint-disable-next-line no-console
+    	let logger=console.error.bind(console);// Sets a property on an object, preserving its enumerability.
     	// This function assumes that the property is already writable.
-    	function defineProperty(obj,name,value){var enumerable=!!obj[name]&&obj.propertyIsEnumerable(name);Object.defineProperty(obj,name,{configurable:true,enumerable:enumerable,writable:true,value:value});}// Keep initialization idempotent.
-    	function shimmer(options){if(options&&options.logger){if(!isFunction(options.logger))logger("new logger isn't a function, not replacing");else logger=options.logger;}}function wrap(nodule,name,wrapper){if(!nodule||!nodule[name]){logger('no original function '+name+' to wrap');return;}if(!wrapper){logger('no wrapper function');logger(new Error().stack);return;}if(!isFunction(nodule[name])||!isFunction(wrapper)){logger('original object and wrapper must be functions');return;}var original=nodule[name];var wrapped=wrapper(original,name);defineProperty(wrapped,'__original',original);defineProperty(wrapped,'__unwrap',function(){if(nodule[name]===wrapped)defineProperty(nodule,name,original);});defineProperty(wrapped,'__wrapped',true);defineProperty(nodule,name,wrapped);return wrapped;}function massWrap(nodules,names,wrapper){if(!nodules){logger('must provide one or more modules to patch');logger(new Error().stack);return;}else if(!Array.isArray(nodules)){nodules=[nodules];}if(!(names&&Array.isArray(names))){logger('must provide one or more functions to wrap on modules');return;}nodules.forEach(function(nodule){names.forEach(function(name){wrap(nodule,name,wrapper);});});}function unwrap(nodule,name){if(!nodule||!nodule[name]){logger('no function to unwrap.');logger(new Error().stack);return;}if(!nodule[name].__unwrap){logger('no original to unwrap to -- has '+name+' already been unwrapped?');}else {return nodule[name].__unwrap();}}function massUnwrap(nodules,names){if(!nodules){logger('must provide one or more modules to patch');logger(new Error().stack);return;}else if(!Array.isArray(nodules)){nodules=[nodules];}if(!(names&&Array.isArray(names))){logger('must provide one or more functions to unwrap on modules');return;}nodules.forEach(function(nodule){names.forEach(function(name){unwrap(nodule,name);});});}shimmer.wrap=wrap;shimmer.massWrap=massWrap;shimmer.unwrap=unwrap;shimmer.massUnwrap=massUnwrap;var shimmer_1=shimmer;/*
+    	function defineProperty(obj,name,value){const enumerable=!!obj[name]&&Object.prototype.propertyIsEnumerable.call(obj,name);Object.defineProperty(obj,name,{configurable:true,enumerable,writable:true,value});}const wrap=(nodule,name,wrapper)=>{if(!nodule||!nodule[name]){logger('no original function '+String(name)+' to wrap');return;}if(!wrapper){logger('no wrapper function');logger(new Error().stack);return;}const original=nodule[name];if(typeof original!=='function'||typeof wrapper!=='function'){logger('original object and wrapper must be functions');return;}const wrapped=wrapper(original,name);defineProperty(wrapped,'__original',original);defineProperty(wrapped,'__unwrap',()=>{if(nodule[name]===wrapped){defineProperty(nodule,name,original);}});defineProperty(wrapped,'__wrapped',true);defineProperty(nodule,name,wrapped);return wrapped;};const massWrap=(nodules,names,wrapper)=>{if(!nodules){logger('must provide one or more modules to patch');logger(new Error().stack);return;}else if(!Array.isArray(nodules)){nodules=[nodules];}if(!(names&&Array.isArray(names))){logger('must provide one or more functions to wrap on modules');return;}nodules.forEach(nodule=>{names.forEach(name=>{wrap(nodule,name,wrapper);});});};const unwrap=(nodule,name)=>{if(!nodule||!nodule[name]){logger('no function to unwrap.');logger(new Error().stack);return;}const wrapped=nodule[name];if(!wrapped.__unwrap){logger('no original to unwrap to -- has '+String(name)+' already been unwrapped?');}else {wrapped.__unwrap();return;}};const massUnwrap=(nodules,names)=>{if(!nodules){logger('must provide one or more modules to patch');logger(new Error().stack);return;}else if(!Array.isArray(nodules)){nodules=[nodules];}if(!(names&&Array.isArray(names))){logger('must provide one or more functions to unwrap on modules');return;}nodules.forEach(nodule=>{names.forEach(name=>{unwrap(nodule,name);});});};/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -10789,39 +10782,39 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var __assign$1=function(){__assign$1=Object.assign||function(t){for(var s,i=1,n=arguments.length;i<n;i++){s=arguments[i];for(var p in s)if(Object.prototype.hasOwnProperty.call(s,p))t[p]=s[p];}return t;};return __assign$1.apply(this,arguments);};/**
+    	 *//**
     	 * Base abstract internal class for instrumenting node and web plugins
-    	 */var InstrumentationAbstract=/** @class */function(){function InstrumentationAbstract(instrumentationName,instrumentationVersion,config){this.instrumentationName=instrumentationName;this.instrumentationVersion=instrumentationVersion;this._config={};/* Api to wrap instrumented method */this._wrap=shimmer_1.wrap;/* Api to unwrap instrumented methods */this._unwrap=shimmer_1.unwrap;/* Api to mass wrap instrumented method */this._massWrap=shimmer_1.massWrap;/* Api to mass unwrap instrumented methods */this._massUnwrap=shimmer_1.massUnwrap;this.setConfig(config);this._diag=diag.createComponentLogger({namespace:instrumentationName});this._tracer=trace.getTracer(instrumentationName,instrumentationVersion);this._meter=metrics.getMeter(instrumentationName,instrumentationVersion);this._logger=logs.getLogger(instrumentationName,instrumentationVersion);this._updateMetricInstruments();}Object.defineProperty(InstrumentationAbstract.prototype,"meter",{/* Returns meter */get:function(){return this._meter;},enumerable:false,configurable:true});/**
+    	 */class InstrumentationAbstract{constructor(instrumentationName,instrumentationVersion,config){_defineProperty2(this,"instrumentationName",void 0);_defineProperty2(this,"instrumentationVersion",void 0);_defineProperty2(this,"_config",{});_defineProperty2(this,"_tracer",void 0);_defineProperty2(this,"_meter",void 0);_defineProperty2(this,"_logger",void 0);_defineProperty2(this,"_diag",void 0);/* Api to wrap instrumented method */_defineProperty2(this,"_wrap",wrap);/* Api to unwrap instrumented methods */_defineProperty2(this,"_unwrap",unwrap);/* Api to mass wrap instrumented method */_defineProperty2(this,"_massWrap",massWrap);/* Api to mass unwrap instrumented methods */_defineProperty2(this,"_massUnwrap",massUnwrap);this.instrumentationName=instrumentationName;this.instrumentationVersion=instrumentationVersion;this.setConfig(config);this._diag=diag.createComponentLogger({namespace:instrumentationName});this._tracer=trace.getTracer(instrumentationName,instrumentationVersion);this._meter=metrics.getMeter(instrumentationName,instrumentationVersion);this._logger=logs.getLogger(instrumentationName,instrumentationVersion);this._updateMetricInstruments();}/* Returns meter */get meter(){return this._meter;}/**
     	     * Sets MeterProvider to this plugin
     	     * @param meterProvider
-    	     */InstrumentationAbstract.prototype.setMeterProvider=function(meterProvider){this._meter=meterProvider.getMeter(this.instrumentationName,this.instrumentationVersion);this._updateMetricInstruments();};Object.defineProperty(InstrumentationAbstract.prototype,"logger",{/* Returns logger */get:function(){return this._logger;},enumerable:false,configurable:true});/**
+    	     */setMeterProvider(meterProvider){this._meter=meterProvider.getMeter(this.instrumentationName,this.instrumentationVersion);this._updateMetricInstruments();}/* Returns logger */get logger(){return this._logger;}/**
     	     * Sets LoggerProvider to this plugin
     	     * @param loggerProvider
-    	     */InstrumentationAbstract.prototype.setLoggerProvider=function(loggerProvider){this._logger=loggerProvider.getLogger(this.instrumentationName,this.instrumentationVersion);};/**
+    	     */setLoggerProvider(loggerProvider){this._logger=loggerProvider.getLogger(this.instrumentationName,this.instrumentationVersion);}/**
     	     * @experimental
     	     *
     	     * Get module definitions defined by {@link init}.
     	     * This can be used for experimental compile-time instrumentation.
     	     *
     	     * @returns an array of {@link InstrumentationModuleDefinition}
-    	     */InstrumentationAbstract.prototype.getModuleDefinitions=function(){var _a;var initResult=(_a=this.init())!==null&&_a!==void 0?_a:[];if(!Array.isArray(initResult)){return [initResult];}return initResult;};/**
+    	     */getModuleDefinitions(){var _this$init;const initResult=(_this$init=this.init())!==null&&_this$init!==void 0?_this$init:[];if(!Array.isArray(initResult)){return [initResult];}return initResult;}/**
     	     * Sets the new metric instruments with the current Meter.
-    	     */InstrumentationAbstract.prototype._updateMetricInstruments=function(){return;};/* Returns InstrumentationConfig */InstrumentationAbstract.prototype.getConfig=function(){return this._config;};/**
+    	     */_updateMetricInstruments(){return;}/* Returns InstrumentationConfig */getConfig(){return this._config;}/**
     	     * Sets InstrumentationConfig to this plugin
     	     * @param config
-    	     */InstrumentationAbstract.prototype.setConfig=function(config){// copy config first level properties to ensure they are immutable.
+    	     */setConfig(config){// copy config first level properties to ensure they are immutable.
     	// nested properties are not copied, thus are mutable from the outside.
-    	this._config=__assign$1({enabled:true},config);};/**
+    	this._config={enabled:true,...config};}/**
     	     * Sets TraceProvider to this plugin
     	     * @param tracerProvider
-    	     */InstrumentationAbstract.prototype.setTracerProvider=function(tracerProvider){this._tracer=tracerProvider.getTracer(this.instrumentationName,this.instrumentationVersion);};Object.defineProperty(InstrumentationAbstract.prototype,"tracer",{/* Returns tracer */get:function(){return this._tracer;},enumerable:false,configurable:true});/**
+    	     */setTracerProvider(tracerProvider){this._tracer=tracerProvider.getTracer(this.instrumentationName,this.instrumentationVersion);}/* Returns tracer */get tracer(){return this._tracer;}/**
     	     * Execute span customization hook, if configured, and log any errors.
     	     * Any semantics of the trigger and info are defined by the specific instrumentation.
     	     * @param hookHandler The optional hook handler which the user has configured via instrumentation config
     	     * @param triggerName The name of the trigger for executing the hook for logging purposes
     	     * @param span The span to which the hook should be applied
     	     * @param info The info object to be passed to the hook, with useful data the hook may use
-    	     */InstrumentationAbstract.prototype._runSpanCustomizationHook=function(hookHandler,triggerName,span,info){if(!hookHandler){return;}try{hookHandler(span,info);}catch(e){this._diag.error("Error running span customization hook due to exception in handler",{triggerName:triggerName},e);}};return InstrumentationAbstract;}();/*
+    	     */_runSpanCustomizationHook(hookHandler,triggerName,span,info){if(!hookHandler){return;}try{hookHandler(span,info);}catch(e){this._diag.error(`Error running span customization hook due to exception in handler`,{triggerName},e);}}}/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -10835,16 +10828,681 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var __extends$3=function(){var extendStatics=function(d,b){extendStatics=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(d,b){d.__proto__=b;}||function(d,b){for(var p in b)if(Object.prototype.hasOwnProperty.call(b,p))d[p]=b[p];};return extendStatics(d,b);};return function(d,b){if(typeof b!=="function"&&b!==null)throw new TypeError("Class extends value "+String(b)+" is not a constructor or null");extendStatics(d,b);function __(){this.constructor=d;}d.prototype=b===null?Object.create(b):(__.prototype=b.prototype,new __());};}();/**
+    	 *//**
     	 * Base abstract class for instrumenting web plugins
-    	 */var InstrumentationBase=/** @class */function(_super){__extends$3(InstrumentationBase,_super);function InstrumentationBase(instrumentationName,instrumentationVersion,config){var _this=_super.call(this,instrumentationName,instrumentationVersion,config)||this;if(_this._config.enabled){_this.enable();}return _this;}return InstrumentationBase;}(InstrumentationAbstract);/**
+    	 */class InstrumentationBase extends InstrumentationAbstract{constructor(instrumentationName,instrumentationVersion,config){super(instrumentationName,instrumentationVersion,config);if(this._config.enabled){this.enable();}}}/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 *//**
     	 * function to execute patched function and being able to catch errors
     	 * @param execute - function to be executed
     	 * @param onFinish - callback to run when execute finishes
-    	 */function safeExecuteInTheMiddle(execute,onFinish,preventThrowingError){var error;var result;try{result=execute();}catch(e){error=e;}finally{onFinish(error,result);	return result;}}/**
+    	 */function safeExecuteInTheMiddle(execute,onFinish,preventThrowingError){let error;let result;try{result=execute();}catch(e){error=e;}finally{onFinish(error,result);// eslint-disable-next-line no-unsafe-finally
+    	return result;}}/**
     	 * Checks if certain function has been already wrapped
     	 * @param func
     	 */function isWrapped(func){return typeof func==='function'&&typeof func.__original==='function'&&typeof func.__unwrap==='function'&&func.__wrapped===true;}/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */var SemconvStability;(function(SemconvStability){/** Emit only stable semantic conventions. */SemconvStability[SemconvStability["STABLE"]=1]="STABLE";/** Emit only old semantic conventions. */SemconvStability[SemconvStability["OLD"]=2]="OLD";/** Emit both stable and old semantic conventions. */SemconvStability[SemconvStability["DUPLICATE"]=3]="DUPLICATE";})(SemconvStability||(SemconvStability={}));/**
+    	 * Determine the appropriate semconv stability for the given namespace.
+    	 *
+    	 * This will parse the given string of comma-separated values (often
+    	 * `process.env.OTEL_SEMCONV_STABILITY_OPT_IN`) looking for the `${namespace}`
+    	 * or `${namespace}/dup` tokens. This is a pattern defined by a number of
+    	 * non-normative semconv documents.
+    	 *
+    	 * For example:
+    	 * - namespace 'http': https://opentelemetry.io/docs/specs/semconv/non-normative/http-migration/
+    	 * - namespace 'database': https://opentelemetry.io/docs/specs/semconv/non-normative/database-migration/
+    	 * - namespace 'k8s': https://opentelemetry.io/docs/specs/semconv/non-normative/k8s-migration/
+    	 *
+    	 * Usage:
+    	 *
+    	 *  import {SemconvStability, semconvStabilityFromStr} from '@opentelemetry/instrumentation';
+    	 *
+    	 *  export class FooInstrumentation extends InstrumentationBase<FooInstrumentationConfig> {
+    	 *    private _semconvStability: SemconvStability;
+    	 *    constructor(config: FooInstrumentationConfig = {}) {
+    	 *      super('@opentelemetry/instrumentation-foo', VERSION, config);
+    	 *
+    	 *      // When supporting the OTEL_SEMCONV_STABILITY_OPT_IN envvar
+    	 *      this._semconvStability = semconvStabilityFromStr(
+    	 *        'http',
+    	 *        process.env.OTEL_SEMCONV_STABILITY_OPT_IN
+    	 *      );
+    	 *
+    	 *      // or when supporting a `semconvStabilityOptIn` config option (e.g. for
+    	 *      // the web where there are no envvars).
+    	 *      this._semconvStability = semconvStabilityFromStr(
+    	 *        'http',
+    	 *        config?.semconvStabilityOptIn
+    	 *      );
+    	 *    }
+    	 *  }
+    	 *
+    	 *  // Then, to apply semconv, use the following or similar:
+    	 *  if (this._semconvStability & SemconvStability.OLD) {
+    	 *    // ...
+    	 *  }
+    	 *  if (this._semconvStability & SemconvStability.STABLE) {
+    	 *    // ...
+    	 *  }
+    	 *
+    	 */function semconvStabilityFromStr(namespace,str){let semconvStability=SemconvStability.OLD;// The same parsing of `str` as `getStringListFromEnv` from the core pkg.
+    	const entries=str===null||str===void 0?void 0:str.split(',').map(v=>v.trim()).filter(s=>s!=='');for(const entry of entries!==null&&entries!==void 0?entries:[]){if(entry.toLowerCase()===namespace+'/dup'){// DUPLICATE takes highest precedence.
+    	semconvStability=SemconvStability.DUPLICATE;break;}else if(entry.toLowerCase()===namespace){semconvStability=SemconvStability.STABLE;}}return semconvStability;}/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */// Updates to this file should also be replicated to @opentelemetry/api too.
+    	/**
+    	 * - globalThis (New standard)
+    	 * - self (Will return the current window instance for supported browsers)
+    	 * - window (fallback for older browser implementations)
+    	 * - global (NodeJS implementation)
+    	 * - <object> (When all else fails)
+    	 *//** only globals that common to node and browsers are allowed */// eslint-disable-next-line n/no-unsupported-features/es-builtins, no-undef
+    	const _globalThis=typeof globalThis==='object'?globalThis:typeof self==='object'?self:typeof window==='object'?window:typeof commonjsGlobal==='object'?commonjsGlobal:{};/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */const otperformance=performance;/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 *///----------------------------------------------------------------------------------------------------------
+    	// DO NOT EDIT, this is an Auto-generated file from scripts/semconv/templates/registry/stable/attributes.ts.j2
+    	//----------------------------------------------------------------------------------------------------------
+    	/**
+    	 * ASP.NET Core exception middleware handling result.
+    	 *
+    	 * @example handled
+    	 * @example unhandled
+    	 *//**
+    	 * Describes a class of error the operation ended with.
+    	 *
+    	 * @example timeout
+    	 * @example java.net.UnknownHostException
+    	 * @example server_certificate_invalid
+    	 * @example 500
+    	 *
+    	 * @note The `error.type` **SHOULD** be predictable, and **SHOULD** have low cardinality.
+    	 *
+    	 * When `error.type` is set to a type (e.g., an exception type), its
+    	 * canonical class name identifying the type within the artifact **SHOULD** be used.
+    	 *
+    	 * Instrumentations **SHOULD** document the list of errors they report.
+    	 *
+    	 * The cardinality of `error.type` within one instrumentation library **SHOULD** be low.
+    	 * Telemetry consumers that aggregate data from multiple instrumentation libraries and applications
+    	 * should be prepared for `error.type` to have high cardinality at query time when no
+    	 * additional filters are applied.
+    	 *
+    	 * If the operation has completed successfully, instrumentations **SHOULD NOT** set `error.type`.
+    	 *
+    	 * If a specific domain defines its own set of error identifiers (such as HTTP or gRPC status codes),
+    	 * it's **RECOMMENDED** to:
+    	 *
+    	 *   - Use a domain-specific attribute
+    	 *   - Set `error.type` to capture all errors, regardless of whether they are defined within the domain-specific set or not.
+    	 */const ATTR_ERROR_TYPE='error.type';/**
+    	 * HTTP request method.
+    	 *
+    	 * @example GET
+    	 * @example POST
+    	 * @example HEAD
+    	 *
+    	 * @note HTTP request method value **SHOULD** be "known" to the instrumentation.
+    	 * By default, this convention defines "known" methods as the ones listed in [RFC9110](https://www.rfc-editor.org/rfc/rfc9110.html#name-methods)
+    	 * and the PATCH method defined in [RFC5789](https://www.rfc-editor.org/rfc/rfc5789.html).
+    	 *
+    	 * If the HTTP request method is not known to instrumentation, it **MUST** set the `http.request.method` attribute to `_OTHER`.
+    	 *
+    	 * If the HTTP instrumentation could end up converting valid HTTP request methods to `_OTHER`, then it **MUST** provide a way to override
+    	 * the list of known HTTP methods. If this override is done via environment variable, then the environment variable **MUST** be named
+    	 * OTEL_INSTRUMENTATION_HTTP_KNOWN_METHODS and support a comma-separated list of case-sensitive known HTTP methods
+    	 * (this list **MUST** be a full override of the default known method, it is not a list of known methods in addition to the defaults).
+    	 *
+    	 * HTTP method names are case-sensitive and `http.request.method` attribute value **MUST** match a known HTTP method name exactly.
+    	 * Instrumentations for specific web frameworks that consider HTTP methods to be case insensitive, **SHOULD** populate a canonical equivalent.
+    	 * Tracing instrumentations that do so, **MUST** also set `http.request.method_original` to the original value.
+    	 */const ATTR_HTTP_REQUEST_METHOD='http.request.method';/**
+    	 * Original HTTP method sent by the client in the request line.
+    	 *
+    	 * @example GeT
+    	 * @example ACL
+    	 * @example foo
+    	 */const ATTR_HTTP_REQUEST_METHOD_ORIGINAL='http.request.method_original';/**
+    	 * [HTTP response status code](https://tools.ietf.org/html/rfc7231#section-6).
+    	 *
+    	 * @example 200
+    	 */const ATTR_HTTP_RESPONSE_STATUS_CODE='http.response.status_code';/**
+    	 * Server domain name if available without reverse DNS lookup; otherwise, IP address or Unix domain socket name.
+    	 *
+    	 * @example example.com
+    	 * @example 10.1.2.80
+    	 * @example /tmp/my.sock
+    	 *
+    	 * @note When observed from the client side, and when communicating through an intermediary, `server.address` **SHOULD** represent the server address behind any intermediaries, for example proxies, if it's available.
+    	 */const ATTR_SERVER_ADDRESS='server.address';/**
+    	 * Server port number.
+    	 *
+    	 * @example 80
+    	 * @example 8080
+    	 * @example 443
+    	 *
+    	 * @note When observed from the client side, and when communicating through an intermediary, `server.port` **SHOULD** represent the server port behind any intermediaries, for example proxies, if it's available.
+    	 */const ATTR_SERVER_PORT='server.port';/**
+    	 * Absolute URL describing a network resource according to [RFC3986](https://www.rfc-editor.org/rfc/rfc3986)
+    	 *
+    	 * @example https://www.foo.bar/search?q=OpenTelemetry#SemConv
+    	 * @example //localhost
+    	 *
+    	 * @note For network calls, URL usually has `scheme://host[:port][path][?query][#fragment]` format, where the fragment
+    	 * is not transmitted over HTTP, but if it is known, it **SHOULD** be included nevertheless.
+    	 *
+    	 * `url.full` **MUST NOT** contain credentials passed via URL in form of `https://username:password@www.example.com/`.
+    	 * In such case username and password **SHOULD** be redacted and attribute's value **SHOULD** be `https://REDACTED:REDACTED@www.example.com/`.
+    	 *
+    	 * `url.full` **SHOULD** capture the absolute URL when it is available (or can be reconstructed).
+    	 *
+    	 * Sensitive content provided in `url.full` **SHOULD** be scrubbed when instrumentations can identify it.
+    	 *
+    	 *
+    	 * Query string values for the following keys **SHOULD** be redacted by default and replaced by the
+    	 * value `REDACTED`:
+    	 *
+    	 *   - [`AWSAccessKeyId`](https://docs.aws.amazon.com/AmazonS3/latest/userguide/RESTAuthentication.html#RESTAuthenticationQueryStringAuth)
+    	 *   - [`Signature`](https://docs.aws.amazon.com/AmazonS3/latest/userguide/RESTAuthentication.html#RESTAuthenticationQueryStringAuth)
+    	 *   - [`sig`](https://learn.microsoft.com/azure/storage/common/storage-sas-overview#sas-token)
+    	 *   - [`X-Goog-Signature`](https://cloud.google.com/storage/docs/access-control/signed-urls)
+    	 *
+    	 * This list is subject to change over time.
+    	 *
+    	 * When a query string value is redacted, the query string key **SHOULD** still be preserved, e.g.
+    	 * `https://www.example.com/path?color=blue&sig=REDACTED`.
+    	 */const ATTR_URL_FULL='url.full';/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */const NANOSECOND_DIGITS=9;const NANOSECOND_DIGITS_IN_MILLIS=6;const MILLISECONDS_TO_NANOSECONDS=Math.pow(10,NANOSECOND_DIGITS_IN_MILLIS);const SECOND_TO_NANOSECONDS=Math.pow(10,NANOSECOND_DIGITS);/**
+    	 * Converts a number of milliseconds from epoch to HrTime([seconds, remainder in nanoseconds]).
+    	 * @param epochMillis
+    	 */function millisToHrTime(epochMillis){const epochSeconds=epochMillis/1000;// Decimals only.
+    	const seconds=Math.trunc(epochSeconds);// Round sub-nanosecond accuracy to nanosecond.
+    	const nanos=Math.round(epochMillis%1000*MILLISECONDS_TO_NANOSECONDS);return [seconds,nanos];}function getTimeOrigin(){let timeOrigin=otperformance.timeOrigin;if(typeof timeOrigin!=='number'){const perf=otperformance;timeOrigin=perf.timing&&perf.timing.fetchStart;}return timeOrigin;}/**
+    	 * Returns an hrtime calculated via performance component.
+    	 * @param performanceNow
+    	 */function hrTime(performanceNow){const timeOrigin=millisToHrTime(getTimeOrigin());const now=millisToHrTime(typeof performanceNow==='number'?performanceNow:otperformance.now());return addHrTimes(timeOrigin,now);}/**
+    	 *
+    	 * Converts a TimeInput to an HrTime, defaults to _hrtime().
+    	 * @param time
+    	 */function timeInputToHrTime(time){// process.hrtime
+    	if(isTimeInputHrTime(time)){return time;}else if(typeof time==='number'){// Must be a performance.now() if it's smaller than process start time.
+    	if(time<getTimeOrigin()){return hrTime(time);}else {// epoch milliseconds or performance.timeOrigin
+    	return millisToHrTime(time);}}else if(time instanceof Date){return millisToHrTime(time.getTime());}else {throw TypeError('Invalid input type');}}/**
+    	 * Convert hrTime to nanoseconds.
+    	 * @param time
+    	 */function hrTimeToNanoseconds(time){return time[0]*SECOND_TO_NANOSECONDS+time[1];}/**
+    	 * check if time is HrTime
+    	 * @param value
+    	 */function isTimeInputHrTime(value){return Array.isArray(value)&&value.length===2&&typeof value[0]==='number'&&typeof value[1]==='number';}/**
+    	 * Given 2 HrTime formatted times, return their sum as an HrTime.
+    	 */function addHrTimes(time1,time2){const out=[time1[0]+time2[0],time1[1]+time2[1]];// Nanoseconds
+    	if(out[1]>=SECOND_TO_NANOSECONDS){out[1]-=SECOND_TO_NANOSECONDS;out[0]+=1;}return out;}/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */function urlMatches(url,urlToMatch){if(typeof urlToMatch==='string'){return url===urlToMatch;}else {return !!url.match(urlToMatch);}}/**
+    	 * Check if {@param url} should be ignored when comparing against {@param ignoredUrls}
+    	 * @param url
+    	 * @param ignoredUrls
+    	 */function isUrlIgnored(url,ignoredUrls){if(!ignoredUrls){return false;}for(const ignoreUrl of ignoredUrls){if(urlMatches(url,ignoreUrl)){return true;}}return false;}/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */var PerformanceTimingNames;(function(PerformanceTimingNames){PerformanceTimingNames["CONNECT_END"]="connectEnd";PerformanceTimingNames["CONNECT_START"]="connectStart";PerformanceTimingNames["DECODED_BODY_SIZE"]="decodedBodySize";PerformanceTimingNames["DOM_COMPLETE"]="domComplete";PerformanceTimingNames["DOM_CONTENT_LOADED_EVENT_END"]="domContentLoadedEventEnd";PerformanceTimingNames["DOM_CONTENT_LOADED_EVENT_START"]="domContentLoadedEventStart";PerformanceTimingNames["DOM_INTERACTIVE"]="domInteractive";PerformanceTimingNames["DOMAIN_LOOKUP_END"]="domainLookupEnd";PerformanceTimingNames["DOMAIN_LOOKUP_START"]="domainLookupStart";PerformanceTimingNames["ENCODED_BODY_SIZE"]="encodedBodySize";PerformanceTimingNames["FETCH_START"]="fetchStart";PerformanceTimingNames["LOAD_EVENT_END"]="loadEventEnd";PerformanceTimingNames["LOAD_EVENT_START"]="loadEventStart";PerformanceTimingNames["NAVIGATION_START"]="navigationStart";PerformanceTimingNames["REDIRECT_END"]="redirectEnd";PerformanceTimingNames["REDIRECT_START"]="redirectStart";PerformanceTimingNames["REQUEST_START"]="requestStart";PerformanceTimingNames["RESPONSE_END"]="responseEnd";PerformanceTimingNames["RESPONSE_START"]="responseStart";PerformanceTimingNames["SECURE_CONNECTION_START"]="secureConnectionStart";PerformanceTimingNames["START_TIME"]="startTime";PerformanceTimingNames["UNLOAD_EVENT_END"]="unloadEventEnd";PerformanceTimingNames["UNLOAD_EVENT_START"]="unloadEventStart";})(PerformanceTimingNames||(PerformanceTimingNames={}));/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 *//*
+    	 * This file contains a copy of unstable semantic convention definitions
+    	 * used by this package.
+    	 * @see https://github.com/open-telemetry/opentelemetry-js/tree/main/semantic-conventions#unstable-semconv
+    	 *//**
+    	 * Deprecated, use `http.response.header.<key>` instead.
+    	 *
+    	 * @example 3495
+    	 *
+    	 * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+    	 *
+    	 * @deprecated Replaced by `http.response.header.<key>`.
+    	 */const ATTR_HTTP_RESPONSE_CONTENT_LENGTH='http.response_content_length';/**
+    	 * Deprecated, use `http.response.body.size` instead.
+    	 *
+    	 * @example 5493
+    	 *
+    	 * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+    	 *
+    	 * @deprecated Replace by `http.response.body.size`.
+    	 */const ATTR_HTTP_RESPONSE_CONTENT_LENGTH_UNCOMPRESSED='http.response_content_length_uncompressed';/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */// Used to normalize relative URLs
+    	let urlNormalizingAnchor;function getUrlNormalizingAnchor(){if(!urlNormalizingAnchor){urlNormalizingAnchor=document.createElement('a');}return urlNormalizingAnchor;}/**
+    	 * Helper function to be able to use enum as typed key in type and in interface when using forEach
+    	 * @param obj
+    	 * @param key
+    	 */function hasKey(obj,key){return key in obj;}/**
+    	 * Helper function for starting an event on span based on {@link PerformanceEntries}
+    	 * @param span
+    	 * @param performanceName name of performance entry for time start
+    	 * @param entries
+    	 * @param ignoreZeros
+    	 */function addSpanNetworkEvent(span,performanceName,entries){let ignoreZeros=arguments.length>3&&arguments[3]!==undefined?arguments[3]:true;if(hasKey(entries,performanceName)&&typeof entries[performanceName]==='number'&&!(ignoreZeros&&entries[performanceName]===0)){return span.addEvent(performanceName,entries[performanceName]);}return undefined;}/**
+    	 * Helper function for adding network events and content length attributes.
+    	 */function addSpanNetworkEvents(span,resource){let ignoreNetworkEvents=arguments.length>2&&arguments[2]!==undefined?arguments[2]:false;let ignoreZeros=arguments.length>3?arguments[3]:undefined;let skipOldSemconvContentLengthAttrs=arguments.length>4?arguments[4]:undefined;if(ignoreZeros===undefined){ignoreZeros=resource[PerformanceTimingNames.START_TIME]!==0;}if(!ignoreNetworkEvents){addSpanNetworkEvent(span,PerformanceTimingNames.FETCH_START,resource,ignoreZeros);addSpanNetworkEvent(span,PerformanceTimingNames.DOMAIN_LOOKUP_START,resource,ignoreZeros);addSpanNetworkEvent(span,PerformanceTimingNames.DOMAIN_LOOKUP_END,resource,ignoreZeros);addSpanNetworkEvent(span,PerformanceTimingNames.CONNECT_START,resource,ignoreZeros);addSpanNetworkEvent(span,PerformanceTimingNames.SECURE_CONNECTION_START,resource,ignoreZeros);addSpanNetworkEvent(span,PerformanceTimingNames.CONNECT_END,resource,ignoreZeros);addSpanNetworkEvent(span,PerformanceTimingNames.REQUEST_START,resource,ignoreZeros);addSpanNetworkEvent(span,PerformanceTimingNames.RESPONSE_START,resource,ignoreZeros);addSpanNetworkEvent(span,PerformanceTimingNames.RESPONSE_END,resource,ignoreZeros);}if(!skipOldSemconvContentLengthAttrs){// This block adds content-length-related span attributes using the
+    	// *old* HTTP semconv (v1.7.0).
+    	const encodedLength=resource[PerformanceTimingNames.ENCODED_BODY_SIZE];if(encodedLength!==undefined){span.setAttribute(ATTR_HTTP_RESPONSE_CONTENT_LENGTH,encodedLength);}const decodedLength=resource[PerformanceTimingNames.DECODED_BODY_SIZE];// Spec: Not set if transport encoding not used (in which case encoded and decoded sizes match)
+    	if(decodedLength!==undefined&&encodedLength!==decodedLength){span.setAttribute(ATTR_HTTP_RESPONSE_CONTENT_LENGTH_UNCOMPRESSED,decodedLength);}}}/**
+    	 * sort resources by startTime
+    	 * @param filteredResources
+    	 */function sortResources(filteredResources){return filteredResources.slice().sort((a,b)=>{const valueA=a[PerformanceTimingNames.FETCH_START];const valueB=b[PerformanceTimingNames.FETCH_START];if(valueA>valueB){return 1;}else if(valueA<valueB){return  -1;}return 0;});}/** Returns the origin if present (if in browser context). */function getOrigin(){return typeof location!=='undefined'?location.origin:undefined;}/**
+    	 * Get closest performance resource ignoring the resources that have been
+    	 * already used.
+    	 * @param spanUrl
+    	 * @param startTimeHR
+    	 * @param endTimeHR
+    	 * @param resources
+    	 * @param ignoredResources
+    	 * @param initiatorType
+    	 */function getResource(spanUrl,startTimeHR,endTimeHR,resources){let ignoredResources=arguments.length>4&&arguments[4]!==undefined?arguments[4]:new WeakSet();let initiatorType=arguments.length>5?arguments[5]:undefined;// de-relativize the URL before usage (does no harm to absolute URLs)
+    	const parsedSpanUrl=parseUrl(spanUrl);spanUrl=parsedSpanUrl.toString();const filteredResources=filterResourcesForSpan(spanUrl,startTimeHR,endTimeHR,resources,ignoredResources,initiatorType);if(filteredResources.length===0){return {mainRequest:undefined};}if(filteredResources.length===1){return {mainRequest:filteredResources[0]};}const sorted=sortResources(filteredResources);if(parsedSpanUrl.origin!==getOrigin()&&sorted.length>1){let corsPreFlightRequest=sorted[0];let mainRequest=findMainRequest(sorted,corsPreFlightRequest[PerformanceTimingNames.RESPONSE_END],endTimeHR);const responseEnd=corsPreFlightRequest[PerformanceTimingNames.RESPONSE_END];const fetchStart=mainRequest[PerformanceTimingNames.FETCH_START];// no corsPreFlightRequest
+    	if(fetchStart<responseEnd){mainRequest=corsPreFlightRequest;corsPreFlightRequest=undefined;}return {corsPreFlightRequest,mainRequest};}else {return {mainRequest:filteredResources[0]};}}/**
+    	 * Will find the main request skipping the cors pre flight requests
+    	 * @param resources
+    	 * @param corsPreFlightRequestEndTime
+    	 * @param spanEndTimeHR
+    	 */function findMainRequest(resources,corsPreFlightRequestEndTime,spanEndTimeHR){const spanEndTime=hrTimeToNanoseconds(spanEndTimeHR);const minTime=hrTimeToNanoseconds(timeInputToHrTime(corsPreFlightRequestEndTime));let mainRequest=resources[1];let bestGap;const length=resources.length;for(let i=1;i<length;i++){const resource=resources[i];const resourceStartTime=hrTimeToNanoseconds(timeInputToHrTime(resource[PerformanceTimingNames.FETCH_START]));const resourceEndTime=hrTimeToNanoseconds(timeInputToHrTime(resource[PerformanceTimingNames.RESPONSE_END]));const currentGap=spanEndTime-resourceEndTime;if(resourceStartTime>=minTime&&(!bestGap||currentGap<bestGap)){bestGap=currentGap;mainRequest=resource;}}return mainRequest;}/**
+    	 * Filter all resources that has started and finished according to span start time and end time.
+    	 *     It will return the closest resource to a start time
+    	 * @param spanUrl
+    	 * @param startTimeHR
+    	 * @param endTimeHR
+    	 * @param resources
+    	 * @param ignoredResources
+    	 */function filterResourcesForSpan(spanUrl,startTimeHR,endTimeHR,resources,ignoredResources,initiatorType){const startTime=hrTimeToNanoseconds(startTimeHR);const endTime=hrTimeToNanoseconds(endTimeHR);let filteredResources=resources.filter(resource=>{const resourceStartTime=hrTimeToNanoseconds(timeInputToHrTime(resource[PerformanceTimingNames.FETCH_START]));const resourceEndTime=hrTimeToNanoseconds(timeInputToHrTime(resource[PerformanceTimingNames.RESPONSE_END]));return resource.initiatorType.toLowerCase()===initiatorType&&resource.name===spanUrl&&resourceStartTime>=startTime&&resourceEndTime<=endTime;});if(filteredResources.length>0){filteredResources=filteredResources.filter(resource=>{return !ignoredResources.has(resource);});}return filteredResources;}/**
+    	 * Parses url using URL constructor or fallback to anchor element.
+    	 * @param url
+    	 */function parseUrl(url){if(typeof URL==='function'){return new URL(url,typeof document!=='undefined'?document.baseURI:typeof location!=='undefined'// Some JS runtimes (e.g. Deno) don't define this
+    	?location.href:undefined);}const element=getUrlNormalizingAnchor();element.href=url;return element;}/**
+    	 * Checks if trace headers should be propagated
+    	 * @param spanUrl
+    	 * @private
+    	 */function shouldPropagateTraceHeaders(spanUrl,propagateTraceHeaderCorsUrls){let propagateTraceHeaderUrls=propagateTraceHeaderCorsUrls||[];if(typeof propagateTraceHeaderUrls==='string'||propagateTraceHeaderUrls instanceof RegExp){propagateTraceHeaderUrls=[propagateTraceHeaderUrls];}const parsedSpanUrl=parseUrl(spanUrl);if(parsedSpanUrl.origin===getOrigin()){return true;}else {return propagateTraceHeaderUrls.some(propagateTraceHeaderUrl=>urlMatches(spanUrl,propagateTraceHeaderUrl));}}/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 *//**
+    	 * https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/http.md
+    	 */var AttributeNames;(function(AttributeNames){AttributeNames["COMPONENT"]="component";AttributeNames["HTTP_STATUS_TEXT"]="http.status_text";})(AttributeNames||(AttributeNames={}));/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 *//*
+    	 * This file contains a copy of unstable semantic convention definitions
+    	 * used by this package.
+    	 * @see https://github.com/open-telemetry/opentelemetry-js/tree/main/semantic-conventions#unstable-semconv
+    	 *//**
+    	 * Deprecated, use one of `server.address`, `client.address` or `http.request.header.host` instead, depending on the usage.
+    	 *
+    	 * @example www.example.org
+    	 *
+    	 * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+    	 *
+    	 * @deprecated Replaced by one of `server.address`, `client.address` or `http.request.header.host`, depending on the usage.
+    	 */const ATTR_HTTP_HOST='http.host';/**
+    	 * Deprecated, use `http.request.method` instead.
+    	 *
+    	 * @example GET
+    	 * @example POST
+    	 * @example HEAD
+    	 *
+    	 * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+    	 *
+    	 * @deprecated Replaced by `http.request.method`.
+    	 */const ATTR_HTTP_METHOD='http.method';/**
+    	 * The size of the request payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size.
+    	 *
+    	 * @example 3495
+    	 *
+    	 * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+    	 */const ATTR_HTTP_REQUEST_BODY_SIZE='http.request.body.size';/**
+    	 * Deprecated, use `http.request.body.size` instead.
+    	 *
+    	 * @example 5493
+    	 *
+    	 * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+    	 *
+    	 * @deprecated Replaced by `http.request.body.size`.
+    	 */const ATTR_HTTP_REQUEST_CONTENT_LENGTH_UNCOMPRESSED='http.request_content_length_uncompressed';/**
+    	 * Deprecated, use `url.scheme` instead.
+    	 *
+    	 * @example http
+    	 * @example https
+    	 *
+    	 * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+    	 *
+    	 * @deprecated Replaced by `url.scheme` instead.
+    	 */const ATTR_HTTP_SCHEME='http.scheme';/**
+    	 * Deprecated, use `http.response.status_code` instead.
+    	 *
+    	 * @example 200
+    	 *
+    	 * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+    	 *
+    	 * @deprecated Replaced by `http.response.status_code`.
+    	 */const ATTR_HTTP_STATUS_CODE='http.status_code';/**
+    	 * Deprecated, use `url.full` instead.
+    	 *
+    	 * @example https://www.foo.bar/search?q=OpenTelemetry#SemConv
+    	 *
+    	 * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+    	 *
+    	 * @deprecated Replaced by `url.full`.
+    	 */const ATTR_HTTP_URL='http.url';/**
+    	 * Deprecated, use `user_agent.original` instead.
+    	 *
+    	 * @example CERN-LineMode/2.15 libwww/2.17b3
+    	 * @example Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1
+    	 *
+    	 * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+    	 *
+    	 * @deprecated Replaced by `user_agent.original`.
+    	 */const ATTR_HTTP_USER_AGENT='http.user_agent';/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */// Much of the logic here overlaps with the same utils file in opentelemetry-instrumentation-xml-http-request
+    	// These may be unified in the future.
+    	const DIAG_LOGGER=diag.createComponentLogger({namespace:'@opentelemetry/opentelemetry-instrumentation-fetch/utils'});/**
+    	 * Helper function to determine payload content length for fetch requests
+    	 *
+    	 * The fetch API is kinda messy: there are a couple of ways the body can be passed in.
+    	 *
+    	 * In all cases, the body param can be some variation of ReadableStream,
+    	 * and ReadableStreams can only be read once! We want to avoid consuming the body here,
+    	 * because that would mean that the body never gets sent with the actual fetch request.
+    	 *
+    	 * Either the first arg is a Request object, which can be cloned
+    	 *   so we can clone that object and read the body of the clone
+    	 *   without disturbing the original argument
+    	 *   However, reading the body here can only be done async; the body() method returns a promise
+    	 *   this means this entire function has to return a promise
+    	 *
+    	 * OR the first arg is a url/string
+    	 *   in which case the second arg has type RequestInit
+    	 *   RequestInit is NOT cloneable, but RequestInit.body is writable
+    	 *   so we can chain it into ReadableStream.pipeThrough()
+    	 *
+    	 *   ReadableStream.pipeThrough() lets us process a stream and returns a new stream
+    	 *   So we can measure the body length as it passes through the pie, but need to attach
+    	 *   the new stream to the original request
+    	 *   so that the browser still has access to the body.
+    	 *
+    	 * @param body
+    	 * @returns promise that resolves to the content length of the body
+    	 */function getFetchBodyLength(){if((arguments.length<=0?undefined:arguments[0])instanceof URL||typeof(arguments.length<=0?undefined:arguments[0])==='string'){const requestInit=arguments.length<=1?undefined:arguments[1];if(!(requestInit!==null&&requestInit!==void 0&&requestInit.body)){return Promise.resolve();}if(requestInit.body instanceof ReadableStream){const{body,length}=_getBodyNonDestructively(requestInit.body);requestInit.body=body;return length;}else {return Promise.resolve(getXHRBodyLength(requestInit.body));}}else {const info=arguments.length<=0?undefined:arguments[0];if(!(info!==null&&info!==void 0&&info.body)){return Promise.resolve();}return info.clone().text().then(t=>getByteLength(t));}}function _getBodyNonDestructively(body){// can't read a ReadableStream without destroying it
+    	// but we CAN pipe it through and return a new ReadableStream
+    	// some (older) platforms don't expose the pipeThrough method and in that scenario, we're out of luck;
+    	//   there's no way to read the stream without consuming it.
+    	if(!body.pipeThrough){DIAG_LOGGER.warn('Platform has ReadableStream but not pipeThrough!');return {body,length:Promise.resolve(undefined)};}let length=0;let resolveLength;const lengthPromise=new Promise(resolve=>{resolveLength=resolve;});const transform=new TransformStream({start(){},async transform(chunk,controller){const bytearray=await chunk;length+=bytearray.byteLength;controller.enqueue(chunk);},flush(){resolveLength(length);}});return {body:body.pipeThrough(transform),length:lengthPromise};}function isDocument(value){return typeof Document!=='undefined'&&value instanceof Document;}/**
+    	 * Helper function to determine payload content length for XHR requests
+    	 * @param body
+    	 * @returns content length
+    	 */function getXHRBodyLength(body){if(isDocument(body)){return new XMLSerializer().serializeToString(document).length;}// XMLHttpRequestBodyInit expands to the following:
+    	if(typeof body==='string'){return getByteLength(body);}if(body instanceof Blob){return body.size;}if(body instanceof FormData){return getFormDataSize(body);}if(body instanceof URLSearchParams){return getByteLength(body.toString());}// ArrayBuffer | ArrayBufferView
+    	if(body.byteLength!==undefined){return body.byteLength;}DIAG_LOGGER.warn('unknown body type');return undefined;}const TEXT_ENCODER=new TextEncoder();function getByteLength(s){return TEXT_ENCODER.encode(s).byteLength;}function getFormDataSize(formData){let size=0;for(const[key,value]of formData.entries()){size+=key.length;if(value instanceof Blob){size+=value.size;}else {size+=value.length;}}return size;}/**
+    	 * Normalize an HTTP request method string per `http.request.method` spec
+    	 * https://github.com/open-telemetry/semantic-conventions/blob/main/docs/http/http-spans.md#http-client-span
+    	 */function normalizeHttpRequestMethod(method){const knownMethods=getKnownMethods();const methUpper=method.toUpperCase();if(methUpper in knownMethods){return methUpper;}else {return '_OTHER';}}const DEFAULT_KNOWN_METHODS={CONNECT:true,DELETE:true,GET:true,HEAD:true,OPTIONS:true,PATCH:true,POST:true,PUT:true,TRACE:true};let knownMethods;function getKnownMethods(){if(knownMethods===undefined){{knownMethods=DEFAULT_KNOWN_METHODS;}}return knownMethods;}const HTTP_PORT_FROM_PROTOCOL={'https:':'443','http:':'80'};function serverPortFromUrl(url){const serverPort=Number(url.port||HTTP_PORT_FROM_PROTOCOL[url.protocol]);// Guard with `if (serverPort)` because `Number('') === 0`.
+    	if(serverPort&&!isNaN(serverPort)){return serverPort;}else {return undefined;}}/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */// this is autogenerated file, see scripts/version-update.js
+    	const VERSION='0.206.0';/*
+    	 * Copyright The OpenTelemetry Authors
+    	 *
+    	 * Licensed under the Apache License, Version 2.0 (the "License");
+    	 * you may not use this file except in compliance with the License.
+    	 * You may obtain a copy of the License at
+    	 *
+    	 *      https://www.apache.org/licenses/LICENSE-2.0
+    	 *
+    	 * Unless required by applicable law or agreed to in writing, software
+    	 * distributed under the License is distributed on an "AS IS" BASIS,
+    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    	 * See the License for the specific language governing permissions and
+    	 * limitations under the License.
+    	 */// how long to wait for observer to collect information about resources
+    	// this is needed as event "load" is called before observer
+    	// hard to say how long it should really wait, seems like 300ms is
+    	// safe enough
+    	const OBSERVER_WAIT_TIME_MS=300;const isNode=typeof process==='object'&&((_process$release=process.release)===null||_process$release===void 0?void 0:_process$release.name)==='node';/**
+    	 * This class represents a fetch plugin for auto instrumentation
+    	 */class FetchInstrumentation extends InstrumentationBase{constructor(){let config=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};super('@opentelemetry/instrumentation-fetch',VERSION,config);_defineProperty2(this,"component",'fetch');_defineProperty2(this,"version",VERSION);_defineProperty2(this,"moduleName",this.component);_defineProperty2(this,"_usedResources",new WeakSet());_defineProperty2(this,"_tasksCount",0);_defineProperty2(this,"_semconvStability",void 0);this._semconvStability=semconvStabilityFromStr('http',config===null||config===void 0?void 0:config.semconvStabilityOptIn);}init(){}/**
+    	     * Add cors pre flight child span
+    	     * @param span
+    	     * @param corsPreFlightRequest
+    	     */_addChildSpan(span,corsPreFlightRequest){const childSpan=this.tracer.startSpan('CORS Preflight',{startTime:corsPreFlightRequest[PerformanceTimingNames.FETCH_START]},trace.setSpan(context.active(),span));const skipOldSemconvContentLengthAttrs=!(this._semconvStability&SemconvStability.OLD);addSpanNetworkEvents(childSpan,corsPreFlightRequest,this.getConfig().ignoreNetworkEvents,undefined,skipOldSemconvContentLengthAttrs);childSpan.end(corsPreFlightRequest[PerformanceTimingNames.RESPONSE_END]);}/**
+    	     * Adds more attributes to span just before ending it
+    	     * @param span
+    	     * @param response
+    	     */_addFinalSpanAttributes(span,response){const parsedUrl=parseUrl(response.url);if(this._semconvStability&SemconvStability.OLD){span.setAttribute(ATTR_HTTP_STATUS_CODE,response.status);if(response.statusText!=null){span.setAttribute(AttributeNames.HTTP_STATUS_TEXT,response.statusText);}span.setAttribute(ATTR_HTTP_HOST,parsedUrl.host);span.setAttribute(ATTR_HTTP_SCHEME,parsedUrl.protocol.replace(':',''));if(typeof navigator!=='undefined'){span.setAttribute(ATTR_HTTP_USER_AGENT,navigator.userAgent);}}if(this._semconvStability&SemconvStability.STABLE){span.setAttribute(ATTR_HTTP_RESPONSE_STATUS_CODE,response.status);// TODO: Set server.{address,port} at span creation for sampling decisions
+    	// (a "SHOULD" requirement in semconv).
+    	span.setAttribute(ATTR_SERVER_ADDRESS,parsedUrl.hostname);const serverPort=serverPortFromUrl(parsedUrl);if(serverPort){span.setAttribute(ATTR_SERVER_PORT,serverPort);}}}/**
+    	     * Add headers
+    	     * @param options
+    	     * @param spanUrl
+    	     */_addHeaders(options,spanUrl){if(!shouldPropagateTraceHeaders(spanUrl,this.getConfig().propagateTraceHeaderCorsUrls)){const headers={};propagation.inject(context.active(),headers);if(Object.keys(headers).length>0){this._diag.debug('headers inject skipped due to CORS policy');}return;}if(options instanceof Request){propagation.inject(context.active(),options.headers,{set:(h,k,v)=>h.set(k,typeof v==='string'?v:String(v))});}else if(options.headers instanceof Headers){propagation.inject(context.active(),options.headers,{set:(h,k,v)=>h.set(k,typeof v==='string'?v:String(v))});}else if(options.headers instanceof Map){propagation.inject(context.active(),options.headers,{set:(h,k,v)=>h.set(k,typeof v==='string'?v:String(v))});}else {const headers={};propagation.inject(context.active(),headers);options.headers=Object.assign({},headers,options.headers||{});}}/**
+    	     * Clears the resource timings and all resources assigned with spans
+    	     *     when {@link FetchPluginConfig.clearTimingResources} is
+    	     *     set to true (default false)
+    	     * @private
+    	     */_clearResources(){if(this._tasksCount===0&&this.getConfig().clearTimingResources){performance.clearResourceTimings();this._usedResources=new WeakSet();}}/**
+    	     * Creates a new span
+    	     * @param url
+    	     * @param options
+    	     */_createSpan(url){let options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};if(isUrlIgnored(url,this.getConfig().ignoreUrls)){this._diag.debug('ignoring span as url matches ignored url');return;}let name='';const attributes={};if(this._semconvStability&SemconvStability.OLD){const method=(options.method||'GET').toUpperCase();name=`HTTP ${method}`;attributes[AttributeNames.COMPONENT]=this.moduleName;attributes[ATTR_HTTP_METHOD]=method;attributes[ATTR_HTTP_URL]=url;}if(this._semconvStability&SemconvStability.STABLE){const origMethod=options.method;const normMethod=normalizeHttpRequestMethod(options.method||'GET');if(!name){// The "old" span name wins if emitting both old and stable semconv
+    	// ('http/dup').
+    	name=normMethod;}attributes[ATTR_HTTP_REQUEST_METHOD]=normMethod;if(normMethod!==origMethod){attributes[ATTR_HTTP_REQUEST_METHOD_ORIGINAL]=origMethod;}attributes[ATTR_URL_FULL]=url;}return this.tracer.startSpan(name,{kind:SpanKind$1.CLIENT,attributes});}/**
+    	     * Finds appropriate resource and add network events to the span
+    	     * @param span
+    	     * @param resourcesObserver
+    	     * @param endTime
+    	     */_findResourceAndAddNetworkEvents(span,resourcesObserver,endTime){let resources=resourcesObserver.entries;if(!resources.length){if(!performance.getEntriesByType){return;}// fallback - either Observer is not available or it took longer
+    	// then OBSERVER_WAIT_TIME_MS and observer didn't collect enough
+    	// information
+    	resources=performance.getEntriesByType('resource');}const resource=getResource(resourcesObserver.spanUrl,resourcesObserver.startTime,endTime,resources,this._usedResources,'fetch');if(resource.mainRequest){const mainRequest=resource.mainRequest;this._markResourceAsUsed(mainRequest);const corsPreFlightRequest=resource.corsPreFlightRequest;if(corsPreFlightRequest){this._addChildSpan(span,corsPreFlightRequest);this._markResourceAsUsed(corsPreFlightRequest);}const skipOldSemconvContentLengthAttrs=!(this._semconvStability&SemconvStability.OLD);addSpanNetworkEvents(span,mainRequest,this.getConfig().ignoreNetworkEvents,undefined,skipOldSemconvContentLengthAttrs);}}/**
+    	     * Marks certain [resource]{@link PerformanceResourceTiming} when information
+    	     * from this is used to add events to span.
+    	     * This is done to avoid reusing the same resource again for next span
+    	     * @param resource
+    	     */_markResourceAsUsed(resource){this._usedResources.add(resource);}/**
+    	     * Finish span, add attributes, network events etc.
+    	     * @param span
+    	     * @param spanData
+    	     * @param response
+    	     */_endSpan(span,spanData,response){const endTime=millisToHrTime(Date.now());const performanceEndTime=hrTime();this._addFinalSpanAttributes(span,response);if(this._semconvStability&SemconvStability.STABLE){// https://github.com/open-telemetry/semantic-conventions/blob/main/docs/http/http-spans.md#status
+    	if(response.status>=400){span.setStatus({code:SpanStatusCode.ERROR});span.setAttribute(ATTR_ERROR_TYPE,String(response.status));}}setTimeout(()=>{var _spanData$observer;(_spanData$observer=spanData.observer)===null||_spanData$observer===void 0||_spanData$observer.disconnect();this._findResourceAndAddNetworkEvents(span,spanData,performanceEndTime);this._tasksCount--;this._clearResources();span.end(endTime);},OBSERVER_WAIT_TIME_MS);}/**
+    	     * Patches the constructor of fetch
+    	     */_patchConstructor(){return original=>{const plugin=this;return function patchConstructor(){const self=this;for(var _len5=arguments.length,args=new Array(_len5),_key6=0;_key6<_len5;_key6++){args[_key6]=arguments[_key6];}const url=parseUrl(args[0]instanceof Request?args[0].url:String(args[0])).href;const options=args[0]instanceof Request?args[0]:args[1]||{};const createdSpan=plugin._createSpan(url,options);if(!createdSpan){return original.apply(this,args);}const spanData=plugin._prepareSpanData(url);if(plugin.getConfig().measureRequestSize){getFetchBodyLength(...args).then(bodyLength=>{if(!bodyLength)return;if(plugin._semconvStability&SemconvStability.OLD){createdSpan.setAttribute(ATTR_HTTP_REQUEST_CONTENT_LENGTH_UNCOMPRESSED,bodyLength);}if(plugin._semconvStability&SemconvStability.STABLE){createdSpan.setAttribute(ATTR_HTTP_REQUEST_BODY_SIZE,bodyLength);}}).catch(error=>{plugin._diag.warn('getFetchBodyLength',error);});}function endSpanOnError(span,error){plugin._applyAttributesAfterFetch(span,options,error);plugin._endSpan(span,spanData,{status:error.status||0,statusText:error.message,url});}function endSpanOnSuccess(span,response){plugin._applyAttributesAfterFetch(span,options,response);if(response.status>=200&&response.status<400){plugin._endSpan(span,spanData,response);}else {plugin._endSpan(span,spanData,{status:response.status,statusText:response.statusText,url});}}function withCancelPropagation(body,readerClone){if(!body)return null;const reader=body.getReader();return new ReadableStream({async pull(controller){try{const{value,done}=await reader.read();if(done){reader.releaseLock();controller.close();}else {controller.enqueue(value);}}catch(err){controller.error(err);reader.cancel(err).catch(_=>{});try{reader.releaseLock();}catch{// Spec reference:
+    	// https://streams.spec.whatwg.org/#default-reader-release-lock
+    	//
+    	// releaseLock() only throws if called on an invalid reader
+    	// (i.e. reader.[[stream]] is undefined, meaning the lock is already released
+    	// or the reader was never associated). In normal use this cannot happen.
+    	// This catch is defensive only.
+    	}}},cancel(reason){readerClone.cancel(reason).catch(_=>{});return reader.cancel(reason);}});}function onSuccess(span,resolve,response){let proxiedResponse=null;try{// TODO: Switch to a consumer-driven model and drop `resClone`.
+    	// Keeping eager consumption here to preserve current behavior and avoid breaking existing tests.
+    	// Context: discussion in PR #5894 → https://github.com/open-telemetry/opentelemetry-js/pull/5894
+    	const resClone=response.clone();const body=resClone.body;if(body){const reader=body.getReader();const wrappedBody=withCancelPropagation(response.body,reader);proxiedResponse=new Response(wrappedBody,{status:response.status,statusText:response.statusText,headers:response.headers});const read=()=>{reader.read().then(_ref19=>{let{done}=_ref19;if(done){endSpanOnSuccess(span,response);}else {read();}},error=>{endSpanOnError(span,error);});};read();}else {// some older browsers don't have .body implemented
+    	endSpanOnSuccess(span,response);}}finally{resolve(proxiedResponse!==null&&proxiedResponse!==void 0?proxiedResponse:response);}}function onError(span,reject,error){try{endSpanOnError(span,error);}finally{reject(error);}}return new Promise((resolve,reject)=>{return context.with(trace.setSpan(context.active(),createdSpan),()=>{plugin._addHeaders(options,url);plugin._callRequestHook(createdSpan,options);plugin._tasksCount++;return original.apply(self,options instanceof Request?[options]:[url,options]).then(onSuccess.bind(self,createdSpan,resolve),onError.bind(self,createdSpan,reject));});});};};}_applyAttributesAfterFetch(span,request,result){const applyCustomAttributesOnSpan=this.getConfig().applyCustomAttributesOnSpan;if(applyCustomAttributesOnSpan){safeExecuteInTheMiddle(()=>applyCustomAttributesOnSpan(span,request,result),error=>{if(!error){return;}this._diag.error('applyCustomAttributesOnSpan',error);});}}_callRequestHook(span,request){const requestHook=this.getConfig().requestHook;if(requestHook){safeExecuteInTheMiddle(()=>requestHook(span,request),error=>{if(!error){return;}this._diag.error('requestHook',error);});}}/**
+    	     * Prepares a span data - needed later for matching appropriate network
+    	     *     resources
+    	     * @param spanUrl
+    	     */_prepareSpanData(spanUrl){const startTime=hrTime();const entries=[];if(typeof PerformanceObserver!=='function'){return {entries,startTime,spanUrl};}const observer=new PerformanceObserver(list=>{const perfObsEntries=list.getEntries();perfObsEntries.forEach(entry=>{if(entry.initiatorType==='fetch'&&entry.name===spanUrl){entries.push(entry);}});});observer.observe({entryTypes:['resource']});return {entries,observer,startTime,spanUrl};}/**
+    	     * implements enable function
+    	     */enable(){if(isNode){// Node.js v18+ *does* have a global `fetch()`, but this package does not
+    	// support instrumenting it.
+    	this._diag.warn("this instrumentation is intended for web usage only, it does not instrument Node.js's fetch()");return;}if(isWrapped(fetch)){this._unwrap(_globalThis,'fetch');this._diag.debug('removing previous patch for constructor');}this._wrap(_globalThis,'fetch',this._patchConstructor());}/**
+    	     * implements unpatch function
+    	     */disable(){if(isNode){return;}this._unwrap(_globalThis,'fetch');this._usedResources=new WeakSet();}}/*
     	 * Copyright The OpenTelemetry Authors
     	 *
     	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -10880,17 +11538,17 @@
     	     *
     	     * @deprecated calling Span constructor directly is not supported. Please use tracer.startSpan.
     	     * */function Span(parentTracer,context,spanName,spanContext,kind,parentSpanId,links,startTime,_deprecatedClock,// keeping this argument even though it is unused to ensure backwards compatibility
-    	attributes){if(links===void 0){links=[];}this.attributes={};this.links=[];this.events=[];this._droppedAttributesCount=0;this._droppedEventsCount=0;this._droppedLinksCount=0;this.status={code:SpanStatusCode.UNSET};this.endTime=[0,0];this._ended=false;this._duration=[-1,-1];this.name=spanName;this._spanContext=spanContext;this.parentSpanId=parentSpanId;this.kind=kind;this.links=links;var now=Date.now();this._performanceStartTime=otperformance.now();this._performanceOffset=now-(this._performanceStartTime+getTimeOrigin());this._startTimeProvided=startTime!=null;this.startTime=this._getTime(startTime!==null&&startTime!==void 0?startTime:now);this.resource=parentTracer.resource;this.instrumentationLibrary=parentTracer.instrumentationLibrary;this._spanLimits=parentTracer.getSpanLimits();this._attributeValueLengthLimit=this._spanLimits.attributeValueLengthLimit||0;if(attributes!=null){this.setAttributes(attributes);}this._spanProcessor=parentTracer.getActiveSpanProcessor();this._spanProcessor.onStart(this,context);}Span.prototype.spanContext=function(){return this._spanContext;};Span.prototype.setAttribute=function(key,value){if(value==null||this._isSpanEnded())return this;if(key.length===0){diag.warn("Invalid attribute key: "+key);return this;}if(!isAttributeValue(value)){diag.warn("Invalid attribute value set for key: "+key);return this;}if(Object.keys(this.attributes).length>=this._spanLimits.attributeCountLimit&&!Object.prototype.hasOwnProperty.call(this.attributes,key)){this._droppedAttributesCount++;return this;}this.attributes[key]=this._truncateToSize(value);return this;};Span.prototype.setAttributes=function(attributes){var e_1,_a;try{for(var _b=__values$1(Object.entries(attributes)),_c=_b.next();!_c.done;_c=_b.next()){var _d=__read$2(_c.value,2),k=_d[0],v=_d[1];this.setAttribute(k,v);}}catch(e_1_1){e_1={error:e_1_1};}finally{try{if(_c&&!_c.done&&(_a=_b.return))_a.call(_b);}finally{if(e_1)throw e_1.error;}}return this;};/**
+    	attributes){if(links===void 0){links=[];}this.attributes={};this.links=[];this.events=[];this._droppedAttributesCount=0;this._droppedEventsCount=0;this._droppedLinksCount=0;this.status={code:SpanStatusCode.UNSET};this.endTime=[0,0];this._ended=false;this._duration=[-1,-1];this.name=spanName;this._spanContext=spanContext;this.parentSpanId=parentSpanId;this.kind=kind;this.links=links;var now=Date.now();this._performanceStartTime=otperformance$1.now();this._performanceOffset=now-(this._performanceStartTime+getTimeOrigin$1());this._startTimeProvided=startTime!=null;this.startTime=this._getTime(startTime!==null&&startTime!==void 0?startTime:now);this.resource=parentTracer.resource;this.instrumentationLibrary=parentTracer.instrumentationLibrary;this._spanLimits=parentTracer.getSpanLimits();this._attributeValueLengthLimit=this._spanLimits.attributeValueLengthLimit||0;if(attributes!=null){this.setAttributes(attributes);}this._spanProcessor=parentTracer.getActiveSpanProcessor();this._spanProcessor.onStart(this,context);}Span.prototype.spanContext=function(){return this._spanContext;};Span.prototype.setAttribute=function(key,value){if(value==null||this._isSpanEnded())return this;if(key.length===0){diag.warn("Invalid attribute key: "+key);return this;}if(!isAttributeValue(value)){diag.warn("Invalid attribute value set for key: "+key);return this;}if(Object.keys(this.attributes).length>=this._spanLimits.attributeCountLimit&&!Object.prototype.hasOwnProperty.call(this.attributes,key)){this._droppedAttributesCount++;return this;}this.attributes[key]=this._truncateToSize(value);return this;};Span.prototype.setAttributes=function(attributes){var e_1,_a;try{for(var _b=__values$1(Object.entries(attributes)),_c=_b.next();!_c.done;_c=_b.next()){var _d=__read$2(_c.value,2),k=_d[0],v=_d[1];this.setAttribute(k,v);}}catch(e_1_1){e_1={error:e_1_1};}finally{try{if(_c&&!_c.done&&(_a=_b.return))_a.call(_b);}finally{if(e_1)throw e_1.error;}}return this;};/**
     	     *
     	     * @param name Span Name
     	     * @param [attributesOrStartTime] Span attributes or start time
     	     *     if type is {@type TimeInput} and 3rd param is undefined
     	     * @param [timeStamp] Specified time stamp for the event
-    	     */Span.prototype.addEvent=function(name,attributesOrStartTime,timeStamp){if(this._isSpanEnded())return this;if(this._spanLimits.eventCountLimit===0){diag.warn('No events allowed.');this._droppedEventsCount++;return this;}if(this.events.length>=this._spanLimits.eventCountLimit){if(this._droppedEventsCount===0){diag.debug('Dropping extra events.');}this.events.shift();this._droppedEventsCount++;}if(isTimeInput(attributesOrStartTime)){if(!isTimeInput(timeStamp)){timeStamp=attributesOrStartTime;}attributesOrStartTime=undefined;}var attributes=sanitizeAttributes(attributesOrStartTime);this.events.push({name:name,attributes:attributes,time:this._getTime(timeStamp),droppedAttributesCount:0});return this;};Span.prototype.addLink=function(link){this.links.push(link);return this;};Span.prototype.addLinks=function(links){var _a;(_a=this.links).push.apply(_a,__spreadArray$1([],__read$2(links),false));return this;};Span.prototype.setStatus=function(status){if(this._isSpanEnded())return this;this.status=status;return this;};Span.prototype.updateName=function(name){if(this._isSpanEnded())return this;this.name=name;return this;};Span.prototype.end=function(endTime){if(this._isSpanEnded()){diag.error(this.name+" "+this._spanContext.traceId+"-"+this._spanContext.spanId+" - You can only call end() on a span once.");return;}this._ended=true;this.endTime=this._getTime(endTime);this._duration=hrTimeDuration(this.startTime,this.endTime);if(this._duration[0]<0){diag.warn('Inconsistent start and end time, startTime > endTime. Setting span duration to 0ms.',this.startTime,this.endTime);this.endTime=this.startTime.slice();this._duration=[0,0];}if(this._droppedEventsCount>0){diag.warn("Dropped "+this._droppedEventsCount+" events because eventCountLimit reached");}this._spanProcessor.onEnd(this);};Span.prototype._getTime=function(inp){if(typeof inp==='number'&&inp<otperformance.now()){// must be a performance timestamp
+    	     */Span.prototype.addEvent=function(name,attributesOrStartTime,timeStamp){if(this._isSpanEnded())return this;if(this._spanLimits.eventCountLimit===0){diag.warn('No events allowed.');this._droppedEventsCount++;return this;}if(this.events.length>=this._spanLimits.eventCountLimit){if(this._droppedEventsCount===0){diag.debug('Dropping extra events.');}this.events.shift();this._droppedEventsCount++;}if(isTimeInput(attributesOrStartTime)){if(!isTimeInput(timeStamp)){timeStamp=attributesOrStartTime;}attributesOrStartTime=undefined;}var attributes=sanitizeAttributes(attributesOrStartTime);this.events.push({name:name,attributes:attributes,time:this._getTime(timeStamp),droppedAttributesCount:0});return this;};Span.prototype.addLink=function(link){this.links.push(link);return this;};Span.prototype.addLinks=function(links){var _a;(_a=this.links).push.apply(_a,__spreadArray$1([],__read$2(links),false));return this;};Span.prototype.setStatus=function(status){if(this._isSpanEnded())return this;this.status=status;return this;};Span.prototype.updateName=function(name){if(this._isSpanEnded())return this;this.name=name;return this;};Span.prototype.end=function(endTime){if(this._isSpanEnded()){diag.error(this.name+" "+this._spanContext.traceId+"-"+this._spanContext.spanId+" - You can only call end() on a span once.");return;}this._ended=true;this.endTime=this._getTime(endTime);this._duration=hrTimeDuration(this.startTime,this.endTime);if(this._duration[0]<0){diag.warn('Inconsistent start and end time, startTime > endTime. Setting span duration to 0ms.',this.startTime,this.endTime);this.endTime=this.startTime.slice();this._duration=[0,0];}if(this._droppedEventsCount>0){diag.warn("Dropped "+this._droppedEventsCount+" events because eventCountLimit reached");}this._spanProcessor.onEnd(this);};Span.prototype._getTime=function(inp){if(typeof inp==='number'&&inp<otperformance$1.now()){// must be a performance timestamp
     	// apply correction and convert to hrtime
-    	return hrTime(inp+this._performanceOffset);}if(typeof inp==='number'){return millisToHrTime(inp);}if(inp instanceof Date){return millisToHrTime(inp.getTime());}if(isTimeInputHrTime(inp)){return inp;}if(this._startTimeProvided){// if user provided a time for the start manually
+    	return hrTime$1(inp+this._performanceOffset);}if(typeof inp==='number'){return millisToHrTime$1(inp);}if(inp instanceof Date){return millisToHrTime$1(inp.getTime());}if(isTimeInputHrTime$1(inp)){return inp;}if(this._startTimeProvided){// if user provided a time for the start manually
     	// we can't use duration to calculate event/end times
-    	return millisToHrTime(Date.now());}var msDuration=otperformance.now()-this._performanceStartTime;return addHrTimes(this.startTime,millisToHrTime(msDuration));};Span.prototype.isRecording=function(){return this._ended===false;};Span.prototype.recordException=function(exception,time){var attributes={};if(typeof exception==='string'){attributes[SEMATTRS_EXCEPTION_MESSAGE]=exception;}else if(exception){if(exception.code){attributes[SEMATTRS_EXCEPTION_TYPE]=exception.code.toString();}else if(exception.name){attributes[SEMATTRS_EXCEPTION_TYPE]=exception.name;}if(exception.message){attributes[SEMATTRS_EXCEPTION_MESSAGE]=exception.message;}if(exception.stack){attributes[SEMATTRS_EXCEPTION_STACKTRACE]=exception.stack;}}// these are minimum requirements from spec
+    	return millisToHrTime$1(Date.now());}var msDuration=otperformance$1.now()-this._performanceStartTime;return addHrTimes$1(this.startTime,millisToHrTime$1(msDuration));};Span.prototype.isRecording=function(){return this._ended===false;};Span.prototype.recordException=function(exception,time){var attributes={};if(typeof exception==='string'){attributes[SEMATTRS_EXCEPTION_MESSAGE]=exception;}else if(exception){if(exception.code){attributes[SEMATTRS_EXCEPTION_TYPE]=exception.code.toString();}else if(exception.name){attributes[SEMATTRS_EXCEPTION_TYPE]=exception.name;}if(exception.message){attributes[SEMATTRS_EXCEPTION_MESSAGE]=exception.message;}if(exception.stack){attributes[SEMATTRS_EXCEPTION_STACKTRACE]=exception.stack;}}// these are minimum requirements from spec
     	if(attributes[SEMATTRS_EXCEPTION_TYPE]||attributes[SEMATTRS_EXCEPTION_MESSAGE]){this.addEvent(ExceptionEventName,attributes,time);}else {diag.warn("Failed to record an exception "+exception);}};Object.defineProperty(Span.prototype,"duration",{get:function(){return this._duration;},enumerable:false,configurable:true});Object.defineProperty(Span.prototype,"ended",{get:function(){return this._ended;},enumerable:false,configurable:true});Object.defineProperty(Span.prototype,"droppedAttributesCount",{get:function(){return this._droppedAttributesCount;},enumerable:false,configurable:true});Object.defineProperty(Span.prototype,"droppedEventsCount",{get:function(){return this._droppedEventsCount;},enumerable:false,configurable:true});Object.defineProperty(Span.prototype,"droppedLinksCount",{get:function(){return this._droppedLinksCount;},enumerable:false,configurable:true});Span.prototype._isSpanEnded=function(){if(this._ended){diag.warn("Can not execute the operation on ended Span {traceId: "+this._spanContext.traceId+", spanId: "+this._spanContext.spanId+"}");}return this._ended;};// Utility function to truncate given value within size
     	// for value type of string, will truncate to given limit
     	// for type of non-string, will return same value
@@ -11090,7 +11748,7 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var __extends$2=function(){var extendStatics=function(d,b){extendStatics=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(d,b){d.__proto__=b;}||function(d,b){for(var p in b)if(Object.prototype.hasOwnProperty.call(b,p))d[p]=b[p];};return extendStatics(d,b);};return function(d,b){if(typeof b!=="function"&&b!==null)throw new TypeError("Class extends value "+String(b)+" is not a constructor or null");extendStatics(d,b);function __(){this.constructor=d;}d.prototype=b===null?Object.create(b):(__.prototype=b.prototype,new __());};}();var BatchSpanProcessor=/** @class */function(_super){__extends$2(BatchSpanProcessor,_super);function BatchSpanProcessor(_exporter,config){var _this=_super.call(this,_exporter,config)||this;_this.onInit(config);return _this;}BatchSpanProcessor.prototype.onInit=function(config){var _this=this;if((config===null||config===void 0?void 0:config.disableAutoFlushOnDocumentHide)!==true&&typeof document!=='undefined'){this._visibilityChangeListener=function(){if(document.visibilityState==='hidden'){void _this.forceFlush();}};this._pageHideListener=function(){void _this.forceFlush();};document.addEventListener('visibilitychange',this._visibilityChangeListener);// use 'pagehide' event as a fallback for Safari; see https://bugs.webkit.org/show_bug.cgi?id=116769
+    	 */var __extends$1=function(){var extendStatics=function(d,b){extendStatics=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(d,b){d.__proto__=b;}||function(d,b){for(var p in b)if(Object.prototype.hasOwnProperty.call(b,p))d[p]=b[p];};return extendStatics(d,b);};return function(d,b){if(typeof b!=="function"&&b!==null)throw new TypeError("Class extends value "+String(b)+" is not a constructor or null");extendStatics(d,b);function __(){this.constructor=d;}d.prototype=b===null?Object.create(b):(__.prototype=b.prototype,new __());};}();var BatchSpanProcessor=/** @class */function(_super){__extends$1(BatchSpanProcessor,_super);function BatchSpanProcessor(_exporter,config){var _this=_super.call(this,_exporter,config)||this;_this.onInit(config);return _this;}BatchSpanProcessor.prototype.onInit=function(config){var _this=this;if((config===null||config===void 0?void 0:config.disableAutoFlushOnDocumentHide)!==true&&typeof document!=='undefined'){this._visibilityChangeListener=function(){if(document.visibilityState==='hidden'){void _this.forceFlush();}};this._pageHideListener=function(){void _this.forceFlush();};document.addEventListener('visibilitychange',this._visibilityChangeListener);// use 'pagehide' event as a fallback for Safari; see https://bugs.webkit.org/show_bug.cgi?id=116769
     	document.addEventListener('pagehide',this._pageHideListener);}};BatchSpanProcessor.prototype.onShutdown=function(){if(typeof document!=='undefined'){if(this._visibilityChangeListener){document.removeEventListener('visibilitychange',this._visibilityChangeListener);}if(this._pageHideListener){document.removeEventListener('pagehide',this._pageHideListener);}}};return BatchSpanProcessor;}(BatchSpanProcessorBase);/*
     	 * Copyright The OpenTelemetry Authors
     	 *
@@ -11315,9 +11973,9 @@
     	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     	 * See the License for the specific language governing permissions and
     	 * limitations under the License.
-    	 */var __extends$1=function(){var extendStatics=function(d,b){extendStatics=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(d,b){d.__proto__=b;}||function(d,b){for(var p in b)if(Object.prototype.hasOwnProperty.call(b,p))d[p]=b[p];};return extendStatics(d,b);};return function(d,b){if(typeof b!=="function"&&b!==null)throw new TypeError("Class extends value "+String(b)+" is not a constructor or null");extendStatics(d,b);function __(){this.constructor=d;}d.prototype=b===null?Object.create(b):(__.prototype=b.prototype,new __());};}();/**
+    	 */var __extends=function(){var extendStatics=function(d,b){extendStatics=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(d,b){d.__proto__=b;}||function(d,b){for(var p in b)if(Object.prototype.hasOwnProperty.call(b,p))d[p]=b[p];};return extendStatics(d,b);};return function(d,b){if(typeof b!=="function"&&b!==null)throw new TypeError("Class extends value "+String(b)+" is not a constructor or null");extendStatics(d,b);function __(){this.constructor=d;}d.prototype=b===null?Object.create(b):(__.prototype=b.prototype,new __());};}();/**
     	 * This class represents a web tracer with {@link StackContextManager}
-    	 */var WebTracerProvider=/** @class */function(_super){__extends$1(WebTracerProvider,_super);/**
+    	 */var WebTracerProvider=/** @class */function(_super){__extends(WebTracerProvider,_super);/**
     	     * Constructs a new Tracer instance.
     	     * @param config Web Tracer config
     	     */function WebTracerProvider(config){if(config===void 0){config={};}var _this=_super.call(this,config)||this;if(config.contextManager){throw 'contextManager should be defined in register method not in'+' constructor';}if(config.propagator){throw 'propagator should be defined in register method not in constructor';}return _this;}/**
@@ -11326,194 +11984,7 @@
     	     * null values will be skipped.
     	     *
     	     * @param config Configuration object for SDK registration
-    	     */WebTracerProvider.prototype.register=function(config){if(config===void 0){config={};}if(config.contextManager===undefined){config.contextManager=new StackContextManager();}if(config.contextManager){config.contextManager.enable();}_super.prototype.register.call(this,config);};return WebTracerProvider;}(BasicTracerProvider);/*
-    	 * Copyright The OpenTelemetry Authors
-    	 *
-    	 * Licensed under the Apache License, Version 2.0 (the "License");
-    	 * you may not use this file except in compliance with the License.
-    	 * You may obtain a copy of the License at
-    	 *
-    	 *      https://www.apache.org/licenses/LICENSE-2.0
-    	 *
-    	 * Unless required by applicable law or agreed to in writing, software
-    	 * distributed under the License is distributed on an "AS IS" BASIS,
-    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    	 * See the License for the specific language governing permissions and
-    	 * limitations under the License.
-    	 */var PerformanceTimingNames;(function(PerformanceTimingNames){PerformanceTimingNames["CONNECT_END"]="connectEnd";PerformanceTimingNames["CONNECT_START"]="connectStart";PerformanceTimingNames["DECODED_BODY_SIZE"]="decodedBodySize";PerformanceTimingNames["DOM_COMPLETE"]="domComplete";PerformanceTimingNames["DOM_CONTENT_LOADED_EVENT_END"]="domContentLoadedEventEnd";PerformanceTimingNames["DOM_CONTENT_LOADED_EVENT_START"]="domContentLoadedEventStart";PerformanceTimingNames["DOM_INTERACTIVE"]="domInteractive";PerformanceTimingNames["DOMAIN_LOOKUP_END"]="domainLookupEnd";PerformanceTimingNames["DOMAIN_LOOKUP_START"]="domainLookupStart";PerformanceTimingNames["ENCODED_BODY_SIZE"]="encodedBodySize";PerformanceTimingNames["FETCH_START"]="fetchStart";PerformanceTimingNames["LOAD_EVENT_END"]="loadEventEnd";PerformanceTimingNames["LOAD_EVENT_START"]="loadEventStart";PerformanceTimingNames["NAVIGATION_START"]="navigationStart";PerformanceTimingNames["REDIRECT_END"]="redirectEnd";PerformanceTimingNames["REDIRECT_START"]="redirectStart";PerformanceTimingNames["REQUEST_START"]="requestStart";PerformanceTimingNames["RESPONSE_END"]="responseEnd";PerformanceTimingNames["RESPONSE_START"]="responseStart";PerformanceTimingNames["SECURE_CONNECTION_START"]="secureConnectionStart";PerformanceTimingNames["UNLOAD_EVENT_END"]="unloadEventEnd";PerformanceTimingNames["UNLOAD_EVENT_START"]="unloadEventStart";})(PerformanceTimingNames||(PerformanceTimingNames={}));/*
-    	 * Copyright The OpenTelemetry Authors
-    	 *
-    	 * Licensed under the Apache License, Version 2.0 (the "License");
-    	 * you may not use this file except in compliance with the License.
-    	 * You may obtain a copy of the License at
-    	 *
-    	 *      https://www.apache.org/licenses/LICENSE-2.0
-    	 *
-    	 * Unless required by applicable law or agreed to in writing, software
-    	 * distributed under the License is distributed on an "AS IS" BASIS,
-    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    	 * See the License for the specific language governing permissions and
-    	 * limitations under the License.
-    	 */// Used to normalize relative URLs
-    	var urlNormalizingAnchor;function getUrlNormalizingAnchor(){if(!urlNormalizingAnchor){urlNormalizingAnchor=document.createElement('a');}return urlNormalizingAnchor;}/**
-    	 * Helper function to be able to use enum as typed key in type and in interface when using forEach
-    	 * @param obj
-    	 * @param key
-    	 */// eslint-disable-next-line @typescript-eslint/no-explicit-any
-    	function hasKey(obj,key){return key in obj;}/**
-    	 * Helper function for starting an event on span based on {@link PerformanceEntries}
-    	 * @param span
-    	 * @param performanceName name of performance entry for time start
-    	 * @param entries
-    	 * @param refPerfName name of performance entry to use for reference
-    	 */function addSpanNetworkEvent(span,performanceName,entries,refPerfName){var perfTime=undefined;var refTime=undefined;if(hasKey(entries,performanceName)&&typeof entries[performanceName]==='number'){perfTime=entries[performanceName];}var refName=PerformanceTimingNames.FETCH_START;// Use a reference time which is the earliest possible value so that the performance timings that are earlier should not be added
-    	// using FETCH START time in case no reference is provided
-    	if(hasKey(entries,refName)&&typeof entries[refName]==='number'){refTime=entries[refName];}if(perfTime!==undefined&&refTime!==undefined&&perfTime>=refTime){span.addEvent(performanceName,perfTime);return span;}return undefined;}/**
-    	 * Helper function for adding network events
-    	 * @param span
-    	 * @param resource
-    	 */function addSpanNetworkEvents(span,resource){addSpanNetworkEvent(span,PerformanceTimingNames.FETCH_START,resource);addSpanNetworkEvent(span,PerformanceTimingNames.DOMAIN_LOOKUP_START,resource);addSpanNetworkEvent(span,PerformanceTimingNames.DOMAIN_LOOKUP_END,resource);addSpanNetworkEvent(span,PerformanceTimingNames.CONNECT_START,resource);if(hasKey(resource,'name')&&resource['name'].startsWith('https:')){addSpanNetworkEvent(span,PerformanceTimingNames.SECURE_CONNECTION_START,resource);}addSpanNetworkEvent(span,PerformanceTimingNames.CONNECT_END,resource);addSpanNetworkEvent(span,PerformanceTimingNames.REQUEST_START,resource);addSpanNetworkEvent(span,PerformanceTimingNames.RESPONSE_START,resource);addSpanNetworkEvent(span,PerformanceTimingNames.RESPONSE_END,resource);var encodedLength=resource[PerformanceTimingNames.ENCODED_BODY_SIZE];if(encodedLength!==undefined){span.setAttribute(SEMATTRS_HTTP_RESPONSE_CONTENT_LENGTH,encodedLength);}var decodedLength=resource[PerformanceTimingNames.DECODED_BODY_SIZE];// Spec: Not set if transport encoding not used (in which case encoded and decoded sizes match)
-    	if(decodedLength!==undefined&&encodedLength!==decodedLength){span.setAttribute(SEMATTRS_HTTP_RESPONSE_CONTENT_LENGTH_UNCOMPRESSED,decodedLength);}}/**
-    	 * sort resources by startTime
-    	 * @param filteredResources
-    	 */function sortResources(filteredResources){return filteredResources.slice().sort(function(a,b){var valueA=a[PerformanceTimingNames.FETCH_START];var valueB=b[PerformanceTimingNames.FETCH_START];if(valueA>valueB){return 1;}else if(valueA<valueB){return  -1;}return 0;});}/** Returns the origin if present (if in browser context). */function getOrigin(){return typeof location!=='undefined'?location.origin:undefined;}/**
-    	 * Get closest performance resource ignoring the resources that have been
-    	 * already used.
-    	 * @param spanUrl
-    	 * @param startTimeHR
-    	 * @param endTimeHR
-    	 * @param resources
-    	 * @param ignoredResources
-    	 * @param initiatorType
-    	 */function getResource(spanUrl,startTimeHR,endTimeHR,resources,ignoredResources,initiatorType){if(ignoredResources===void 0){ignoredResources=new WeakSet();}// de-relativize the URL before usage (does no harm to absolute URLs)
-    	var parsedSpanUrl=parseUrl(spanUrl);spanUrl=parsedSpanUrl.toString();var filteredResources=filterResourcesForSpan(spanUrl,startTimeHR,endTimeHR,resources,ignoredResources,initiatorType);if(filteredResources.length===0){return {mainRequest:undefined};}if(filteredResources.length===1){return {mainRequest:filteredResources[0]};}var sorted=sortResources(filteredResources);if(parsedSpanUrl.origin!==getOrigin()&&sorted.length>1){var corsPreFlightRequest=sorted[0];var mainRequest=findMainRequest(sorted,corsPreFlightRequest[PerformanceTimingNames.RESPONSE_END],endTimeHR);var responseEnd=corsPreFlightRequest[PerformanceTimingNames.RESPONSE_END];var fetchStart=mainRequest[PerformanceTimingNames.FETCH_START];// no corsPreFlightRequest
-    	if(fetchStart<responseEnd){mainRequest=corsPreFlightRequest;corsPreFlightRequest=undefined;}return {corsPreFlightRequest:corsPreFlightRequest,mainRequest:mainRequest};}else {return {mainRequest:filteredResources[0]};}}/**
-    	 * Will find the main request skipping the cors pre flight requests
-    	 * @param resources
-    	 * @param corsPreFlightRequestEndTime
-    	 * @param spanEndTimeHR
-    	 */function findMainRequest(resources,corsPreFlightRequestEndTime,spanEndTimeHR){var spanEndTime=hrTimeToNanoseconds(spanEndTimeHR);var minTime=hrTimeToNanoseconds(timeInputToHrTime(corsPreFlightRequestEndTime));var mainRequest=resources[1];var bestGap;var length=resources.length;for(var i=1;i<length;i++){var resource=resources[i];var resourceStartTime=hrTimeToNanoseconds(timeInputToHrTime(resource[PerformanceTimingNames.FETCH_START]));var resourceEndTime=hrTimeToNanoseconds(timeInputToHrTime(resource[PerformanceTimingNames.RESPONSE_END]));var currentGap=spanEndTime-resourceEndTime;if(resourceStartTime>=minTime&&(!bestGap||currentGap<bestGap)){bestGap=currentGap;mainRequest=resource;}}return mainRequest;}/**
-    	 * Filter all resources that has started and finished according to span start time and end time.
-    	 *     It will return the closest resource to a start time
-    	 * @param spanUrl
-    	 * @param startTimeHR
-    	 * @param endTimeHR
-    	 * @param resources
-    	 * @param ignoredResources
-    	 */function filterResourcesForSpan(spanUrl,startTimeHR,endTimeHR,resources,ignoredResources,initiatorType){var startTime=hrTimeToNanoseconds(startTimeHR);var endTime=hrTimeToNanoseconds(endTimeHR);var filteredResources=resources.filter(function(resource){var resourceStartTime=hrTimeToNanoseconds(timeInputToHrTime(resource[PerformanceTimingNames.FETCH_START]));var resourceEndTime=hrTimeToNanoseconds(timeInputToHrTime(resource[PerformanceTimingNames.RESPONSE_END]));return resource.initiatorType.toLowerCase()===initiatorType&&resource.name===spanUrl&&resourceStartTime>=startTime&&resourceEndTime<=endTime;});if(filteredResources.length>0){filteredResources=filteredResources.filter(function(resource){return !ignoredResources.has(resource);});}return filteredResources;}/**
-    	 * Parses url using URL constructor or fallback to anchor element.
-    	 * @param url
-    	 */function parseUrl(url){if(typeof URL==='function'){return new URL(url,typeof document!=='undefined'?document.baseURI:typeof location!=='undefined'// Some JS runtimes (e.g. Deno) don't define this
-    	?location.href:undefined);}var element=getUrlNormalizingAnchor();element.href=url;return element;}/**
-    	 * Checks if trace headers should be propagated
-    	 * @param spanUrl
-    	 * @private
-    	 */function shouldPropagateTraceHeaders(spanUrl,propagateTraceHeaderCorsUrls){var propagateTraceHeaderUrls=propagateTraceHeaderCorsUrls||[];if(typeof propagateTraceHeaderUrls==='string'||propagateTraceHeaderUrls instanceof RegExp){propagateTraceHeaderUrls=[propagateTraceHeaderUrls];}var parsedSpanUrl=parseUrl(spanUrl);if(parsedSpanUrl.origin===getOrigin()){return true;}else {return propagateTraceHeaderUrls.some(function(propagateTraceHeaderUrl){return urlMatches(spanUrl,propagateTraceHeaderUrl);});}}/*
-    	 * Copyright The OpenTelemetry Authors
-    	 *
-    	 * Licensed under the Apache License, Version 2.0 (the "License");
-    	 * you may not use this file except in compliance with the License.
-    	 * You may obtain a copy of the License at
-    	 *
-    	 *      https://www.apache.org/licenses/LICENSE-2.0
-    	 *
-    	 * Unless required by applicable law or agreed to in writing, software
-    	 * distributed under the License is distributed on an "AS IS" BASIS,
-    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    	 * See the License for the specific language governing permissions and
-    	 * limitations under the License.
-    	 *//**
-    	 * https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/http.md
-    	 */var AttributeNames;(function(AttributeNames){AttributeNames["COMPONENT"]="component";AttributeNames["HTTP_ERROR_NAME"]="http.error_name";AttributeNames["HTTP_STATUS_TEXT"]="http.status_text";})(AttributeNames||(AttributeNames={}));/*
-    	 * Copyright The OpenTelemetry Authors
-    	 *
-    	 * Licensed under the Apache License, Version 2.0 (the "License");
-    	 * you may not use this file except in compliance with the License.
-    	 * You may obtain a copy of the License at
-    	 *
-    	 *      https://www.apache.org/licenses/LICENSE-2.0
-    	 *
-    	 * Unless required by applicable law or agreed to in writing, software
-    	 * distributed under the License is distributed on an "AS IS" BASIS,
-    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    	 * See the License for the specific language governing permissions and
-    	 * limitations under the License.
-    	 */// this is autogenerated file, see scripts/version-update.js
-    	var VERSION='0.53.0';/*
-    	 * Copyright The OpenTelemetry Authors
-    	 *
-    	 * Licensed under the Apache License, Version 2.0 (the "License");
-    	 * you may not use this file except in compliance with the License.
-    	 * You may obtain a copy of the License at
-    	 *
-    	 *      https://www.apache.org/licenses/LICENSE-2.0
-    	 *
-    	 * Unless required by applicable law or agreed to in writing, software
-    	 * distributed under the License is distributed on an "AS IS" BASIS,
-    	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    	 * See the License for the specific language governing permissions and
-    	 * limitations under the License.
-    	 */var __extends=function(){var extendStatics=function(d,b){extendStatics=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(d,b){d.__proto__=b;}||function(d,b){for(var p in b)if(Object.prototype.hasOwnProperty.call(b,p))d[p]=b[p];};return extendStatics(d,b);};return function(d,b){if(typeof b!=="function"&&b!==null)throw new TypeError("Class extends value "+String(b)+" is not a constructor or null");extendStatics(d,b);function __(){this.constructor=d;}d.prototype=b===null?Object.create(b):(__.prototype=b.prototype,new __());};}();var _a;// how long to wait for observer to collect information about resources
-    	// this is needed as event "load" is called before observer
-    	// hard to say how long it should really wait, seems like 300ms is
-    	// safe enough
-    	var OBSERVER_WAIT_TIME_MS=300;var isNode=typeof process==='object'&&((_a=process.release)===null||_a===void 0?void 0:_a.name)==='node';/**
-    	 * This class represents a fetch plugin for auto instrumentation
-    	 */var FetchInstrumentation=/** @class */function(_super){__extends(FetchInstrumentation,_super);function FetchInstrumentation(config){if(config===void 0){config={};}var _this=_super.call(this,'@opentelemetry/instrumentation-fetch',VERSION,config)||this;_this.component='fetch';_this.version=VERSION;_this.moduleName=_this.component;_this._usedResources=new WeakSet();_this._tasksCount=0;return _this;}FetchInstrumentation.prototype.init=function(){};/**
-    	     * Add cors pre flight child span
-    	     * @param span
-    	     * @param corsPreFlightRequest
-    	     */FetchInstrumentation.prototype._addChildSpan=function(span,corsPreFlightRequest){var childSpan=this.tracer.startSpan('CORS Preflight',{startTime:corsPreFlightRequest[PerformanceTimingNames.FETCH_START]},trace.setSpan(context.active(),span));if(!this.getConfig().ignoreNetworkEvents){addSpanNetworkEvents(childSpan,corsPreFlightRequest);}childSpan.end(corsPreFlightRequest[PerformanceTimingNames.RESPONSE_END]);};/**
-    	     * Adds more attributes to span just before ending it
-    	     * @param span
-    	     * @param response
-    	     */FetchInstrumentation.prototype._addFinalSpanAttributes=function(span,response){var parsedUrl=parseUrl(response.url);span.setAttribute(SEMATTRS_HTTP_STATUS_CODE,response.status);if(response.statusText!=null){span.setAttribute(AttributeNames.HTTP_STATUS_TEXT,response.statusText);}span.setAttribute(SEMATTRS_HTTP_HOST,parsedUrl.host);span.setAttribute(SEMATTRS_HTTP_SCHEME,parsedUrl.protocol.replace(':',''));if(typeof navigator!=='undefined'){span.setAttribute(SEMATTRS_HTTP_USER_AGENT,navigator.userAgent);}};/**
-    	     * Add headers
-    	     * @param options
-    	     * @param spanUrl
-    	     */FetchInstrumentation.prototype._addHeaders=function(options,spanUrl){if(!shouldPropagateTraceHeaders(spanUrl,this.getConfig().propagateTraceHeaderCorsUrls)){var headers={};propagation.inject(context.active(),headers);if(Object.keys(headers).length>0){this._diag.debug('headers inject skipped due to CORS policy');}return;}if(options instanceof Request){propagation.inject(context.active(),options.headers,{set:function(h,k,v){return h.set(k,typeof v==='string'?v:String(v));}});}else if(options.headers instanceof Headers){propagation.inject(context.active(),options.headers,{set:function(h,k,v){return h.set(k,typeof v==='string'?v:String(v));}});}else if(options.headers instanceof Map){propagation.inject(context.active(),options.headers,{set:function(h,k,v){return h.set(k,typeof v==='string'?v:String(v));}});}else {var headers={};propagation.inject(context.active(),headers);options.headers=Object.assign({},headers,options.headers||{});}};/**
-    	     * Clears the resource timings and all resources assigned with spans
-    	     *     when {@link FetchPluginConfig.clearTimingResources} is
-    	     *     set to true (default false)
-    	     * @private
-    	     */FetchInstrumentation.prototype._clearResources=function(){if(this._tasksCount===0&&this.getConfig().clearTimingResources){performance.clearResourceTimings();this._usedResources=new WeakSet();}};/**
-    	     * Creates a new span
-    	     * @param url
-    	     * @param options
-    	     */FetchInstrumentation.prototype._createSpan=function(url,options){var _a;if(options===void 0){options={};}if(isUrlIgnored(url,this.getConfig().ignoreUrls)){this._diag.debug('ignoring span as url matches ignored url');return;}var method=(options.method||'GET').toUpperCase();var spanName="HTTP "+method;return this.tracer.startSpan(spanName,{kind:SpanKind$1.CLIENT,attributes:(_a={},_a[AttributeNames.COMPONENT]=this.moduleName,_a[SEMATTRS_HTTP_METHOD]=method,_a[SEMATTRS_HTTP_URL]=url,_a)});};/**
-    	     * Finds appropriate resource and add network events to the span
-    	     * @param span
-    	     * @param resourcesObserver
-    	     * @param endTime
-    	     */FetchInstrumentation.prototype._findResourceAndAddNetworkEvents=function(span,resourcesObserver,endTime){var resources=resourcesObserver.entries;if(!resources.length){if(!performance.getEntriesByType){return;}// fallback - either Observer is not available or it took longer
-    	// then OBSERVER_WAIT_TIME_MS and observer didn't collect enough
-    	// information
-    	resources=performance.getEntriesByType('resource');}var resource=getResource(resourcesObserver.spanUrl,resourcesObserver.startTime,endTime,resources,this._usedResources,'fetch');if(resource.mainRequest){var mainRequest=resource.mainRequest;this._markResourceAsUsed(mainRequest);var corsPreFlightRequest=resource.corsPreFlightRequest;if(corsPreFlightRequest){this._addChildSpan(span,corsPreFlightRequest);this._markResourceAsUsed(corsPreFlightRequest);}if(!this.getConfig().ignoreNetworkEvents){addSpanNetworkEvents(span,mainRequest);}}};/**
-    	     * Marks certain [resource]{@link PerformanceResourceTiming} when information
-    	     * from this is used to add events to span.
-    	     * This is done to avoid reusing the same resource again for next span
-    	     * @param resource
-    	     */FetchInstrumentation.prototype._markResourceAsUsed=function(resource){this._usedResources.add(resource);};/**
-    	     * Finish span, add attributes, network events etc.
-    	     * @param span
-    	     * @param spanData
-    	     * @param response
-    	     */FetchInstrumentation.prototype._endSpan=function(span,spanData,response){var _this=this;var endTime=millisToHrTime(Date.now());var performanceEndTime=hrTime();this._addFinalSpanAttributes(span,response);setTimeout(function(){var _a;(_a=spanData.observer)===null||_a===void 0?void 0:_a.disconnect();_this._findResourceAndAddNetworkEvents(span,spanData,performanceEndTime);_this._tasksCount--;_this._clearResources();span.end(endTime);},OBSERVER_WAIT_TIME_MS);};/**
-    	     * Patches the constructor of fetch
-    	     */FetchInstrumentation.prototype._patchConstructor=function(){var _this=this;return function(original){var plugin=_this;return function patchConstructor(){var args=[];for(var _i=0;_i<arguments.length;_i++){args[_i]=arguments[_i];}var self=this;var url=parseUrl(args[0]instanceof Request?args[0].url:String(args[0])).href;var options=args[0]instanceof Request?args[0]:args[1]||{};var createdSpan=plugin._createSpan(url,options);if(!createdSpan){return original.apply(this,args);}var spanData=plugin._prepareSpanData(url);function endSpanOnError(span,error){plugin._applyAttributesAfterFetch(span,options,error);plugin._endSpan(span,spanData,{status:error.status||0,statusText:error.message,url:url});}function endSpanOnSuccess(span,response){plugin._applyAttributesAfterFetch(span,options,response);if(response.status>=200&&response.status<400){plugin._endSpan(span,spanData,response);}else {plugin._endSpan(span,spanData,{status:response.status,statusText:response.statusText,url:url});}}function onSuccess(span,resolve,response){try{var resClone=response.clone();var resClone4Hook_1=response.clone();var body=resClone.body;if(body){var reader_1=body.getReader();var read_1=function(){reader_1.read().then(function(_a){var done=_a.done;if(done){endSpanOnSuccess(span,resClone4Hook_1);}else {read_1();}},function(error){endSpanOnError(span,error);});};read_1();}else {// some older browsers don't have .body implemented
-    	endSpanOnSuccess(span,response);}}finally{resolve(response);}}function onError(span,reject,error){try{endSpanOnError(span,error);}finally{reject(error);}}return new Promise(function(resolve,reject){return context.with(trace.setSpan(context.active(),createdSpan),function(){plugin._addHeaders(options,url);plugin._tasksCount++;// TypeScript complains about arrow function captured a this typed as globalThis
-    	// ts(7041)
-    	return original.apply(self,options instanceof Request?[options]:[url,options]).then(onSuccess.bind(self,createdSpan,resolve),onError.bind(self,createdSpan,reject));});});};};};FetchInstrumentation.prototype._applyAttributesAfterFetch=function(span,request,result){var _this=this;var applyCustomAttributesOnSpan=this.getConfig().applyCustomAttributesOnSpan;if(applyCustomAttributesOnSpan){safeExecuteInTheMiddle(function(){return applyCustomAttributesOnSpan(span,request,result);},function(error){if(!error){return;}_this._diag.error('applyCustomAttributesOnSpan',error);});}};/**
-    	     * Prepares a span data - needed later for matching appropriate network
-    	     *     resources
-    	     * @param spanUrl
-    	     */FetchInstrumentation.prototype._prepareSpanData=function(spanUrl){var startTime=hrTime();var entries=[];if(typeof PerformanceObserver!=='function'){return {entries:entries,startTime:startTime,spanUrl:spanUrl};}var observer=new PerformanceObserver(function(list){var perfObsEntries=list.getEntries();perfObsEntries.forEach(function(entry){if(entry.initiatorType==='fetch'&&entry.name===spanUrl){entries.push(entry);}});});observer.observe({entryTypes:['resource']});return {entries:entries,observer:observer,startTime:startTime,spanUrl:spanUrl};};/**
-    	     * implements enable function
-    	     */FetchInstrumentation.prototype.enable=function(){if(isNode){// Node.js v18+ *does* have a global `fetch()`, but this package does not
-    	// support instrumenting it.
-    	this._diag.warn("this instrumentation is intended for web usage only, it does not instrument Node.js's fetch()");return;}if(isWrapped(fetch)){this._unwrap(_globalThis$1,'fetch');this._diag.debug('removing previous patch for constructor');}this._wrap(_globalThis$1,'fetch',this._patchConstructor());};/**
-    	     * implements unpatch function
-    	     */FetchInstrumentation.prototype.disable=function(){if(isNode){return;}this._unwrap(_globalThis$1,'fetch');this._usedResources=new WeakSet();};return FetchInstrumentation;}(InstrumentationBase);function serializeSpan(span){const spanInfo=span.getSpanInformation();const spanContext=span.getContext();return {traceId:spanContext.traceId,spanId:spanContext.spanId,parentSpanId:spanInfo.parentSpanId,name:spanInfo.name,startTimeUnixNano:spanInfo.startTime,endTimeUnixNano:spanInfo.endTime,attributes:spanContext.attributes,kind:spanInfo.kind,status:spanInfo.status};}var _MainTraceExporter_instances,_MainTraceExporter_transportManager,_MainTraceExporter_inProgress,_MainTraceExporter_progressCount,_MainTraceExporter_tracer,_MainTraceExporter_writeSpan;class MainTraceExporter{constructor(_ref21){let{transportManager,promiseMap=new Map(),tracer}=_ref21;_MainTraceExporter_instances.add(this);_MainTraceExporter_transportManager.set(this,void 0);_MainTraceExporter_inProgress.set(this,void 0);_MainTraceExporter_progressCount.set(this,0);_MainTraceExporter_tracer.set(this,void 0);__classPrivateFieldSet(this,_MainTraceExporter_transportManager,transportManager);__classPrivateFieldSet(this,_MainTraceExporter_inProgress,promiseMap);__classPrivateFieldSet(this,_MainTraceExporter_tracer,tracer);}shutdown(){return __awaiter$3(this,void 0,void 0,function*(){yield Promise.all(__classPrivateFieldGet(this,_MainTraceExporter_inProgress,"f").values());});}forceFlush(){return __awaiter$3(this,void 0,void 0,function*(){yield Promise.all(__classPrivateFieldGet(this,_MainTraceExporter_inProgress,"f").values());});}onStart(){}onEnd(otSpan){const span=__classPrivateFieldGet(this,_MainTraceExporter_tracer,"f").fromOTSpan(otSpan);__classPrivateFieldGet(this,_MainTraceExporter_instances,"m",_MainTraceExporter_writeSpan).call(this,span);}}_MainTraceExporter_transportManager=new WeakMap(),_MainTraceExporter_inProgress=new WeakMap(),_MainTraceExporter_progressCount=new WeakMap(),_MainTraceExporter_tracer=new WeakMap(),_MainTraceExporter_instances=new WeakSet(),_MainTraceExporter_writeSpan=function _MainTraceExporter_writeSpan(span){var _a,_b;const index=(__classPrivateFieldSet(this,_MainTraceExporter_progressCount,(_b=__classPrivateFieldGet(this,_MainTraceExporter_progressCount,"f"),_a=_b++,_b)),_a);const serializedSpan=serializeSpan(span);const work=()=>__awaiter$3(this,void 0,void 0,function*(){yield __classPrivateFieldGet(this,_MainTraceExporter_transportManager,"f").processSpan(serializedSpan);__classPrivateFieldGet(this,_MainTraceExporter_inProgress,"f").delete(index);});__classPrivateFieldGet(this,_MainTraceExporter_inProgress,"f").set(index,work());};function addChildSpanNameToParent(childSpanName,parent){var _a,_b;if(parent){const attribute=(_b=(_a=parent.getSpanInformation())===null||_a===void 0?void 0:_a.childrenNames)!==null&&_b!==void 0?_b:[];attribute.push(childSpanName);parent.setAttribute(AggregationAttributes.ChildrenNames,attribute);}}const KnownAttributes=_exports.KnownAttributes={Tag:"outsystems.log.message.tag",Visibility:"outsystems.otel.access.visibility",AccessType:"outsystems.otel.access.type",ChildrenNames:AggregationAttributes.ChildrenNames,IsNonAggregable:AggregationAttributes.IsNonAggregable};const InternalAttributes=[KnownAttributes.IsNonAggregable,KnownAttributes.ChildrenNames];var _Span_innerSpan,_Span_activateSpan,_Span_resolveEndedPromise,_Span_explicitChildren;class Span{constructor(_ref22){let{visibility,attributes={},span,activateSpan,explicitChildren=[]}=_ref22;_Span_innerSpan.set(this,void 0);_Span_activateSpan.set(this,void 0);_Span_resolveEndedPromise.set(this,void 0);_Span_explicitChildren.set(this,void 0);__classPrivateFieldSet(this,_Span_innerSpan,span);__classPrivateFieldSet(this,_Span_activateSpan,activateSpan);__classPrivateFieldSet(this,_Span_explicitChildren,explicitChildren);if(visibility!==undefined){__classPrivateFieldGet(this,_Span_innerSpan,"f").setAttribute(KnownAttributes.Visibility,mapVisibilityToNumber[visibility]);}__classPrivateFieldGet(this,_Span_innerSpan,"f").setAttributes(attributes);this.ended=new Promise(resolve=>{__classPrivateFieldSet(this,_Span_resolveEndedPromise,resolve);});}setAttribute(key,value){__classPrivateFieldGet(this,_Span_innerSpan,"f").setAttribute(key,value);}setStatus(status,message){__classPrivateFieldGet(this,_Span_innerSpan,"f").setStatus({code:status,message});}raiseError(ex,message){__classPrivateFieldGet(this,_Span_innerSpan,"f").recordException(ex);this.setStatus(2,message);}getContext(){const spanContext=__classPrivateFieldGet(this,_Span_innerSpan,"f").spanContext();return {spanId:spanContext.spanId,traceId:spanContext.traceId,attributes:__classPrivateFieldGet(this,_Span_innerSpan,"f").attributes,sampled:Boolean(spanContext.traceFlags&1)};}addEvent(name,attributes){__classPrivateFieldGet(this,_Span_innerSpan,"f").addEvent(name,attributes);}end(){return __awaiter$3(this,void 0,void 0,function*(){var _a;yield Promise.all(__classPrivateFieldGet(this,_Span_explicitChildren,"f").map(child=>child.ended));__classPrivateFieldGet(this,_Span_innerSpan,"f").end();(_a=__classPrivateFieldGet(this,_Span_resolveEndedPromise,"f"))===null||_a===void 0?void 0:_a.call(this);});}fail(){__classPrivateFieldGet(this,_Span_innerSpan,"f").setStatus({code:SpanStatusCode.ERROR});}getSpanInformation(){return {name:__classPrivateFieldGet(this,_Span_innerSpan,"f").name,kind:__classPrivateFieldGet(this,_Span_innerSpan,"f").kind,status:__classPrivateFieldGet(this,_Span_innerSpan,"f").status.code,parentSpanId:__classPrivateFieldGet(this,_Span_innerSpan,"f").parentSpanId,startTime:Instant.toNanoSeconds(new Instant(__classPrivateFieldGet(this,_Span_innerSpan,"f").startTime)),endTime:Instant.toNanoSeconds(new Instant(__classPrivateFieldGet(this,_Span_innerSpan,"f").endTime)),childrenNames:__classPrivateFieldGet(this,_Span_innerSpan,"f").attributes[AggregationAttributes.ChildrenNames]};}activate(){return __classPrivateFieldGet(this,_Span_activateSpan,"f").call(this);}addExplicitChild(child){__classPrivateFieldGet(this,_Span_explicitChildren,"f").push(child);}}_Span_innerSpan=new WeakMap(),_Span_activateSpan=new WeakMap(),_Span_resolveEndedPromise=new WeakMap(),_Span_explicitChildren=new WeakMap();var _Tracer_instances,_Tracer_transportManager,_Tracer_tracerProvider,_Tracer_enabled,_Tracer_innerTracer,_Tracer_contextManager,_Tracer_getActiveSpan,_Tracer_setSpan,_Tracer_baseAttributes,_Tracer_staticAttributes,_Tracer_handleStaticAttributes;class Tracer{constructor(_ref23){let{transports,baseAttributes={},staticAttributes=[],databaseNameSuffix,transportManager=new TransportManager({traceTransports:transports,databaseNameSuffix}),tracerProvider=new WebTracerProvider(),contextManager=new ZoneContextManager(),tracer=tracerProvider.getTracer("@outsystems/logger-js","3.2.0"),exporter,enabled=true,getActiveSpan=()=>trace.getActiveSpan(),setSpan=(ctx,span)=>trace.setSpan(ctx,span)}=_ref23;_Tracer_instances.add(this);_Tracer_transportManager.set(this,void 0);_Tracer_tracerProvider.set(this,void 0);_Tracer_enabled.set(this,void 0);_Tracer_innerTracer.set(this,void 0);_Tracer_contextManager.set(this,void 0);_Tracer_getActiveSpan.set(this,void 0);_Tracer_setSpan.set(this,void 0);_Tracer_baseAttributes.set(this,void 0);_Tracer_staticAttributes.set(this,void 0);__classPrivateFieldSet(this,_Tracer_transportManager,transportManager);__classPrivateFieldSet(this,_Tracer_innerTracer,tracer);__classPrivateFieldSet(this,_Tracer_enabled,enabled);__classPrivateFieldSet(this,_Tracer_getActiveSpan,getActiveSpan);__classPrivateFieldSet(this,_Tracer_tracerProvider,tracerProvider);__classPrivateFieldSet(this,_Tracer_setSpan,setSpan);__classPrivateFieldSet(this,_Tracer_contextManager,contextManager);__classPrivateFieldSet(this,_Tracer_baseAttributes,baseAttributes);__classPrivateFieldSet(this,_Tracer_staticAttributes,staticAttributes);const processor=exporter!==null&&exporter!==void 0?exporter:new MainTraceExporter({transportManager,tracer:this});__classPrivateFieldGet(this,_Tracer_tracerProvider,"f").register({contextManager});__classPrivateFieldGet(this,_Tracer_tracerProvider,"f").addSpanProcessor(processor);}addTransport(transport){__classPrivateFieldGet(this,_Tracer_transportManager,"f").addTraceTransport(transport);}removeTransport(transportId){__classPrivateFieldGet(this,_Tracer_transportManager,"f").removeTraceTransport(transportId);}startSpan(name,visibility,parent,kind){if(__classPrivateFieldGet(this,_Tracer_enabled,"f")){const parentSpan=parent!==null&&parent!==void 0?parent:__classPrivateFieldGet(this,_Tracer_getActiveSpan,"f").call(this)?this.fromOTSpan(__classPrivateFieldGet(this,_Tracer_getActiveSpan,"f").call(this)):undefined;addChildSpanNameToParent(name,parentSpan);const otSpan=parent?__classPrivateFieldGet(this,_Tracer_innerTracer,"f").startSpan(name,{attributes:{},kind:kind},parent.activate()):__classPrivateFieldGet(this,_Tracer_innerTracer,"f").startSpan(name,{kind:kind});const span=this.fromOTSpan(otSpan,visibility);parent===null||parent===void 0?void 0:parent.addExplicitChild(span);return span;}else {return undefined;}}startActiveSpan(name,fnWorker,visibility,parent,kind){if(__classPrivateFieldGet(this,_Tracer_enabled,"f")){const fn=otSpan=>{const span=this.fromOTSpan(otSpan,visibility);parent===null||parent===void 0?void 0:parent.addExplicitChild(span);return fnWorker(span);};const result=parent?__classPrivateFieldGet(this,_Tracer_innerTracer,"f").startActiveSpan(name,{attributes:{},kind:kind},parent.activate(),fn):__classPrivateFieldGet(this,_Tracer_innerTracer,"f").startActiveSpan(name,{kind:kind},fn);return result;}else {return fnWorker(undefined);}}getActiveSpan(){const otSpan=__classPrivateFieldGet(this,_Tracer_getActiveSpan,"f").call(this);return otSpan?this.fromOTSpan(otSpan):undefined;}setStatus(enabled){__classPrivateFieldSet(this,_Tracer_enabled,enabled);}addBaseSpanAttributes(attributes){__classPrivateFieldSet(this,_Tracer_baseAttributes,Object.assign(Object.assign({},__classPrivateFieldGet(this,_Tracer_baseAttributes,"f")),attributes));}enableFetchInstrumentation(){let fetchInstrumentation=arguments.length>0&&arguments[0]!==undefined?arguments[0]:new FetchInstrumentation();fetchInstrumentation.setTracerProvider(__classPrivateFieldGet(this,_Tracer_tracerProvider,"f"));}span(serializedSpan){return __awaiter$3(this,void 0,void 0,function*(){yield __classPrivateFieldGet(this,_Tracer_transportManager,"f").processSpan(serializedSpan);});}flush(){return __awaiter$3(this,void 0,void 0,function*(){__classPrivateFieldGet(this,_Tracer_transportManager,"f").flushSpans();});}setSchedulerTimerInterval(timerInterval){__classPrivateFieldGet(this,_Tracer_transportManager,"f").setSchedulerTimerInterval(timerInterval);}fromOTSpan(otSpan,visibility){const attributes=__classPrivateFieldGet(this,_Tracer_instances,"m",_Tracer_handleStaticAttributes).call(this,otSpan);return new Span({span:otSpan,attributes:evaluateObjFuncValues(attributes),activateSpan:()=>__classPrivateFieldGet(this,_Tracer_setSpan,"f").call(this,__classPrivateFieldGet(this,_Tracer_contextManager,"f").active(),otSpan),visibility});}}_exports.Tracer=Tracer;_Tracer_transportManager=new WeakMap(),_Tracer_tracerProvider=new WeakMap(),_Tracer_enabled=new WeakMap(),_Tracer_innerTracer=new WeakMap(),_Tracer_contextManager=new WeakMap(),_Tracer_getActiveSpan=new WeakMap(),_Tracer_setSpan=new WeakMap(),_Tracer_baseAttributes=new WeakMap(),_Tracer_staticAttributes=new WeakMap(),_Tracer_instances=new WeakSet(),_Tracer_handleStaticAttributes=function _Tracer_handleStaticAttributes(otSpan){const attributes=Object.assign({},__classPrivateFieldGet(this,_Tracer_baseAttributes,"f"));const isRootSpan=otSpan.parentSpanId===undefined;if(!isRootSpan){Object.keys(attributes).forEach(key=>{if(__classPrivateFieldGet(this,_Tracer_staticAttributes,"f").includes(key)){delete attributes[key];}});}return attributes;};var _ConsoleTransport_instances,_ConsoleTransport_shouldWriteLogsOnConsoles,_ConsoleTransport_canWriteOnConsole;const DEFAULT_CATEGORY="Application";class ConsoleTransport{constructor(_ref24){let{transportId,logTypeBaseline=LogType$1.Debug,formatter,transportConsole=console,shouldWriteLogsOnConsoles=()=>false}=_ref24;_ConsoleTransport_instances.add(this);_ConsoleTransport_shouldWriteLogsOnConsoles.set(this,void 0);this.formatConsoleLog=log=>{var _a,_b,_c,_d;const logOutput={errorCode:log.type===LogType$1.Error?(_a=log.errorCode)!==null&&_a!==void 0?_a:DefaultErrorCode:undefined,category:(_b=log.category)!==null&&_b!==void 0?_b:DEFAULT_CATEGORY,message:(_d=(_c=log===null||log===void 0?void 0:log.error)===null||_c===void 0?void 0:_c.message)!==null&&_d!==void 0?_d:log.message,timestamp:Instant.toISOString(log.timestamp)};return `${logOutput.timestamp}:${logOutput.errorCode?" "+logOutput.errorCode:""} [${logOutput.category}] ${logOutput.message}`;};this.transportId=transportId;this.logTypeBaseline=logTypeBaseline;this.formatter=formatter;this.transportConsole=transportConsole;__classPrivateFieldSet(this,_ConsoleTransport_shouldWriteLogsOnConsoles,shouldWriteLogsOnConsoles);}getTransportId(){return this.transportId;}requiresConnectivity(){return false;}hasWriteBuffer(){return false;}getLogTypeBaseline(){return this.logTypeBaseline;}setLogTypeBaseline(logType){this.logTypeBaseline=logType;}write(log){return __awaiter$3(this,void 0,void 0,function*(){if(!__classPrivateFieldGet(this,_ConsoleTransport_instances,"m",_ConsoleTransport_canWriteOnConsole).call(this,log)){return;}const logOutput=this.formatter?this.formatter.format(log):this.formatConsoleLog(log);switch(log.type){case LogType$1.Debug:this.transportConsole.debug(logOutput);break;case LogType$1.Info:this.transportConsole.log(logOutput);break;case LogType$1.Warning:this.transportConsole.warn(logOutput);break;case LogType$1.Error:this.transportConsole.error(logOutput,log.error);break;default:this.transportConsole.log(logOutput);}});}writeAll(logs){return __awaiter$3(this,void 0,void 0,function*(){for(const log of logs){yield this.write(log);}});}}_ConsoleTransport_shouldWriteLogsOnConsoles=new WeakMap(),_ConsoleTransport_instances=new WeakSet(),_ConsoleTransport_canWriteOnConsole=function _ConsoleTransport_canWriteOnConsole(log){return log.visibility===Visibility$1.External||__classPrivateFieldGet(this,_ConsoleTransport_shouldWriteLogsOnConsoles,"f").call(this);};function mapLogFieldToAttributes(log){const mappedLogAttributes={};if(log.category){mappedLogAttributes[KnownAttributes.Tag]=log.category;}return mappedLogAttributes;}class NativeLoggerFormatter{format(log){var _a,_b;const logVisibility=(_a=log.visibility)!==null&&_a!==void 0?_a:Visibility$1.External;const exceptionAttributes=getExceptionAttributes(log);const fieldAttributes=mapLogFieldToAttributes(log);const allLogAttributes=Object.assign(Object.assign(Object.assign({[KnownAttributes.Visibility]:mapVisibilityToNumber[logVisibility]},exceptionAttributes),fieldAttributes),log.attributes);const sanitizedAttributes=sanitizeUrlAttribute(allLogAttributes);const logTimestampISO=Instant.toISOString(log.timestamp);const nativeLoggerRecord={message:(_b=log.message)!==null&&_b!==void 0?_b:"",attributes:sanitizedAttributes,instant:logTimestampISO};return nativeLoggerRecord;}}const mapLogTypeToNativeLoggerMethod={[LogType$1.Debug]:"logDebug",[LogType$1.Info]:"logInfo",[LogType$1.Warning]:"logWarning",[LogType$1.Error]:"logError",[LogType$1.Trace]:"logTrace"};class NativeLoggerTransport{constructor(_ref25){let{transportId,logTypeBaseline,nativeLoggerV2,formatter=new NativeLoggerFormatter()}=_ref25;this.transportId=transportId;this.logTypeBaseline=logTypeBaseline;this.nativeLoggerV2=nativeLoggerV2;this.formatter=formatter;}getTransportId(){return this.transportId;}requiresConnectivity(){return false;}hasWriteBuffer(){return false;}getLogTypeBaseline(){return this.logTypeBaseline;}setLogTypeBaseline(logType){this.logTypeBaseline=logType;}write(log){return __awaiter$3(this,void 0,void 0,function*(){const payload=this.formatter.format(log);const loggerMethod=mapLogTypeToNativeLoggerMethod[log.type];const logResult=this.nativeLoggerV2[loggerMethod](payload);return logResult;});}writeAll(logs){return __awaiter$3(this,void 0,void 0,function*(){for(const log of logs){yield this.write(log);}});}}var _OpenTelemetryLogFormatter_resourceAttributes;const MESSAGE_MAX_LENGTH=2000;const mapLogTypeToSeverityNumber={[LogType$1.Trace]:1,[LogType$1.Debug]:5,[LogType$1.Info]:9,[LogType$1.Warning]:13,[LogType$1.Error]:17};const mapLogTypeToSeverityText={[LogType$1.Debug]:"Debug",[LogType$1.Info]:"Information",[LogType$1.Warning]:"Warning",[LogType$1.Error]:"Error",[LogType$1.Trace]:"Trace"};const getOptionalLogRecordFields=log=>{const optionalLogRecordFields={body:{stringValue:""}};if(log.message){const truncatedMessage=log.message.length>MESSAGE_MAX_LENGTH?`${log.message.substring(0,MESSAGE_MAX_LENGTH-3)}...`:log.message;optionalLogRecordFields.body={stringValue:truncatedMessage};}return optionalLogRecordFields;};class OpenTelemetryLogFormatter{constructor(){let{resourceAttributes={}}=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};_OpenTelemetryLogFormatter_resourceAttributes.set(this,void 0);__classPrivateFieldSet(this,_OpenTelemetryLogFormatter_resourceAttributes,resourceAttributes);}setResourceAttributes(attributes){__classPrivateFieldSet(this,_OpenTelemetryLogFormatter_resourceAttributes,attributes!==null&&attributes!==void 0?attributes:{});}format(log){return this.formatAll([log]);}formatAll(logs){const allResourceAttributes=Object.assign({[KnownAttributes.AccessType]:3},__classPrivateFieldGet(this,_OpenTelemetryLogFormatter_resourceAttributes,"f"));const resourcesPayload=convertObjectToAttributesList(allResourceAttributes);const logsFormatted=logs.map(log=>formatLog(log));return formatRequest$1(logsFormatted,resourcesPayload);}}_OpenTelemetryLogFormatter_resourceAttributes=new WeakMap();function formatRequest$1(logsFormatted,resourcesPayload){return {resourceLogs:[{resource:{attributes:resourcesPayload},scopeLogs:[{scope:{name:"@outsystems/logger-js",version:"3.2.0"},logRecords:logsFormatted}]}]};}function formatLog(log){var _a;const logVisibility=(_a=log.visibility)!==null&&_a!==void 0?_a:Visibility$1.External;const exceptionAttributes=getExceptionAttributes(log);const traceFields=getTraceFields(log);const mappedLogAttributes=mapLogFieldToAttributes(log);const allLogAttributes=Object.assign(Object.assign(Object.assign({[KnownAttributes.Visibility]:mapVisibilityToNumber[logVisibility]},exceptionAttributes),mappedLogAttributes),log.attributes);const sanitizedAttributes=sanitizeUrlAttribute(allLogAttributes);const attributesPayload=convertObjectToAttributesList(sanitizedAttributes);const severityNumber=mapLogTypeToSeverityNumber[log.type];const severityText=mapLogTypeToSeverityText[log.type];const timeUnixNanoSeconds=Instant.toNanoSeconds(log.timestamp);const optionalLogRecordFields=getOptionalLogRecordFields(log);return Object.assign(Object.assign(Object.assign({},optionalLogRecordFields),traceFields),{timeUnixNano:timeUnixNanoSeconds,severityNumber,severityText,attributes:attributesPayload});}var _OpenTelemetryLoggerTransport_instances,_OpenTelemetryLoggerTransport_tagId,_OpenTelemetryLoggerTransport_baseUrl,_OpenTelemetryLoggerTransport_postLogs;const LOGS_ENDPOINT_V2="/v2/logs";class OpenTelemetryLoggerTransport{constructor(_ref26){let{transportId,resourceAttributes,logTypeBaseline,logsEndpoint=LOGS_ENDPOINT_V2,logsCollectorBaseUrl,tagId,enableWriteBuffer=true,httpClient=new _communicationJs.HttpClient({baseUrl:logsCollectorBaseUrl,headers:tagId?{"api-key":tagId,"tag-id":tagId}:{}}),formatter=new OpenTelemetryLogFormatter({resourceAttributes})}=_ref26;_OpenTelemetryLoggerTransport_instances.add(this);_OpenTelemetryLoggerTransport_tagId.set(this,void 0);_OpenTelemetryLoggerTransport_baseUrl.set(this,void 0);this.transportId=transportId;this.logTypeBaseline=logTypeBaseline;this.logsEndpoint=logsEndpoint;this.enableWriteBuffer=enableWriteBuffer;this.httpClient=httpClient;this.formatter=formatter;__classPrivateFieldSet(this,_OpenTelemetryLoggerTransport_tagId,tagId);__classPrivateFieldSet(this,_OpenTelemetryLoggerTransport_baseUrl,logsCollectorBaseUrl);}getTransportId(){return this.transportId;}requiresConnectivity(){return true;}hasWriteBuffer(){return this.enableWriteBuffer;}getLogTypeBaseline(){return this.logTypeBaseline;}setLogTypeBaseline(logType){this.logTypeBaseline=logType;}setTagId(tagId){__classPrivateFieldSet(this,_OpenTelemetryLoggerTransport_tagId,tagId);}setResourceAttributes(resourceAttributes){var _a,_b;(_b=(_a=this.formatter).setResourceAttributes)===null||_b===void 0?void 0:_b.call(_a,resourceAttributes);}write(log){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_instances,"m",_OpenTelemetryLoggerTransport_postLogs).call(this,this.formatter.format(log));});}writeAll(logs){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_instances,"m",_OpenTelemetryLoggerTransport_postLogs).call(this,this.formatter.formatAll(logs));});}}_OpenTelemetryLoggerTransport_tagId=new WeakMap(),_OpenTelemetryLoggerTransport_baseUrl=new WeakMap(),_OpenTelemetryLoggerTransport_instances=new WeakSet(),_OpenTelemetryLoggerTransport_postLogs=function _OpenTelemetryLoggerTransport_postLogs(payload){return __awaiter$3(this,void 0,void 0,function*(){return this.httpClient.post({url:this.logsEndpoint,payload,contentType:_communicationJs.ContentType.Json,headers:__classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_tagId,"f")?{"api-key":__classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_tagId,"f"),"tag-id":__classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_tagId,"f")}:{},baseURL:__classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_baseUrl,"f")});});};var _OpenTelemetryTraceFormatter_instances,_OpenTelemetryTraceFormatter_resourceAttributes,_OpenTelemetryTraceFormatter_filterInternalAttributes;class OpenTelemetryTraceFormatter{constructor(){let{resourceAttributes={}}=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};_OpenTelemetryTraceFormatter_instances.add(this);_OpenTelemetryTraceFormatter_resourceAttributes.set(this,void 0);__classPrivateFieldSet(this,_OpenTelemetryTraceFormatter_resourceAttributes,resourceAttributes);}setResourceAttributes(attributes){__classPrivateFieldSet(this,_OpenTelemetryTraceFormatter_resourceAttributes,attributes!==null&&attributes!==void 0?attributes:{});}format(span){return this.formatAll([span]);}formatAll(spans){const allResourceAttributes=Object.assign({[KnownAttributes.AccessType]:3},__classPrivateFieldGet(this,_OpenTelemetryTraceFormatter_resourceAttributes,"f"));const resourcesPayload=convertObjectToAttributesList(allResourceAttributes);const spansPayload=spans.map(span=>{const allTraceAttributes=Object.assign({[KnownAttributes.Visibility]:mapVisibilityToNumber[Visibility$1.External]},__classPrivateFieldGet(this,_OpenTelemetryTraceFormatter_instances,"m",_OpenTelemetryTraceFormatter_filterInternalAttributes).call(this,span.attributes));const sanitizedAttributes=sanitizeUrlAttribute(allTraceAttributes);const spanAttributes=convertObjectToAttributesList(sanitizedAttributes);return Object.assign({traceId:span.traceId,spanId:span.spanId,parentSpanId:span.parentSpanId,name:span.name,startTimeUnixNano:span.startTimeUnixNano,endTimeUnixNano:span.endTimeUnixNano,status:{code:span.status!==0?span.status:1},attributes:spanAttributes},span.kind?{kind:span.kind}:{});});return formatRequest(spansPayload,resourcesPayload);}}_OpenTelemetryTraceFormatter_resourceAttributes=new WeakMap(),_OpenTelemetryTraceFormatter_instances=new WeakSet(),_OpenTelemetryTraceFormatter_filterInternalAttributes=function _OpenTelemetryTraceFormatter_filterInternalAttributes(attributes){return Object.entries(attributes).reduce((acc,_ref27)=>{let[key,value]=_ref27;if(!InternalAttributes.includes(key)){acc[key]=value;}return acc;},{});};function formatRequest(spansPayload,resourcesPayload){return {resourceSpans:[{resource:{attributes:resourcesPayload},scopeSpans:[{scope:{name:"@outsystems/logger-js",version:"3.2.0"},spans:spansPayload}]}]};}var _OpenTelemetryTracerTransport_instances,_OpenTelemetryTracerTransport_enabled,_OpenTelemetryTracerTransport_tagId,_OpenTelemetryTracerTransport_baseUrl,_OpenTelemetryTracerTransport_postSpans;const TRACES_ENDPOINT_V2="/v2/traces";class OpenTelemetryTracerTransport{constructor(_ref28){let{transportId,resourceAttributes,enabled=true,tracesEndpoint=TRACES_ENDPOINT_V2,tracesCollectorBaseUrl,tagId,enableWriteBuffer=true,httpClient=new _communicationJs.HttpClient({baseUrl:tracesCollectorBaseUrl,headers:tagId?{"api-key":tagId,"tag-id":tagId}:{}}),formatter=new OpenTelemetryTraceFormatter({resourceAttributes})}=_ref28;_OpenTelemetryTracerTransport_instances.add(this);_OpenTelemetryTracerTransport_enabled.set(this,void 0);_OpenTelemetryTracerTransport_tagId.set(this,void 0);_OpenTelemetryTracerTransport_baseUrl.set(this,void 0);this.transportId=transportId;__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_enabled,enabled);this.tracesEndpoint=tracesEndpoint;this.enableWriteBuffer=enableWriteBuffer;this.httpClient=httpClient;this.formatter=formatter;__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_tagId,tagId);__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_baseUrl,tracesCollectorBaseUrl);}getTransportId(){return this.transportId;}isTracingEnabled(){return __classPrivateFieldGet(this,_OpenTelemetryTracerTransport_enabled,"f");}enableTracing(){__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_enabled,true);}disableTracing(){__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_enabled,false);}requiresConnectivity(){return true;}hasWriteBuffer(){return this.enableWriteBuffer;}setTagId(tagId){__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_tagId,tagId);}setResourceAttributes(resourceAttributes){var _a,_b;(_b=(_a=this.formatter).setResourceAttributes)===null||_b===void 0?void 0:_b.call(_a,resourceAttributes);}write(span){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_OpenTelemetryTracerTransport_instances,"m",_OpenTelemetryTracerTransport_postSpans).call(this,this.formatter.format(span));});}writeAll(spans){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_OpenTelemetryTracerTransport_instances,"m",_OpenTelemetryTracerTransport_postSpans).call(this,this.formatter.formatAll(spans));});}}_OpenTelemetryTracerTransport_enabled=new WeakMap(),_OpenTelemetryTracerTransport_tagId=new WeakMap(),_OpenTelemetryTracerTransport_baseUrl=new WeakMap(),_OpenTelemetryTracerTransport_instances=new WeakSet(),_OpenTelemetryTracerTransport_postSpans=function _OpenTelemetryTracerTransport_postSpans(payload){return __awaiter$3(this,void 0,void 0,function*(){return this.httpClient.post({url:this.tracesEndpoint,payload,contentType:_communicationJs.ContentType.Json,headers:__classPrivateFieldGet(this,_OpenTelemetryTracerTransport_tagId,"f")?{"api-key":__classPrivateFieldGet(this,_OpenTelemetryTracerTransport_tagId,"f"),"tag-id":__classPrivateFieldGet(this,_OpenTelemetryTracerTransport_tagId,"f")}:{},baseURL:__classPrivateFieldGet(this,_OpenTelemetryTracerTransport_baseUrl,"f")});});};var _ServiceWorkerTransport_sw,_ServiceWorkerTransport_container,_ServiceWorkerTransport_pendingMessages,_ServiceWorkerTransport_waitingForSW;class ServiceWorkerTransport{constructor(){let{sw,container=navigator.serviceWorker}=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var _a;_ServiceWorkerTransport_sw.set(this,void 0);_ServiceWorkerTransport_container.set(this,void 0);_ServiceWorkerTransport_pendingMessages.set(this,[]);_ServiceWorkerTransport_waitingForSW.set(this,false);if(!container){throw new Error("No service worker container available");}__classPrivateFieldSet(this,_ServiceWorkerTransport_sw,(_a=sw!==null&&sw!==void 0?sw:container===null||container===void 0?void 0:container.controller)!==null&&_a!==void 0?_a:undefined);__classPrivateFieldSet(this,_ServiceWorkerTransport_container,container);this.waitForSW();}get pendingMessages(){return __classPrivateFieldGet(this,_ServiceWorkerTransport_pendingMessages,"f");}isServiceWorkerAvailable(){return !!__classPrivateFieldGet(this,_ServiceWorkerTransport_sw,"f")&&__classPrivateFieldGet(this,_ServiceWorkerTransport_sw,"f").state==="activated";}send(kind,data){this.sendMessage({kind,data});}sendMessage(message,options){var _a;if(this.isServiceWorkerAvailable()){(_a=__classPrivateFieldGet(this,_ServiceWorkerTransport_sw,"f"))===null||_a===void 0?void 0:_a.postMessage(message,options);}else {__classPrivateFieldGet(this,_ServiceWorkerTransport_pendingMessages,"f").push({message,options});this.waitForSW();}}waitForSW(){return __awaiter$3(this,void 0,void 0,function*(){if(this.isServiceWorkerAvailable()||__classPrivateFieldGet(this,_ServiceWorkerTransport_waitingForSW,"f")){return;}__classPrivateFieldSet(this,_ServiceWorkerTransport_waitingForSW,true);const{active}=yield __classPrivateFieldGet(this,_ServiceWorkerTransport_container,"f").ready;__classPrivateFieldSet(this,_ServiceWorkerTransport_sw,active!==null&&active!==void 0?active:undefined);__classPrivateFieldSet(this,_ServiceWorkerTransport_waitingForSW,false);this.flushMessages();});}flushMessages(){var _a;if(this.isServiceWorkerAvailable()){for(const{message,options}of __classPrivateFieldGet(this,_ServiceWorkerTransport_pendingMessages,"f")){(_a=__classPrivateFieldGet(this,_ServiceWorkerTransport_sw,"f"))===null||_a===void 0?void 0:_a.postMessage(message,options);}__classPrivateFieldSet(this,_ServiceWorkerTransport_pendingMessages,[]);}else {this.waitForSW();}}}_ServiceWorkerTransport_sw=new WeakMap(),_ServiceWorkerTransport_container=new WeakMap(),_ServiceWorkerTransport_pendingMessages=new WeakMap(),_ServiceWorkerTransport_waitingForSW=new WeakMap();var _ServiceWorkerTracerTransport_instances,_ServiceWorkerTracerTransport_transportId,_ServiceWorkerTracerTransport_swTransport,_ServiceWorkerTracerTransport_attributes,_ServiceWorkerTracerTransport_tagId,_ServiceWorkerTracerTransport_collectorBaseUrl,_ServiceWorkerTracerTransport_databaseSuffix,_ServiceWorkerTracerTransport_aggregateSpans,_ServiceWorkerTracerTransport_enabled,_ServiceWorkerTracerTransport_getMetadata;class ServiceWorkerTracerTransport{constructor(_ref29){let{transportId,tagId,collectorBaseUrl,databaseSuffix,swTransport=new ServiceWorkerTransport(),enabled=true,attributes={},aggregateSpans=false}=_ref29;_ServiceWorkerTracerTransport_instances.add(this);_ServiceWorkerTracerTransport_transportId.set(this,void 0);_ServiceWorkerTracerTransport_swTransport.set(this,void 0);_ServiceWorkerTracerTransport_attributes.set(this,void 0);_ServiceWorkerTracerTransport_tagId.set(this,void 0);_ServiceWorkerTracerTransport_collectorBaseUrl.set(this,void 0);_ServiceWorkerTracerTransport_databaseSuffix.set(this,void 0);_ServiceWorkerTracerTransport_aggregateSpans.set(this,void 0);_ServiceWorkerTracerTransport_enabled.set(this,void 0);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_transportId,transportId);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_swTransport,swTransport);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_enabled,enabled);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_attributes,attributes);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_tagId,tagId);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_collectorBaseUrl,collectorBaseUrl);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_databaseSuffix,databaseSuffix);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_aggregateSpans,aggregateSpans);}getTransportId(){return __classPrivateFieldGet(this,_ServiceWorkerTracerTransport_transportId,"f");}requiresConnectivity(){return false;}isTracingEnabled(){return __classPrivateFieldGet(this,_ServiceWorkerTracerTransport_enabled,"f");}enableTracing(){__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_enabled,true);}disableTracing(){__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_enabled,false);}hasWriteBuffer(){return false;}write(span){__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_swTransport,"f").send("Span",{span,meta:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_instances,"m",_ServiceWorkerTracerTransport_getMetadata).call(this)});return Promise.resolve();}writeAll(spans){for(const span of spans){__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_swTransport,"f").send("Span",{span,meta:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_instances,"m",_ServiceWorkerTracerTransport_getMetadata).call(this)});}return Promise.resolve();}flush(){__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_swTransport,"f").send("Flush",{kind:"Spans",meta:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_instances,"m",_ServiceWorkerTracerTransport_getMetadata).call(this)});return Promise.resolve();}}_ServiceWorkerTracerTransport_transportId=new WeakMap(),_ServiceWorkerTracerTransport_swTransport=new WeakMap(),_ServiceWorkerTracerTransport_attributes=new WeakMap(),_ServiceWorkerTracerTransport_tagId=new WeakMap(),_ServiceWorkerTracerTransport_collectorBaseUrl=new WeakMap(),_ServiceWorkerTracerTransport_databaseSuffix=new WeakMap(),_ServiceWorkerTracerTransport_aggregateSpans=new WeakMap(),_ServiceWorkerTracerTransport_enabled=new WeakMap(),_ServiceWorkerTracerTransport_instances=new WeakSet(),_ServiceWorkerTracerTransport_getMetadata=function _ServiceWorkerTracerTransport_getMetadata(){return {databaseSuffix:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_databaseSuffix,"f"),resourceAttributes:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_attributes,"f"),collectorBaseUrl:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_collectorBaseUrl,"f"),apiKey:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_tagId,"f"),aggregateSpans:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_aggregateSpans,"f")};};var _InstrumentationFactory_instances,_InstrumentationFactory_transportManager,_InstrumentationFactory_tracerInstance,_InstrumentationFactory_loggerInstance,_InstrumentationFactory_shouldWriteLogsOnConsoles,_InstrumentationFactory_baseLogAttributes,_InstrumentationFactory_baseSpanAttributes,_InstrumentationFactory_staticSpanAttributes,_InstrumentationFactory_databaseNameSuffix,_InstrumentationFactory_getActiveSpanInfo;class InstrumentationFactory{constructor(_ref30){let{databaseNameSuffix,logTransports,traceTransports,baseLogAttributes={},baseSpanAttributes={},staticSpanAttributes=[],isOnline,aggregateSpans,transportManager=new TransportManager({databaseNameSuffix,logTransports,traceTransports,isOnline,aggregateSpans}),tracerInstance,loggerInstance}=_ref30;_InstrumentationFactory_instances.add(this);_InstrumentationFactory_transportManager.set(this,void 0);_InstrumentationFactory_tracerInstance.set(this,void 0);_InstrumentationFactory_loggerInstance.set(this,void 0);_InstrumentationFactory_shouldWriteLogsOnConsoles.set(this,void 0);_InstrumentationFactory_baseLogAttributes.set(this,void 0);_InstrumentationFactory_baseSpanAttributes.set(this,void 0);_InstrumentationFactory_staticSpanAttributes.set(this,void 0);_InstrumentationFactory_databaseNameSuffix.set(this,void 0);__classPrivateFieldSet(this,_InstrumentationFactory_transportManager,transportManager);__classPrivateFieldSet(this,_InstrumentationFactory_tracerInstance,tracerInstance);__classPrivateFieldSet(this,_InstrumentationFactory_loggerInstance,loggerInstance);__classPrivateFieldSet(this,_InstrumentationFactory_shouldWriteLogsOnConsoles,()=>_settingsJs.FeaturesManager.isEnabled(_settingsJs.FeatureKeys.WriteLogsOnConsoles));__classPrivateFieldSet(this,_InstrumentationFactory_baseLogAttributes,baseLogAttributes);__classPrivateFieldSet(this,_InstrumentationFactory_baseSpanAttributes,baseSpanAttributes);__classPrivateFieldSet(this,_InstrumentationFactory_staticSpanAttributes,staticSpanAttributes);__classPrivateFieldSet(this,_InstrumentationFactory_databaseNameSuffix,databaseNameSuffix);}init(){return __awaiter$3(this,void 0,void 0,function*(){yield this.getLogger();this.getTracer();});}getLogger(){return __awaiter$3(this,void 0,void 0,function*(){if(!__classPrivateFieldGet(this,_InstrumentationFactory_loggerInstance,"f")){__classPrivateFieldSet(this,_InstrumentationFactory_loggerInstance,yield Logger.build({transportManager:__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f"),baseAttributes:__classPrivateFieldGet(this,_InstrumentationFactory_baseLogAttributes,"f")}));}return __classPrivateFieldGet(this,_InstrumentationFactory_loggerInstance,"f");});}getTracer(){if(!__classPrivateFieldGet(this,_InstrumentationFactory_tracerInstance,"f")){__classPrivateFieldSet(this,_InstrumentationFactory_tracerInstance,new Tracer({transportManager:__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f"),baseAttributes:__classPrivateFieldGet(this,_InstrumentationFactory_baseSpanAttributes,"f"),staticAttributes:__classPrivateFieldGet(this,_InstrumentationFactory_staticSpanAttributes,"f")}));}return __classPrivateFieldGet(this,_InstrumentationFactory_tracerInstance,"f");}useNativeLoggerTransport(_a){return __awaiter$3(this,arguments,void 0,function(_ref31){var _this17=this;let{plugin,logTypeBaseline}=_ref31;return function*(){const loggerInstance=yield _this17.getLogger();loggerInstance.addTransport(new NativeLoggerTransport({transportId:"native-logger-transport",nativeLoggerV2:plugin,logTypeBaseline}));}();});}useOpenTelemetryLoggerTransport(_a){return __awaiter$3(this,arguments,void 0,function(_ref32){var _this18=this;let{resourceAttributes,logTypeBaseline,collectorBaseUrl,tagId,httpClient}=_ref32;return function*(){const loggerInstance=yield _this18.getLogger();loggerInstance.addTransport(new OpenTelemetryLoggerTransport({transportId:"otel-logger-transport",resourceAttributes,logTypeBaseline,logsCollectorBaseUrl:collectorBaseUrl,tagId,httpClient}));}();});}useConsoleLoggerTransport(logTypeBaseline){return __awaiter$3(this,void 0,void 0,function*(){const loggerInstance=yield this.getLogger();loggerInstance.addTransport(new ConsoleTransport({transportId:"console-transport",logTypeBaseline,shouldWriteLogsOnConsoles:__classPrivateFieldGet(this,_InstrumentationFactory_shouldWriteLogsOnConsoles,"f")}));});}useServiceWorkerTracerTransport(_ref33){let{resourceAttributes,enabled=true,collectorBaseUrl,tagId,swTransport,aggregateSpans=false}=_ref33;const tracerInstance=this.getTracer();const transporter=new ServiceWorkerTracerTransport({transportId:"sw-tracer-transport",attributes:resourceAttributes,enabled,tagId,collectorBaseUrl,databaseSuffix:__classPrivateFieldGet(this,_InstrumentationFactory_databaseNameSuffix,"f"),swTransport,aggregateSpans});tracerInstance.addTransport(transporter);}useOpenTelemetryTracerTransport(_ref34){let{resourceAttributes,enabled=true,collectorBaseUrl,tagId,httpClient}=_ref34;const tracerInstance=this.getTracer();const transporter=new OpenTelemetryTracerTransport({transportId:"otel-tracer-transport",resourceAttributes,enabled,tagId,tracesCollectorBaseUrl:collectorBaseUrl,httpClient});tracerInstance.addTransport(transporter);}useConsoleTracerTransport(){return __awaiter$3(this,void 0,void 0,function*(){throw new Error("Not implemented");});}useFetchInstrumentation(){const tracerInstance=this.getTracer();tracerInstance.enableFetchInstrumentation();}setLogLevel(logType){__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").setAllLogTypeBaselines(logType);}setTracerStatus(enabled){const tracerInstance=this.getTracer();tracerInstance.setStatus(enabled);}setTagId(tagId){__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").setTagId(tagId);}setAggregateSpansStatus(enabled){__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").setAggregateSpansStatus(enabled);}setResourceAttributes(resourceAttributes){__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").setResourceAttributes(resourceAttributes);}setSchedulerTimerInterval(timeInterval){__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").setSchedulerTimerInterval(timeInterval);}flushInstrumentationData(){return __awaiter$3(this,void 0,void 0,function*(){yield Promise.all([__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").flushLogs(),__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").flushSpans()]);});}logError(_a){return __awaiter$3(this,arguments,void 0,function(_ref35){var _this19=this;let{category,message,error,errorCode,visibility,failSpan=true,attributes}=_ref35;return function*(){if(failSpan){const tracerInstance=_this19.getTracer();const span=tracerInstance.getActiveSpan();span===null||span===void 0?void 0:span.fail();}const loggerInstance=yield _this19.getLogger();loggerInstance.error({category,message,error,errorCode,visibility,span:__classPrivateFieldGet(_this19,_InstrumentationFactory_instances,"m",_InstrumentationFactory_getActiveSpanInfo).call(_this19),attributes});}();});}logWarning(_a){return __awaiter$3(this,arguments,void 0,function(_ref36){var _this20=this;let{category,message,visibility,attributes}=_ref36;return function*(){const loggerInstance=yield _this20.getLogger();loggerInstance.warning({category,message,visibility,span:__classPrivateFieldGet(_this20,_InstrumentationFactory_instances,"m",_InstrumentationFactory_getActiveSpanInfo).call(_this20),attributes});}();});}logInfo(_a){return __awaiter$3(this,arguments,void 0,function(_ref37){var _this21=this;let{category,message,visibility,attributes}=_ref37;return function*(){const loggerInstance=yield _this21.getLogger();loggerInstance.info({category,message,visibility,span:__classPrivateFieldGet(_this21,_InstrumentationFactory_instances,"m",_InstrumentationFactory_getActiveSpanInfo).call(_this21),attributes});}();});}logDebug(_a){return __awaiter$3(this,arguments,void 0,function(_ref38){var _this22=this;let{category,message,visibility,attributes}=_ref38;return function*(){const loggerInstance=yield _this22.getLogger();loggerInstance.debug({category,message,visibility,span:__classPrivateFieldGet(_this22,_InstrumentationFactory_instances,"m",_InstrumentationFactory_getActiveSpanInfo).call(_this22),attributes});}();});}log(logObject){return __awaiter$3(this,void 0,void 0,function*(){const loggerInstance=yield this.getLogger();yield loggerInstance.log(logObject);});}span(serializedSpan){return __awaiter$3(this,void 0,void 0,function*(){const tracerInstance=this.getTracer();yield tracerInstance.span(serializedSpan);});}flushLogs(){return __awaiter$3(this,void 0,void 0,function*(){yield __classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").flushLogs();});}flushSpans(){return __awaiter$3(this,void 0,void 0,function*(){yield __classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").flushSpans();});}startSpan(name,visibility,parent,kind){const tracerInstance=this.getTracer();return tracerInstance.startSpan(name,visibility,parent,kind);}startActiveSpan(name,fnWorker,visibility,parent,kind){const tracerInstance=this.getTracer();return tracerInstance.startActiveSpan(name,fnWorker,visibility,parent,kind);}getActiveSpan(){const tracerInstance=this.getTracer();return tracerInstance.getActiveSpan();}}_exports.InstrumentationFactory=InstrumentationFactory;_InstrumentationFactory_transportManager=new WeakMap(),_InstrumentationFactory_tracerInstance=new WeakMap(),_InstrumentationFactory_loggerInstance=new WeakMap(),_InstrumentationFactory_shouldWriteLogsOnConsoles=new WeakMap(),_InstrumentationFactory_baseLogAttributes=new WeakMap(),_InstrumentationFactory_baseSpanAttributes=new WeakMap(),_InstrumentationFactory_staticSpanAttributes=new WeakMap(),_InstrumentationFactory_databaseNameSuffix=new WeakMap(),_InstrumentationFactory_instances=new WeakSet(),_InstrumentationFactory_getActiveSpanInfo=function _InstrumentationFactory_getActiveSpanInfo(){const tracer=this.getTracer();const activeSpan=tracer.getActiveSpan();return activeSpan?serializeSpan(activeSpan):undefined;};var SpanKind;(function(SpanKind){SpanKind[SpanKind["Internal"]=0]="Internal";SpanKind[SpanKind["Client"]=2]="Client";})(SpanKind||(_exports.SpanKind=SpanKind={}));_exports.Version="3.2.0";}); 
+    	     */WebTracerProvider.prototype.register=function(config){if(config===void 0){config={};}if(config.contextManager===undefined){config.contextManager=new StackContextManager();}if(config.contextManager){config.contextManager.enable();}_super.prototype.register.call(this,config);};return WebTracerProvider;}(BasicTracerProvider);function serializeSpan(span){const spanInfo=span.getSpanInformation();const spanContext=span.getContext();return {traceId:spanContext.traceId,spanId:spanContext.spanId,parentSpanId:spanInfo.parentSpanId,name:spanInfo.name,startTimeUnixNano:spanInfo.startTime,endTimeUnixNano:spanInfo.endTime,attributes:spanContext.attributes,kind:spanInfo.kind,status:spanInfo.status};}var _MainTraceExporter_instances,_MainTraceExporter_transportManager,_MainTraceExporter_inProgress,_MainTraceExporter_progressCount,_MainTraceExporter_tracer,_MainTraceExporter_writeSpan;class MainTraceExporter{constructor(_ref20){let{transportManager,promiseMap=new Map(),tracer}=_ref20;_MainTraceExporter_instances.add(this);_MainTraceExporter_transportManager.set(this,void 0);_MainTraceExporter_inProgress.set(this,void 0);_MainTraceExporter_progressCount.set(this,0);_MainTraceExporter_tracer.set(this,void 0);__classPrivateFieldSet(this,_MainTraceExporter_transportManager,transportManager);__classPrivateFieldSet(this,_MainTraceExporter_inProgress,promiseMap);__classPrivateFieldSet(this,_MainTraceExporter_tracer,tracer);}shutdown(){return __awaiter$3(this,void 0,void 0,function*(){yield Promise.all(__classPrivateFieldGet(this,_MainTraceExporter_inProgress,"f").values());});}forceFlush(){return __awaiter$3(this,void 0,void 0,function*(){yield Promise.all(__classPrivateFieldGet(this,_MainTraceExporter_inProgress,"f").values());});}onStart(){}onEnd(otSpan){const span=__classPrivateFieldGet(this,_MainTraceExporter_tracer,"f").fromOTSpan(otSpan);__classPrivateFieldGet(this,_MainTraceExporter_instances,"m",_MainTraceExporter_writeSpan).call(this,span);}}_MainTraceExporter_transportManager=new WeakMap(),_MainTraceExporter_inProgress=new WeakMap(),_MainTraceExporter_progressCount=new WeakMap(),_MainTraceExporter_tracer=new WeakMap(),_MainTraceExporter_instances=new WeakSet(),_MainTraceExporter_writeSpan=function _MainTraceExporter_writeSpan(span){var _a,_b;const index=(__classPrivateFieldSet(this,_MainTraceExporter_progressCount,(_b=__classPrivateFieldGet(this,_MainTraceExporter_progressCount,"f"),_a=_b++,_b)),_a);const serializedSpan=serializeSpan(span);const work=()=>__awaiter$3(this,void 0,void 0,function*(){yield __classPrivateFieldGet(this,_MainTraceExporter_transportManager,"f").processSpan(serializedSpan);__classPrivateFieldGet(this,_MainTraceExporter_inProgress,"f").delete(index);});__classPrivateFieldGet(this,_MainTraceExporter_inProgress,"f").set(index,work());};function addChildSpanNameToParent(childSpanName,parent){var _a,_b;if(parent){const attribute=(_b=(_a=parent.getSpanInformation())===null||_a===void 0?void 0:_a.childrenNames)!==null&&_b!==void 0?_b:[];attribute.push(childSpanName);parent.setAttribute(AggregationAttributes.ChildrenNames,attribute);}}const KnownAttributes=_exports.KnownAttributes={Tag:"outsystems.log.message.tag",Visibility:"outsystems.otel.access.visibility",AccessType:"outsystems.otel.access.type",ChildrenNames:AggregationAttributes.ChildrenNames,IsNonAggregable:AggregationAttributes.IsNonAggregable};const InternalAttributes=[KnownAttributes.IsNonAggregable,KnownAttributes.ChildrenNames];var _Span_innerSpan,_Span_activateSpan,_Span_resolveEndedPromise,_Span_explicitChildren;class Span{constructor(_ref21){let{visibility,attributes={},span,activateSpan,explicitChildren=[]}=_ref21;_Span_innerSpan.set(this,void 0);_Span_activateSpan.set(this,void 0);_Span_resolveEndedPromise.set(this,void 0);_Span_explicitChildren.set(this,void 0);__classPrivateFieldSet(this,_Span_innerSpan,span);__classPrivateFieldSet(this,_Span_activateSpan,activateSpan);__classPrivateFieldSet(this,_Span_explicitChildren,explicitChildren);if(visibility!==undefined){__classPrivateFieldGet(this,_Span_innerSpan,"f").setAttribute(KnownAttributes.Visibility,mapVisibilityToNumber[visibility]);}__classPrivateFieldGet(this,_Span_innerSpan,"f").setAttributes(attributes);this.ended=new Promise(resolve=>{__classPrivateFieldSet(this,_Span_resolveEndedPromise,resolve);});}setAttribute(key,value){__classPrivateFieldGet(this,_Span_innerSpan,"f").setAttribute(key,value);}setStatus(status,message){__classPrivateFieldGet(this,_Span_innerSpan,"f").setStatus({code:status,message});}raiseError(ex,message){__classPrivateFieldGet(this,_Span_innerSpan,"f").recordException(ex);this.setStatus(2,message);}getContext(){const spanContext=__classPrivateFieldGet(this,_Span_innerSpan,"f").spanContext();return {spanId:spanContext.spanId,traceId:spanContext.traceId,attributes:__classPrivateFieldGet(this,_Span_innerSpan,"f").attributes,sampled:Boolean(spanContext.traceFlags&1)};}addEvent(name,attributes){__classPrivateFieldGet(this,_Span_innerSpan,"f").addEvent(name,attributes);}end(){return __awaiter$3(this,void 0,void 0,function*(){var _a;yield Promise.all(__classPrivateFieldGet(this,_Span_explicitChildren,"f").map(child=>child.ended));__classPrivateFieldGet(this,_Span_innerSpan,"f").end();(_a=__classPrivateFieldGet(this,_Span_resolveEndedPromise,"f"))===null||_a===void 0?void 0:_a.call(this);});}fail(){__classPrivateFieldGet(this,_Span_innerSpan,"f").setStatus({code:SpanStatusCode.ERROR});}getSpanInformation(){return {name:__classPrivateFieldGet(this,_Span_innerSpan,"f").name,kind:__classPrivateFieldGet(this,_Span_innerSpan,"f").kind,status:__classPrivateFieldGet(this,_Span_innerSpan,"f").status.code,parentSpanId:__classPrivateFieldGet(this,_Span_innerSpan,"f").parentSpanId,startTime:Instant.toNanoSeconds(new Instant(__classPrivateFieldGet(this,_Span_innerSpan,"f").startTime)),endTime:Instant.toNanoSeconds(new Instant(__classPrivateFieldGet(this,_Span_innerSpan,"f").endTime)),childrenNames:__classPrivateFieldGet(this,_Span_innerSpan,"f").attributes[AggregationAttributes.ChildrenNames]};}activate(){return __classPrivateFieldGet(this,_Span_activateSpan,"f").call(this);}addExplicitChild(child){__classPrivateFieldGet(this,_Span_explicitChildren,"f").push(child);}}_Span_innerSpan=new WeakMap(),_Span_activateSpan=new WeakMap(),_Span_resolveEndedPromise=new WeakMap(),_Span_explicitChildren=new WeakMap();var _Tracer_instances,_Tracer_transportManager,_Tracer_tracerProvider,_Tracer_enabled,_Tracer_innerTracer,_Tracer_contextManager,_Tracer_getActiveSpan,_Tracer_setSpan,_Tracer_baseAttributes,_Tracer_staticAttributes,_Tracer_handleStaticAttributes;class Tracer{constructor(_ref22){let{transports,baseAttributes={},staticAttributes=[],databaseNameSuffix,transportManager=new TransportManager({traceTransports:transports,databaseNameSuffix}),tracerProvider=new WebTracerProvider(),contextManager=new ZoneContextManager(),tracer=tracerProvider.getTracer("@outsystems/logger-js","3.4.1"),exporter,enabled=true,getActiveSpan=()=>trace.getActiveSpan(),setSpan=(ctx,span)=>trace.setSpan(ctx,span)}=_ref22;_Tracer_instances.add(this);_Tracer_transportManager.set(this,void 0);_Tracer_tracerProvider.set(this,void 0);_Tracer_enabled.set(this,void 0);_Tracer_innerTracer.set(this,void 0);_Tracer_contextManager.set(this,void 0);_Tracer_getActiveSpan.set(this,void 0);_Tracer_setSpan.set(this,void 0);_Tracer_baseAttributes.set(this,void 0);_Tracer_staticAttributes.set(this,void 0);__classPrivateFieldSet(this,_Tracer_transportManager,transportManager);__classPrivateFieldSet(this,_Tracer_innerTracer,tracer);__classPrivateFieldSet(this,_Tracer_enabled,enabled);__classPrivateFieldSet(this,_Tracer_getActiveSpan,getActiveSpan);__classPrivateFieldSet(this,_Tracer_tracerProvider,tracerProvider);__classPrivateFieldSet(this,_Tracer_setSpan,setSpan);__classPrivateFieldSet(this,_Tracer_contextManager,contextManager);__classPrivateFieldSet(this,_Tracer_baseAttributes,baseAttributes);__classPrivateFieldSet(this,_Tracer_staticAttributes,staticAttributes);const processor=exporter!==null&&exporter!==void 0?exporter:new MainTraceExporter({transportManager,tracer:this});__classPrivateFieldGet(this,_Tracer_tracerProvider,"f").register({contextManager});__classPrivateFieldGet(this,_Tracer_tracerProvider,"f").addSpanProcessor(processor);}addTransport(transport){__classPrivateFieldGet(this,_Tracer_transportManager,"f").addTraceTransport(transport);}removeTransport(transportId){__classPrivateFieldGet(this,_Tracer_transportManager,"f").removeTraceTransport(transportId);}startSpan(name,visibility,parent,kind){if(__classPrivateFieldGet(this,_Tracer_enabled,"f")){const parentSpan=parent!==null&&parent!==void 0?parent:__classPrivateFieldGet(this,_Tracer_getActiveSpan,"f").call(this)?this.fromOTSpan(__classPrivateFieldGet(this,_Tracer_getActiveSpan,"f").call(this)):undefined;addChildSpanNameToParent(name,parentSpan);const otSpan=parent?__classPrivateFieldGet(this,_Tracer_innerTracer,"f").startSpan(name,{attributes:{},kind:kind},parent.activate()):__classPrivateFieldGet(this,_Tracer_innerTracer,"f").startSpan(name,{kind:kind});const span=this.fromOTSpan(otSpan,visibility);parent===null||parent===void 0?void 0:parent.addExplicitChild(span);return span;}else {return undefined;}}startActiveSpan(name,fnWorker,visibility,parent,kind){if(__classPrivateFieldGet(this,_Tracer_enabled,"f")){const fn=otSpan=>{const span=this.fromOTSpan(otSpan,visibility);parent===null||parent===void 0?void 0:parent.addExplicitChild(span);return fnWorker(span);};const result=parent?__classPrivateFieldGet(this,_Tracer_innerTracer,"f").startActiveSpan(name,{attributes:{},kind:kind},parent.activate(),fn):__classPrivateFieldGet(this,_Tracer_innerTracer,"f").startActiveSpan(name,{kind:kind},fn);return result;}else {return fnWorker(undefined);}}getActiveSpan(){const otSpan=__classPrivateFieldGet(this,_Tracer_getActiveSpan,"f").call(this);return otSpan?this.fromOTSpan(otSpan):undefined;}setStatus(enabled){__classPrivateFieldSet(this,_Tracer_enabled,enabled);}addBaseSpanAttributes(attributes){__classPrivateFieldSet(this,_Tracer_baseAttributes,Object.assign(Object.assign({},__classPrivateFieldGet(this,_Tracer_baseAttributes,"f")),attributes));}enableFetchInstrumentation(){let fetchInstrumentation=arguments.length>0&&arguments[0]!==undefined?arguments[0]:new FetchInstrumentation();fetchInstrumentation.setTracerProvider(__classPrivateFieldGet(this,_Tracer_tracerProvider,"f"));}span(serializedSpan){return __awaiter$3(this,void 0,void 0,function*(){yield __classPrivateFieldGet(this,_Tracer_transportManager,"f").processSpan(serializedSpan);});}flush(){return __awaiter$3(this,void 0,void 0,function*(){__classPrivateFieldGet(this,_Tracer_transportManager,"f").flushSpans();});}setSchedulerTimerInterval(timerInterval){__classPrivateFieldGet(this,_Tracer_transportManager,"f").setSchedulerTimerInterval(timerInterval);}fromOTSpan(otSpan,visibility){const attributes=__classPrivateFieldGet(this,_Tracer_instances,"m",_Tracer_handleStaticAttributes).call(this,otSpan);return new Span({span:otSpan,attributes:evaluateObjFuncValues(attributes),activateSpan:()=>__classPrivateFieldGet(this,_Tracer_setSpan,"f").call(this,__classPrivateFieldGet(this,_Tracer_contextManager,"f").active(),otSpan),visibility});}}_exports.Tracer=Tracer;_Tracer_transportManager=new WeakMap(),_Tracer_tracerProvider=new WeakMap(),_Tracer_enabled=new WeakMap(),_Tracer_innerTracer=new WeakMap(),_Tracer_contextManager=new WeakMap(),_Tracer_getActiveSpan=new WeakMap(),_Tracer_setSpan=new WeakMap(),_Tracer_baseAttributes=new WeakMap(),_Tracer_staticAttributes=new WeakMap(),_Tracer_instances=new WeakSet(),_Tracer_handleStaticAttributes=function _Tracer_handleStaticAttributes(otSpan){const attributes=Object.assign({},__classPrivateFieldGet(this,_Tracer_baseAttributes,"f"));const isRootSpan=otSpan.parentSpanId===undefined;if(!isRootSpan){Object.keys(attributes).forEach(key=>{if(__classPrivateFieldGet(this,_Tracer_staticAttributes,"f").includes(key)){delete attributes[key];}});}return attributes;};var _ConsoleTransport_instances,_ConsoleTransport_shouldWriteLogsOnConsoles,_ConsoleTransport_canWriteOnConsole;const DEFAULT_CATEGORY="Application";class ConsoleTransport{constructor(_ref23){let{transportId,logTypeBaseline=LogType$1.Debug,formatter,transportConsole=console,shouldWriteLogsOnConsoles=()=>false}=_ref23;_ConsoleTransport_instances.add(this);_ConsoleTransport_shouldWriteLogsOnConsoles.set(this,void 0);this.formatConsoleLog=log=>{var _a,_b,_c,_d;const logOutput={errorCode:log.type===LogType$1.Error?(_a=log.errorCode)!==null&&_a!==void 0?_a:DefaultErrorCode:undefined,category:(_b=log.category)!==null&&_b!==void 0?_b:DEFAULT_CATEGORY,message:(_d=(_c=log===null||log===void 0?void 0:log.error)===null||_c===void 0?void 0:_c.message)!==null&&_d!==void 0?_d:log.message,timestamp:Instant.toISOString(log.timestamp)};return `${logOutput.timestamp}:${logOutput.errorCode?" "+logOutput.errorCode:""} [${logOutput.category}] ${logOutput.message}`;};this.transportId=transportId;this.logTypeBaseline=logTypeBaseline;this.formatter=formatter;this.transportConsole=transportConsole;__classPrivateFieldSet(this,_ConsoleTransport_shouldWriteLogsOnConsoles,shouldWriteLogsOnConsoles);}getTransportId(){return this.transportId;}requiresConnectivity(){return false;}hasWriteBuffer(){return false;}getLogTypeBaseline(){return this.logTypeBaseline;}setLogTypeBaseline(logType){this.logTypeBaseline=logType;}write(log){return __awaiter$3(this,void 0,void 0,function*(){if(!__classPrivateFieldGet(this,_ConsoleTransport_instances,"m",_ConsoleTransport_canWriteOnConsole).call(this,log)){return;}const logOutput=this.formatter?this.formatter.format(log):this.formatConsoleLog(log);switch(log.type){case LogType$1.Debug:this.transportConsole.debug(logOutput);break;case LogType$1.Info:this.transportConsole.log(logOutput);break;case LogType$1.Warning:this.transportConsole.warn(logOutput);break;case LogType$1.Error:this.transportConsole.error(logOutput,log.error);break;default:this.transportConsole.log(logOutput);}});}writeAll(logs){return __awaiter$3(this,void 0,void 0,function*(){for(const log of logs){yield this.write(log);}});}}_ConsoleTransport_shouldWriteLogsOnConsoles=new WeakMap(),_ConsoleTransport_instances=new WeakSet(),_ConsoleTransport_canWriteOnConsole=function _ConsoleTransport_canWriteOnConsole(log){return log.visibility===Visibility$1.External||__classPrivateFieldGet(this,_ConsoleTransport_shouldWriteLogsOnConsoles,"f").call(this);};function mapLogFieldToAttributes(log){const mappedLogAttributes={};if(log.category){mappedLogAttributes[KnownAttributes.Tag]=log.category;}return mappedLogAttributes;}class NativeLoggerFormatter{format(log){var _a,_b;const logVisibility=(_a=log.visibility)!==null&&_a!==void 0?_a:Visibility$1.External;const exceptionAttributes=getExceptionAttributes(log);const fieldAttributes=mapLogFieldToAttributes(log);const allLogAttributes=Object.assign(Object.assign(Object.assign({[KnownAttributes.Visibility]:mapVisibilityToNumber[logVisibility]},exceptionAttributes),fieldAttributes),log.attributes);const sanitizedAttributes=sanitizeUrlAttribute(allLogAttributes);const logTimestampISO=Instant.toISOString(log.timestamp);const nativeLoggerRecord={message:(_b=log.message)!==null&&_b!==void 0?_b:"",attributes:sanitizedAttributes,instant:logTimestampISO};return nativeLoggerRecord;}}const mapLogTypeToNativeLoggerMethod={[LogType$1.Debug]:"logDebug",[LogType$1.Info]:"logInfo",[LogType$1.Warning]:"logWarning",[LogType$1.Error]:"logError",[LogType$1.Trace]:"logTrace"};class NativeLoggerTransport{constructor(_ref24){let{transportId,logTypeBaseline,nativeLoggerV2,formatter=new NativeLoggerFormatter()}=_ref24;this.transportId=transportId;this.logTypeBaseline=logTypeBaseline;this.nativeLoggerV2=nativeLoggerV2;this.formatter=formatter;}getTransportId(){return this.transportId;}requiresConnectivity(){return false;}hasWriteBuffer(){return false;}getLogTypeBaseline(){return this.logTypeBaseline;}setLogTypeBaseline(logType){this.logTypeBaseline=logType;}write(log){return __awaiter$3(this,void 0,void 0,function*(){const payload=this.formatter.format(log);const loggerMethod=mapLogTypeToNativeLoggerMethod[log.type];const logResult=this.nativeLoggerV2[loggerMethod](payload);return logResult;});}writeAll(logs){return __awaiter$3(this,void 0,void 0,function*(){for(const log of logs){yield this.write(log);}});}}var _OpenTelemetryLogFormatter_resourceAttributes;const MESSAGE_MAX_LENGTH=2000;const mapLogTypeToSeverityNumber={[LogType$1.Trace]:1,[LogType$1.Debug]:5,[LogType$1.Info]:9,[LogType$1.Warning]:13,[LogType$1.Error]:17};const mapLogTypeToSeverityText={[LogType$1.Debug]:"Debug",[LogType$1.Info]:"Information",[LogType$1.Warning]:"Warning",[LogType$1.Error]:"Error",[LogType$1.Trace]:"Trace"};const getOptionalLogRecordFields=log=>{const optionalLogRecordFields={body:{stringValue:""}};if(log.message){const truncatedMessage=log.message.length>MESSAGE_MAX_LENGTH?`${log.message.substring(0,MESSAGE_MAX_LENGTH-3)}...`:log.message;optionalLogRecordFields.body={stringValue:truncatedMessage};}return optionalLogRecordFields;};class OpenTelemetryLogFormatter{constructor(){let{resourceAttributes={}}=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};_OpenTelemetryLogFormatter_resourceAttributes.set(this,void 0);__classPrivateFieldSet(this,_OpenTelemetryLogFormatter_resourceAttributes,resourceAttributes);}setResourceAttributes(attributes){__classPrivateFieldSet(this,_OpenTelemetryLogFormatter_resourceAttributes,attributes!==null&&attributes!==void 0?attributes:{});}format(log){return this.formatAll([log]);}formatAll(logs){const allResourceAttributes=Object.assign({[KnownAttributes.AccessType]:3},__classPrivateFieldGet(this,_OpenTelemetryLogFormatter_resourceAttributes,"f"));const resourcesPayload=convertObjectToAttributesList(allResourceAttributes);const logsFormatted=logs.map(log=>formatLog(log));return formatRequest$1(logsFormatted,resourcesPayload);}}_OpenTelemetryLogFormatter_resourceAttributes=new WeakMap();function formatRequest$1(logsFormatted,resourcesPayload){return {resourceLogs:[{resource:{attributes:resourcesPayload},scopeLogs:[{scope:{name:"@outsystems/logger-js",version:"3.4.1"},logRecords:logsFormatted}]}]};}function formatLog(log){var _a;const logVisibility=(_a=log.visibility)!==null&&_a!==void 0?_a:Visibility$1.External;const exceptionAttributes=getExceptionAttributes(log);const traceFields=getTraceFields(log);const mappedLogAttributes=mapLogFieldToAttributes(log);const allLogAttributes=Object.assign(Object.assign(Object.assign({[KnownAttributes.Visibility]:mapVisibilityToNumber[logVisibility]},exceptionAttributes),mappedLogAttributes),log.attributes);const sanitizedAttributes=sanitizeUrlAttribute(allLogAttributes);const attributesPayload=convertObjectToAttributesList(sanitizedAttributes);const severityNumber=mapLogTypeToSeverityNumber[log.type];const severityText=mapLogTypeToSeverityText[log.type];const timeUnixNanoSeconds=Instant.toNanoSeconds(log.timestamp);const optionalLogRecordFields=getOptionalLogRecordFields(log);return Object.assign(Object.assign(Object.assign({},optionalLogRecordFields),traceFields),{timeUnixNano:timeUnixNanoSeconds,severityNumber,severityText,attributes:attributesPayload});}var _OpenTelemetryLoggerTransport_instances,_OpenTelemetryLoggerTransport_tagId,_OpenTelemetryLoggerTransport_baseUrl,_OpenTelemetryLoggerTransport_postLogs;const LOGS_ENDPOINT_V2="/v2/logs";class OpenTelemetryLoggerTransport{constructor(_ref25){let{transportId,resourceAttributes,logTypeBaseline,logsEndpoint=LOGS_ENDPOINT_V2,logsCollectorBaseUrl,tagId,enableWriteBuffer=true,httpClient=new _communicationJs.HttpClient({baseUrl:logsCollectorBaseUrl,headers:tagId?{"api-key":tagId,"tag-id":tagId}:{}}),formatter=new OpenTelemetryLogFormatter({resourceAttributes})}=_ref25;_OpenTelemetryLoggerTransport_instances.add(this);_OpenTelemetryLoggerTransport_tagId.set(this,void 0);_OpenTelemetryLoggerTransport_baseUrl.set(this,void 0);this.transportId=transportId;this.logTypeBaseline=logTypeBaseline;this.logsEndpoint=logsEndpoint;this.enableWriteBuffer=enableWriteBuffer;this.httpClient=httpClient;this.formatter=formatter;__classPrivateFieldSet(this,_OpenTelemetryLoggerTransport_tagId,tagId);__classPrivateFieldSet(this,_OpenTelemetryLoggerTransport_baseUrl,logsCollectorBaseUrl);}getTransportId(){return this.transportId;}requiresConnectivity(){return true;}hasWriteBuffer(){return this.enableWriteBuffer;}getLogTypeBaseline(){return this.logTypeBaseline;}setLogTypeBaseline(logType){this.logTypeBaseline=logType;}setTagId(tagId){__classPrivateFieldSet(this,_OpenTelemetryLoggerTransport_tagId,tagId);}setResourceAttributes(resourceAttributes){var _a,_b;(_b=(_a=this.formatter).setResourceAttributes)===null||_b===void 0?void 0:_b.call(_a,resourceAttributes);}write(log){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_instances,"m",_OpenTelemetryLoggerTransport_postLogs).call(this,this.formatter.format(log));});}writeAll(logs){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_instances,"m",_OpenTelemetryLoggerTransport_postLogs).call(this,this.formatter.formatAll(logs));});}}_OpenTelemetryLoggerTransport_tagId=new WeakMap(),_OpenTelemetryLoggerTransport_baseUrl=new WeakMap(),_OpenTelemetryLoggerTransport_instances=new WeakSet(),_OpenTelemetryLoggerTransport_postLogs=function _OpenTelemetryLoggerTransport_postLogs(payload){return __awaiter$3(this,void 0,void 0,function*(){return this.httpClient.post({url:this.logsEndpoint,payload,contentType:_communicationJs.ContentType.Json,headers:__classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_tagId,"f")?{"api-key":__classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_tagId,"f"),"tag-id":__classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_tagId,"f")}:{},baseURL:__classPrivateFieldGet(this,_OpenTelemetryLoggerTransport_baseUrl,"f")});});};var _OpenTelemetryTraceFormatter_instances,_OpenTelemetryTraceFormatter_resourceAttributes,_OpenTelemetryTraceFormatter_filterInternalAttributes;class OpenTelemetryTraceFormatter{constructor(){let{resourceAttributes={}}=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};_OpenTelemetryTraceFormatter_instances.add(this);_OpenTelemetryTraceFormatter_resourceAttributes.set(this,void 0);__classPrivateFieldSet(this,_OpenTelemetryTraceFormatter_resourceAttributes,resourceAttributes);}setResourceAttributes(attributes){__classPrivateFieldSet(this,_OpenTelemetryTraceFormatter_resourceAttributes,attributes!==null&&attributes!==void 0?attributes:{});}format(span){return this.formatAll([span]);}formatAll(spans){const allResourceAttributes=Object.assign({[KnownAttributes.AccessType]:3},__classPrivateFieldGet(this,_OpenTelemetryTraceFormatter_resourceAttributes,"f"));const resourcesPayload=convertObjectToAttributesList(allResourceAttributes);const spansPayload=spans.map(span=>{const allTraceAttributes=Object.assign({[KnownAttributes.Visibility]:mapVisibilityToNumber[Visibility$1.External]},__classPrivateFieldGet(this,_OpenTelemetryTraceFormatter_instances,"m",_OpenTelemetryTraceFormatter_filterInternalAttributes).call(this,span.attributes));const sanitizedAttributes=sanitizeUrlAttribute(allTraceAttributes);const spanAttributes=convertObjectToAttributesList(sanitizedAttributes);return Object.assign({traceId:span.traceId,spanId:span.spanId,parentSpanId:span.parentSpanId,name:span.name,startTimeUnixNano:span.startTimeUnixNano,endTimeUnixNano:span.endTimeUnixNano,status:{code:span.status!==0?span.status:1},attributes:spanAttributes},span.kind?{kind:span.kind}:{});});return formatRequest(spansPayload,resourcesPayload);}}_OpenTelemetryTraceFormatter_resourceAttributes=new WeakMap(),_OpenTelemetryTraceFormatter_instances=new WeakSet(),_OpenTelemetryTraceFormatter_filterInternalAttributes=function _OpenTelemetryTraceFormatter_filterInternalAttributes(attributes){return Object.entries(attributes).reduce((acc,_ref26)=>{let[key,value]=_ref26;if(!InternalAttributes.includes(key)){acc[key]=value;}return acc;},{});};function formatRequest(spansPayload,resourcesPayload){return {resourceSpans:[{resource:{attributes:resourcesPayload},scopeSpans:[{scope:{name:"@outsystems/logger-js",version:"3.4.1"},spans:spansPayload}]}]};}var _OpenTelemetryTracerTransport_instances,_OpenTelemetryTracerTransport_enabled,_OpenTelemetryTracerTransport_tagId,_OpenTelemetryTracerTransport_baseUrl,_OpenTelemetryTracerTransport_postSpans;const TRACES_ENDPOINT_V2="/v2/traces";class OpenTelemetryTracerTransport{constructor(_ref27){let{transportId,resourceAttributes,enabled=true,tracesEndpoint=TRACES_ENDPOINT_V2,tracesCollectorBaseUrl,tagId,enableWriteBuffer=true,httpClient=new _communicationJs.HttpClient({baseUrl:tracesCollectorBaseUrl,headers:tagId?{"api-key":tagId,"tag-id":tagId}:{}}),formatter=new OpenTelemetryTraceFormatter({resourceAttributes})}=_ref27;_OpenTelemetryTracerTransport_instances.add(this);_OpenTelemetryTracerTransport_enabled.set(this,void 0);_OpenTelemetryTracerTransport_tagId.set(this,void 0);_OpenTelemetryTracerTransport_baseUrl.set(this,void 0);this.transportId=transportId;__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_enabled,enabled);this.tracesEndpoint=tracesEndpoint;this.enableWriteBuffer=enableWriteBuffer;this.httpClient=httpClient;this.formatter=formatter;__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_tagId,tagId);__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_baseUrl,tracesCollectorBaseUrl);}getTransportId(){return this.transportId;}isTracingEnabled(){return __classPrivateFieldGet(this,_OpenTelemetryTracerTransport_enabled,"f");}enableTracing(){__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_enabled,true);}disableTracing(){__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_enabled,false);}requiresConnectivity(){return true;}hasWriteBuffer(){return this.enableWriteBuffer;}setTagId(tagId){__classPrivateFieldSet(this,_OpenTelemetryTracerTransport_tagId,tagId);}setResourceAttributes(resourceAttributes){var _a,_b;(_b=(_a=this.formatter).setResourceAttributes)===null||_b===void 0?void 0:_b.call(_a,resourceAttributes);}write(span){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_OpenTelemetryTracerTransport_instances,"m",_OpenTelemetryTracerTransport_postSpans).call(this,this.formatter.format(span));});}writeAll(spans){return __awaiter$3(this,void 0,void 0,function*(){return __classPrivateFieldGet(this,_OpenTelemetryTracerTransport_instances,"m",_OpenTelemetryTracerTransport_postSpans).call(this,this.formatter.formatAll(spans));});}}_OpenTelemetryTracerTransport_enabled=new WeakMap(),_OpenTelemetryTracerTransport_tagId=new WeakMap(),_OpenTelemetryTracerTransport_baseUrl=new WeakMap(),_OpenTelemetryTracerTransport_instances=new WeakSet(),_OpenTelemetryTracerTransport_postSpans=function _OpenTelemetryTracerTransport_postSpans(payload){return __awaiter$3(this,void 0,void 0,function*(){return this.httpClient.post({url:this.tracesEndpoint,payload,contentType:_communicationJs.ContentType.Json,headers:__classPrivateFieldGet(this,_OpenTelemetryTracerTransport_tagId,"f")?{"api-key":__classPrivateFieldGet(this,_OpenTelemetryTracerTransport_tagId,"f"),"tag-id":__classPrivateFieldGet(this,_OpenTelemetryTracerTransport_tagId,"f")}:{},baseURL:__classPrivateFieldGet(this,_OpenTelemetryTracerTransport_baseUrl,"f")});});};var _ServiceWorkerTransport_sw,_ServiceWorkerTransport_container,_ServiceWorkerTransport_pendingMessages,_ServiceWorkerTransport_waitingForSW;class ServiceWorkerTransport{constructor(){let{sw,container=navigator.serviceWorker}=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var _a;_ServiceWorkerTransport_sw.set(this,void 0);_ServiceWorkerTransport_container.set(this,void 0);_ServiceWorkerTransport_pendingMessages.set(this,[]);_ServiceWorkerTransport_waitingForSW.set(this,false);if(!container){throw new Error("No service worker container available");}__classPrivateFieldSet(this,_ServiceWorkerTransport_sw,(_a=sw!==null&&sw!==void 0?sw:container===null||container===void 0?void 0:container.controller)!==null&&_a!==void 0?_a:undefined);__classPrivateFieldSet(this,_ServiceWorkerTransport_container,container);this.waitForSW();}get pendingMessages(){return __classPrivateFieldGet(this,_ServiceWorkerTransport_pendingMessages,"f");}isServiceWorkerAvailable(){return !!__classPrivateFieldGet(this,_ServiceWorkerTransport_sw,"f")&&__classPrivateFieldGet(this,_ServiceWorkerTransport_sw,"f").state==="activated";}send(kind,data){this.sendMessage({kind,data});}sendMessage(message,options){var _a;if(this.isServiceWorkerAvailable()){(_a=__classPrivateFieldGet(this,_ServiceWorkerTransport_sw,"f"))===null||_a===void 0?void 0:_a.postMessage(message,options);}else {__classPrivateFieldGet(this,_ServiceWorkerTransport_pendingMessages,"f").push({message,options});this.waitForSW();}}waitForSW(){return __awaiter$3(this,void 0,void 0,function*(){if(this.isServiceWorkerAvailable()||__classPrivateFieldGet(this,_ServiceWorkerTransport_waitingForSW,"f")){return;}__classPrivateFieldSet(this,_ServiceWorkerTransport_waitingForSW,true);const{active}=yield __classPrivateFieldGet(this,_ServiceWorkerTransport_container,"f").ready;__classPrivateFieldSet(this,_ServiceWorkerTransport_sw,active!==null&&active!==void 0?active:undefined);__classPrivateFieldSet(this,_ServiceWorkerTransport_waitingForSW,false);this.flushMessages();});}flushMessages(){var _a;if(this.isServiceWorkerAvailable()){for(const{message,options}of __classPrivateFieldGet(this,_ServiceWorkerTransport_pendingMessages,"f")){(_a=__classPrivateFieldGet(this,_ServiceWorkerTransport_sw,"f"))===null||_a===void 0?void 0:_a.postMessage(message,options);}__classPrivateFieldSet(this,_ServiceWorkerTransport_pendingMessages,[]);}else {this.waitForSW();}}}_ServiceWorkerTransport_sw=new WeakMap(),_ServiceWorkerTransport_container=new WeakMap(),_ServiceWorkerTransport_pendingMessages=new WeakMap(),_ServiceWorkerTransport_waitingForSW=new WeakMap();var _ServiceWorkerTracerTransport_instances,_ServiceWorkerTracerTransport_transportId,_ServiceWorkerTracerTransport_swTransport,_ServiceWorkerTracerTransport_attributes,_ServiceWorkerTracerTransport_tagId,_ServiceWorkerTracerTransport_collectorBaseUrl,_ServiceWorkerTracerTransport_databaseSuffix,_ServiceWorkerTracerTransport_aggregateSpans,_ServiceWorkerTracerTransport_enabled,_ServiceWorkerTracerTransport_getMetadata;class ServiceWorkerTracerTransport{constructor(_ref28){let{transportId,tagId,collectorBaseUrl,databaseSuffix,swTransport=new ServiceWorkerTransport(),enabled=true,attributes={},aggregateSpans=false}=_ref28;_ServiceWorkerTracerTransport_instances.add(this);_ServiceWorkerTracerTransport_transportId.set(this,void 0);_ServiceWorkerTracerTransport_swTransport.set(this,void 0);_ServiceWorkerTracerTransport_attributes.set(this,void 0);_ServiceWorkerTracerTransport_tagId.set(this,void 0);_ServiceWorkerTracerTransport_collectorBaseUrl.set(this,void 0);_ServiceWorkerTracerTransport_databaseSuffix.set(this,void 0);_ServiceWorkerTracerTransport_aggregateSpans.set(this,void 0);_ServiceWorkerTracerTransport_enabled.set(this,void 0);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_transportId,transportId);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_swTransport,swTransport);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_enabled,enabled);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_attributes,attributes);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_tagId,tagId);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_collectorBaseUrl,collectorBaseUrl);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_databaseSuffix,databaseSuffix);__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_aggregateSpans,aggregateSpans);}getTransportId(){return __classPrivateFieldGet(this,_ServiceWorkerTracerTransport_transportId,"f");}requiresConnectivity(){return false;}isTracingEnabled(){return __classPrivateFieldGet(this,_ServiceWorkerTracerTransport_enabled,"f");}enableTracing(){__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_enabled,true);}disableTracing(){__classPrivateFieldSet(this,_ServiceWorkerTracerTransport_enabled,false);}hasWriteBuffer(){return false;}write(span){__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_swTransport,"f").send("Span",{span,meta:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_instances,"m",_ServiceWorkerTracerTransport_getMetadata).call(this)});return Promise.resolve();}writeAll(spans){for(const span of spans){__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_swTransport,"f").send("Span",{span,meta:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_instances,"m",_ServiceWorkerTracerTransport_getMetadata).call(this)});}return Promise.resolve();}flush(){__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_swTransport,"f").send("Flush",{kind:"Spans",meta:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_instances,"m",_ServiceWorkerTracerTransport_getMetadata).call(this)});return Promise.resolve();}}_ServiceWorkerTracerTransport_transportId=new WeakMap(),_ServiceWorkerTracerTransport_swTransport=new WeakMap(),_ServiceWorkerTracerTransport_attributes=new WeakMap(),_ServiceWorkerTracerTransport_tagId=new WeakMap(),_ServiceWorkerTracerTransport_collectorBaseUrl=new WeakMap(),_ServiceWorkerTracerTransport_databaseSuffix=new WeakMap(),_ServiceWorkerTracerTransport_aggregateSpans=new WeakMap(),_ServiceWorkerTracerTransport_enabled=new WeakMap(),_ServiceWorkerTracerTransport_instances=new WeakSet(),_ServiceWorkerTracerTransport_getMetadata=function _ServiceWorkerTracerTransport_getMetadata(){return {databaseSuffix:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_databaseSuffix,"f"),resourceAttributes:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_attributes,"f"),collectorBaseUrl:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_collectorBaseUrl,"f"),apiKey:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_tagId,"f"),aggregateSpans:__classPrivateFieldGet(this,_ServiceWorkerTracerTransport_aggregateSpans,"f")};};var _InstrumentationFactory_instances,_InstrumentationFactory_transportManager,_InstrumentationFactory_tracerInstance,_InstrumentationFactory_loggerInstance,_InstrumentationFactory_shouldWriteLogsOnConsoles,_InstrumentationFactory_baseLogAttributes,_InstrumentationFactory_baseSpanAttributes,_InstrumentationFactory_staticSpanAttributes,_InstrumentationFactory_databaseNameSuffix,_InstrumentationFactory_getActiveSpanInfo;class InstrumentationFactory{constructor(_ref29){let{databaseNameSuffix,logTransports,traceTransports,baseLogAttributes={},baseSpanAttributes={},staticSpanAttributes=[],isOnline,aggregateSpans,transportManager=new TransportManager({databaseNameSuffix,logTransports,traceTransports,isOnline,aggregateSpans}),tracerInstance,loggerInstance}=_ref29;_InstrumentationFactory_instances.add(this);_InstrumentationFactory_transportManager.set(this,void 0);_InstrumentationFactory_tracerInstance.set(this,void 0);_InstrumentationFactory_loggerInstance.set(this,void 0);_InstrumentationFactory_shouldWriteLogsOnConsoles.set(this,void 0);_InstrumentationFactory_baseLogAttributes.set(this,void 0);_InstrumentationFactory_baseSpanAttributes.set(this,void 0);_InstrumentationFactory_staticSpanAttributes.set(this,void 0);_InstrumentationFactory_databaseNameSuffix.set(this,void 0);__classPrivateFieldSet(this,_InstrumentationFactory_transportManager,transportManager);__classPrivateFieldSet(this,_InstrumentationFactory_tracerInstance,tracerInstance);__classPrivateFieldSet(this,_InstrumentationFactory_loggerInstance,loggerInstance);__classPrivateFieldSet(this,_InstrumentationFactory_shouldWriteLogsOnConsoles,()=>_settingsJs.FeaturesManager.isEnabled(_settingsJs.FeatureKeys.WriteLogsOnConsoles));__classPrivateFieldSet(this,_InstrumentationFactory_baseLogAttributes,baseLogAttributes);__classPrivateFieldSet(this,_InstrumentationFactory_baseSpanAttributes,baseSpanAttributes);__classPrivateFieldSet(this,_InstrumentationFactory_staticSpanAttributes,staticSpanAttributes);__classPrivateFieldSet(this,_InstrumentationFactory_databaseNameSuffix,databaseNameSuffix);}init(){return __awaiter$3(this,void 0,void 0,function*(){yield this.getLogger();this.getTracer();});}getLogger(){return __awaiter$3(this,void 0,void 0,function*(){if(!__classPrivateFieldGet(this,_InstrumentationFactory_loggerInstance,"f")){__classPrivateFieldSet(this,_InstrumentationFactory_loggerInstance,yield Logger.build({transportManager:__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f"),baseAttributes:__classPrivateFieldGet(this,_InstrumentationFactory_baseLogAttributes,"f")}));}return __classPrivateFieldGet(this,_InstrumentationFactory_loggerInstance,"f");});}getTracer(){if(!__classPrivateFieldGet(this,_InstrumentationFactory_tracerInstance,"f")){__classPrivateFieldSet(this,_InstrumentationFactory_tracerInstance,new Tracer({transportManager:__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f"),baseAttributes:__classPrivateFieldGet(this,_InstrumentationFactory_baseSpanAttributes,"f"),staticAttributes:__classPrivateFieldGet(this,_InstrumentationFactory_staticSpanAttributes,"f")}));}return __classPrivateFieldGet(this,_InstrumentationFactory_tracerInstance,"f");}useNativeLoggerTransport(_a){return __awaiter$3(this,arguments,void 0,function(_ref30){var _this15=this;let{plugin,logTypeBaseline}=_ref30;return function*(){const loggerInstance=yield _this15.getLogger();loggerInstance.addTransport(new NativeLoggerTransport({transportId:"native-logger-transport",nativeLoggerV2:plugin,logTypeBaseline}));}();});}useOpenTelemetryLoggerTransport(_a){return __awaiter$3(this,arguments,void 0,function(_ref31){var _this16=this;let{resourceAttributes,logTypeBaseline,collectorBaseUrl,tagId,httpClient}=_ref31;return function*(){const loggerInstance=yield _this16.getLogger();loggerInstance.addTransport(new OpenTelemetryLoggerTransport({transportId:"otel-logger-transport",resourceAttributes,logTypeBaseline,logsCollectorBaseUrl:collectorBaseUrl,tagId,httpClient}));}();});}useConsoleLoggerTransport(logTypeBaseline){return __awaiter$3(this,void 0,void 0,function*(){const loggerInstance=yield this.getLogger();loggerInstance.addTransport(new ConsoleTransport({transportId:"console-transport",logTypeBaseline,shouldWriteLogsOnConsoles:__classPrivateFieldGet(this,_InstrumentationFactory_shouldWriteLogsOnConsoles,"f")}));});}useServiceWorkerTracerTransport(_ref32){let{resourceAttributes,enabled=true,collectorBaseUrl,tagId,swTransport,aggregateSpans=false}=_ref32;const tracerInstance=this.getTracer();const transporter=new ServiceWorkerTracerTransport({transportId:"sw-tracer-transport",attributes:resourceAttributes,enabled,tagId,collectorBaseUrl,databaseSuffix:__classPrivateFieldGet(this,_InstrumentationFactory_databaseNameSuffix,"f"),swTransport,aggregateSpans});tracerInstance.addTransport(transporter);}useOpenTelemetryTracerTransport(_ref33){let{resourceAttributes,enabled=true,collectorBaseUrl,tagId,httpClient}=_ref33;const tracerInstance=this.getTracer();const transporter=new OpenTelemetryTracerTransport({transportId:"otel-tracer-transport",resourceAttributes,enabled,tagId,tracesCollectorBaseUrl:collectorBaseUrl,httpClient});tracerInstance.addTransport(transporter);}useConsoleTracerTransport(){return __awaiter$3(this,void 0,void 0,function*(){throw new Error("Not implemented");});}useFetchInstrumentation(){const tracerInstance=this.getTracer();tracerInstance.enableFetchInstrumentation();}setLogLevel(logType){__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").setAllLogTypeBaselines(logType);}setTracerStatus(enabled){const tracerInstance=this.getTracer();tracerInstance.setStatus(enabled);}setTagId(tagId){__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").setTagId(tagId);}setAggregateSpansStatus(enabled){__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").setAggregateSpansStatus(enabled);}setResourceAttributes(resourceAttributes){__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").setResourceAttributes(resourceAttributes);}setSchedulerTimerInterval(timeInterval){__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").setSchedulerTimerInterval(timeInterval);}flushInstrumentationData(){return __awaiter$3(this,void 0,void 0,function*(){yield Promise.all([__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").flushLogs(),__classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").flushSpans()]);});}logError(_a){return __awaiter$3(this,arguments,void 0,function(_ref34){var _this17=this;let{category,message,error,errorCode,visibility,failSpan=true,attributes}=_ref34;return function*(){if(failSpan){const tracerInstance=_this17.getTracer();const span=tracerInstance.getActiveSpan();span===null||span===void 0?void 0:span.fail();}const loggerInstance=yield _this17.getLogger();loggerInstance.error({category,message,error,errorCode,visibility,span:__classPrivateFieldGet(_this17,_InstrumentationFactory_instances,"m",_InstrumentationFactory_getActiveSpanInfo).call(_this17),attributes});}();});}logWarning(_a){return __awaiter$3(this,arguments,void 0,function(_ref35){var _this18=this;let{category,message,visibility,attributes}=_ref35;return function*(){const loggerInstance=yield _this18.getLogger();loggerInstance.warning({category,message,visibility,span:__classPrivateFieldGet(_this18,_InstrumentationFactory_instances,"m",_InstrumentationFactory_getActiveSpanInfo).call(_this18),attributes});}();});}logInfo(_a){return __awaiter$3(this,arguments,void 0,function(_ref36){var _this19=this;let{category,message,visibility,attributes}=_ref36;return function*(){const loggerInstance=yield _this19.getLogger();loggerInstance.info({category,message,visibility,span:__classPrivateFieldGet(_this19,_InstrumentationFactory_instances,"m",_InstrumentationFactory_getActiveSpanInfo).call(_this19),attributes});}();});}logDebug(_a){return __awaiter$3(this,arguments,void 0,function(_ref37){var _this20=this;let{category,message,visibility,attributes}=_ref37;return function*(){const loggerInstance=yield _this20.getLogger();loggerInstance.debug({category,message,visibility,span:__classPrivateFieldGet(_this20,_InstrumentationFactory_instances,"m",_InstrumentationFactory_getActiveSpanInfo).call(_this20),attributes});}();});}log(logObject){return __awaiter$3(this,void 0,void 0,function*(){const loggerInstance=yield this.getLogger();yield loggerInstance.log(logObject);});}span(serializedSpan){return __awaiter$3(this,void 0,void 0,function*(){const tracerInstance=this.getTracer();yield tracerInstance.span(serializedSpan);});}flushLogs(){return __awaiter$3(this,void 0,void 0,function*(){yield __classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").flushLogs();});}flushSpans(){return __awaiter$3(this,void 0,void 0,function*(){yield __classPrivateFieldGet(this,_InstrumentationFactory_transportManager,"f").flushSpans();});}startSpan(name,visibility,parent,kind){const tracerInstance=this.getTracer();return tracerInstance.startSpan(name,visibility,parent,kind);}startActiveSpan(name,fnWorker,visibility,parent,kind){const tracerInstance=this.getTracer();return tracerInstance.startActiveSpan(name,fnWorker,visibility,parent,kind);}getActiveSpan(){const tracerInstance=this.getTracer();return tracerInstance.getActiveSpan();}}_exports.InstrumentationFactory=InstrumentationFactory;_InstrumentationFactory_transportManager=new WeakMap(),_InstrumentationFactory_tracerInstance=new WeakMap(),_InstrumentationFactory_loggerInstance=new WeakMap(),_InstrumentationFactory_shouldWriteLogsOnConsoles=new WeakMap(),_InstrumentationFactory_baseLogAttributes=new WeakMap(),_InstrumentationFactory_baseSpanAttributes=new WeakMap(),_InstrumentationFactory_staticSpanAttributes=new WeakMap(),_InstrumentationFactory_databaseNameSuffix=new WeakMap(),_InstrumentationFactory_instances=new WeakSet(),_InstrumentationFactory_getActiveSpanInfo=function _InstrumentationFactory_getActiveSpanInfo(){const tracer=this.getTracer();const activeSpan=tracer.getActiveSpan();return activeSpan?serializeSpan(activeSpan):undefined;};var SpanKind;(function(SpanKind){SpanKind[SpanKind["Internal"]=0]="Internal";SpanKind[SpanKind["Client"]=2]="Client";})(SpanKind||(_exports.SpanKind=SpanKind={}));_exports.Version="3.4.1";}); 
     } (dist$1));
 
     var ClientPayloadKind;
@@ -11617,7 +12088,7 @@
         yield (tracerWrapper === null || tracerWrapper === void 0 ? void 0 : tracerWrapper.processClientMessage({ payload: event.data }));
     });
 
-    const Version = "0.9.1";
+    const Version = "0.9.2";
 
     exports.Version = Version;
     exports.startInstrumentationModule = startInstrumentationModule;

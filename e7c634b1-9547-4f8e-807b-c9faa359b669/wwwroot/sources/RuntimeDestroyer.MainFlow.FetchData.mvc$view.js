@@ -13,14 +13,14 @@ var IteratorPlaceholderContent = OSView.Widget.IteratorPlaceholderContent;
 
 
 var componentFactory = function () {
-var ELEM = OSView.fc.withBaseWebScreen(function (props) {
+var ELEM = OSView.withBaseWebScreen(function (props) {
 var model = props.model;
 var controller = props.controller;
 var idService = props.controller.idService;
 var validationService = controller.validationService;
 var callContext = controller.callContext();
-var asPrimitiveValue = OSView.fc.asPrimitiveValue;
-var getTranslation = OSView.fc.getTranslation;
+var asPrimitiveValue = OSView.asPrimitiveValue;
+var getTranslation = OSView.getTranslation;
 var _this = {
 props: props,
 validateWidget: function (widgetId) {
@@ -28,9 +28,9 @@ props.validateWidget(props, widgetId);
 }
 };
 var widgetsRecordProvider = model;
-var $if = OSView.fc.ifWidget;
-var $text = OSView.fc.textWidget;
-var spanProvider = OSView.fc.useTracing();
+var $if = OSView.ifWidget;
+var $text = OSView.textWidget;
+var spanProvider = OSView.useTracing();
 return React.createElement("div", props.rootNodeProperties, React.createElement(OSWidgets.Expression, {
 value: model.variables.getWeekdayDataAct.out1Out,
 _idProps: {
