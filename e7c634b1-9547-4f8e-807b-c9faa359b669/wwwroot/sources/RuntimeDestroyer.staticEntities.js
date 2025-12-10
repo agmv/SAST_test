@@ -1,43 +1,164 @@
 ﻿import * as OS from "@outsystems/runtime-core-js";
 var RuntimeDestroyerModel = {
-staticEntities: {
-sampleListGet: Object.freeze({
-record1: 1000,
-record2: 2000,
-record3: 3000
-}),
-httpMethod: Object.freeze({
-pUT: "PUT",
-pOST: "POST",
-dELETE: "DELETE",
-gET: "GET"
-}),
-enum_color: Object.freeze({
-c1: "c1",
-c2: "c2"
-}),
-aIContentType: Object.freeze({
-textContent: OS.BuiltinFunctions.integerToLongInteger(1),
-imageURL: OS.BuiltinFunctions.integerToLongInteger(2),
-imageBinary: OS.BuiltinFunctions.integerToLongInteger(3)
-}),
-aIRole: Object.freeze({
-system: OS.BuiltinFunctions.integerToLongInteger(1),
-user: OS.BuiltinFunctions.integerToLongInteger(2),
-assistant: OS.BuiltinFunctions.integerToLongInteger(3),
-action: OS.BuiltinFunctions.integerToLongInteger(4)
-}),
-weekday: Object.freeze({
-monday: 1,
-tuesday: 2,
-saturday: 6,
-thursday: 4,
-friday: 5,
-wednesday: 3,
-sunday: 7
-})
-}
+staticEntities: {}
 };
+RuntimeDestroyerModel.staticEntities.sampleListGet = {};
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.sampleListGet, "record1", {
+get: function () {
+return 1000;
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.sampleListGet, "record2", {
+get: function () {
+return 2000;
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.sampleListGet, "record3", {
+get: function () {
+return 3000;
+}
+});
+
+
+
+RuntimeDestroyerModel.staticEntities.httpMethod = {};
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.httpMethod, "pUT", {
+get: function () {
+return "PUT";
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.httpMethod, "pOST", {
+get: function () {
+return "POST";
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.httpMethod, "dELETE", {
+get: function () {
+return "DELETE";
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.httpMethod, "gET", {
+get: function () {
+return "GET";
+}
+});
+
+
+
+RuntimeDestroyerModel.staticEntities.enum_color = {};
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.enum_color, "c1", {
+get: function () {
+return "c1";
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.enum_color, "c2", {
+get: function () {
+return "c2";
+}
+});
+
+
+
+RuntimeDestroyerModel.staticEntities.aIContentType = {};
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.aIContentType, "textContent", {
+get: function () {
+return OS.BuiltinFunctions.integerToLongInteger(1);
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.aIContentType, "imageURL", {
+get: function () {
+return OS.BuiltinFunctions.integerToLongInteger(2);
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.aIContentType, "imageBinary", {
+get: function () {
+return OS.BuiltinFunctions.integerToLongInteger(3);
+}
+});
+
+
+
+RuntimeDestroyerModel.staticEntities.aIRole = {};
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.aIRole, "system", {
+get: function () {
+return OS.BuiltinFunctions.integerToLongInteger(1);
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.aIRole, "user", {
+get: function () {
+return OS.BuiltinFunctions.integerToLongInteger(2);
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.aIRole, "assistant", {
+get: function () {
+return OS.BuiltinFunctions.integerToLongInteger(3);
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.aIRole, "action", {
+get: function () {
+return OS.BuiltinFunctions.integerToLongInteger(4);
+}
+});
+
+
+
+RuntimeDestroyerModel.staticEntities.weekday = {};
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.weekday, "monday", {
+get: function () {
+return 1;
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.weekday, "tuesday", {
+get: function () {
+return 2;
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.weekday, "saturday", {
+get: function () {
+return 6;
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.weekday, "thursday", {
+get: function () {
+return 4;
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.weekday, "friday", {
+get: function () {
+return 5;
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.weekday, "wednesday", {
+get: function () {
+return 3;
+}
+});
+
+Object.defineProperty(RuntimeDestroyerModel.staticEntities.weekday, "sunday", {
+get: function () {
+return 7;
+}
+});
+
+
+
+
 export var staticEntities = RuntimeDestroyerModel.staticEntities;
 
 

@@ -1,14 +1,35 @@
 ﻿import * as OS from "@outsystems/runtime-core-js";
 var RuntimeDestroyerLibModel = {
-staticEntities: {
-httpMethod: Object.freeze({
-gET: "GET",
-pOST: "POST",
-dELETE: "DELETE",
-pUT: "PUT"
-})
-}
+staticEntities: {}
 };
+RuntimeDestroyerLibModel.staticEntities.httpMethod = {};
+Object.defineProperty(RuntimeDestroyerLibModel.staticEntities.httpMethod, "gET", {
+get: function () {
+return "GET";
+}
+});
+
+Object.defineProperty(RuntimeDestroyerLibModel.staticEntities.httpMethod, "pOST", {
+get: function () {
+return "POST";
+}
+});
+
+Object.defineProperty(RuntimeDestroyerLibModel.staticEntities.httpMethod, "dELETE", {
+get: function () {
+return "DELETE";
+}
+});
+
+Object.defineProperty(RuntimeDestroyerLibModel.staticEntities.httpMethod, "pUT", {
+get: function () {
+return "PUT";
+}
+});
+
+
+
+
 export var staticEntities = RuntimeDestroyerLibModel.staticEntities;
 
 

@@ -153,7 +153,7 @@ return output;
 [RESTScreenServicesActionProperties(Name="CreateOrUpdateEmployee",Screen="ScreenAggregate",Type=ScreenServicesActionType.ServerAction)]
 public async Task<ActionResult<Payload.ServiceResponse>> ssCreateOrUpdateEmployee(CancellationToken cancellationToken) {
     using Stream input = HttpContext.Request.Body;
-    return await EndpointAsync(input, "DGWwvDkWRAvoNPhH1KseZg", async (screenName, screenModel, inputParameters, clientVariables, cancellationToken) => {
+    return await EndpointAsync(input, "z8EpiQlzCs+i++sDUr3kcA", async (screenName, screenModel, inputParameters, clientVariables, cancellationToken) => {
         RuntimeDestroyer_MainFlow_ScreenAggregate_ssCreateOrUpdateEmployee_Model inputs = null;
 long res_outParamId = 0L;
 CheckPermissionsIndex.CheckPermissionsAsync check;

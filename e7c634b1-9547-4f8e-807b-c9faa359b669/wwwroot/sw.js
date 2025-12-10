@@ -1,4 +1,4 @@
-﻿importScripts("./scripts/pwa-service-worker__9MipAZYpDeh6ya0auQ94w.js?9MipAZY+pDeh6ya0auQ94w");
+﻿importScripts("./scripts/pwa-service-worker__dfIvQDVC4wIsXH1nyryKA.js?dfIvQ+DVC4wIsXH1nyryKA");
 self["@outsystems/pwa-service-worker-js"].startInstrumentationModule({
 workerScope: self
 });

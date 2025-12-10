@@ -53,16 +53,16 @@
       }
     },
     "Module": {
-      "CompilationHash": "vf+D+J7xWXSeApSwwDIe7w"
+      "CompilationHash": "vf\u002BD\u002BJ7xWXSeApSwwDIe7w"
     },
     "RESTService": {
       "Assemblies": "RuntimeDestroyerLib"
     },
     "BuildJob": {
-      "Version": "v44.6.2.0"
+      "Version": "v44.7.5.0"
     },
     "BackendWorker": {
-      "Version": "v18.280.3-PullRequest0717.7"
+      "Version": "v18.293.1"
     },
     "HubEdition": {
       "NoMARSSupport": "True"

@@ -120,5 +120,37 @@ return output;
 
 
     }, cancellationToken);
+}[HttpPost]
+[Route("DataActionDataAction1")]
+[RESTScreenServicesActionProperties(Name="DataAction1",Screen="FetchData",Type=ScreenServicesActionType.DataAction)]
+public async Task<ActionResult<Payload.ServiceResponse>> DataActionDataAction1(CancellationToken cancellationToken) {
+    using Stream input = HttpContext.Request.Body;
+    return await EndpointAsync(input, "7Kzdy+q2wuYpI67SHkqj5A", async (screenName, screenModel, inputParameters, clientVariables, cancellationToken) => {
+        RuntimeDestroyer_MainFlow_FetchData_ScreenModel model = null;
+CheckPermissionsIndex.CheckPermissionsAsync check;
+if(Permissions.TryGetAsyncCheckPermissions(ScreenName.AnyScreen, out check)) {
+await check(requestContext, cancellationToken);
+} else {
+if(Permissions.TryGetAsyncCheckPermissions(new ScreenName(screenName), out check)) {
+await check(requestContext, cancellationToken);
+} else {
+throw new InvalidOperationException("No role validation found");
+}
+
+}
+
+try {model = RESTRuntimeDestroyer_MainFlow_FetchData_ScreenModel.FromJSON(screenModel, this.JsonSerializer).ToModel();
+} catch (Exception ex) {
+throw RestExposeErrorsHelper.BadRequest("Failed to parse JSON request content.", ex);
+}
+
+string outParamOut1;
+outParamOut1 = await model.DataActionDataAction1(requestContext,cancellationToken);
+
+var output = RESTRuntimeDestroyer_MainFlow_FetchData_DataActionDataAction1_Outputs.FromOutputs(this.BehaviorsConfiguration, outParamOut1);
+return output;
+
+
+    }, cancellationToken);
 }
 }

@@ -6,7 +6,5 @@ namespace ssRuntimeDestroyer {
         public static void Main(string[] args) {
             RealMain(args);
         }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) => RealCreateHostBuilder(args);
     }
 }

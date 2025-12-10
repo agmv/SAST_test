@@ -23,6 +23,26 @@ out1Out: OS.DataTypes.ImmutableBase.getData(str)
 
 GetWeekdayDataActRec.init();
 
+class DataAction1DataActRec extends 
+OS.Model.DataSourceRecord {
+static attributesToDeclare() {
+return [
+this.attr("Out1", "out1Out", "Out1", true, false, OS.DataTypes.DataTypes.Text, function () {
+return "";
+}, true)
+].concat(OS.Model.DataSourceRecord.attributesToDeclare.call(this));
+}
+
+static fromStructure(str) {
+return new DataAction1DataActRec(new DataAction1DataActRec.RecordClass({
+out1Out: OS.DataTypes.ImmutableBase.getData(str)
+}));
+}
+
+}
+
+DataAction1DataActRec.init();
+
 
 class VariablesRecord extends 
 OS.DataTypes.GenericRecord {
@@ -30,14 +50,11 @@ static attributesToDeclare() {
 return [
 this.attr("GetWeekday", "getWeekdayDataAct", "GetWeekday", true, true, OS.DataTypes.DataTypes.Record, function () {
 return OS.DataTypes.ImmutableBase.getData(new GetWeekdayDataActRec());
-}, true, GetWeekdayDataActRec)
+}, true, GetWeekdayDataActRec), 
+this.attr("DataAction1", "dataAction1DataAct", "DataAction1", true, true, OS.DataTypes.DataTypes.Record, function () {
+return OS.DataTypes.ImmutableBase.getData(new DataAction1DataActRec());
+}, true, DataAction1DataActRec)
 ].concat(OS.DataTypes.GenericRecord.attributesToDeclare.call(this));
-}
-
-static fromStructure(str) {
-return new VariablesRecord(new VariablesRecord.RecordClass({
-getWeekdayDataAct: OS.DataTypes.ImmutableBase.getData(str)
-}));
 }
 
 }
